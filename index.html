@@ -3,46 +3,47 @@
 
 <head>
   <meta charset="UTF-8">
-
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Jadwal Waktu Gabut</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap"
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap"
     rel="stylesheet">
   <style>
     body {
       font-family: 'Plus Jakarta Sans', sans-serif;
     }
 
+    .font-mono-time {
+      font-family: 'JetBrains Mono', monospace;
+    }
+
     .glass {
-      background: rgba(23, 23, 23, 0.75);
-      backdrop-filter: blur(14px);
-      -webkit-backdrop-filter: blur(14px);
+      background: rgba(23, 23, 23, 0.78);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
       border: 1px solid rgba(255, 255, 255, 0.08);
     }
 
+    .glass-card {
+      background: rgba(30, 30, 35, 0.65);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.07);
+    }
+
     @keyframes pulse-glow {
-
-      0%,
-      100% {
-        opacity: 0.4;
-      }
-
-      50% {
-        opacity: 0.8;
-      }
+      0%, 100% { opacity: 0.35; transform: scale(1); }
+      50% { opacity: 0.7; transform: scale(1.06); }
     }
 
     .glow-bg {
-      animation: pulse-glow 6s infinite ease-in-out;
+      animation: pulse-glow 7s infinite ease-in-out;
     }
 
     @keyframes fade-in-up {
       from {
         opacity: 0;
-        transform: translateY(8px);
+        transform: translateY(10px);
       }
-
       to {
         opacity: 1;
         transform: translateY(0);
@@ -50,69 +51,157 @@
     }
 
     .fade-in-up {
-      animation: fade-in-up 0.35s ease-out both;
+      animation: fade-in-up 0.35s cubic-bezier(0.16, 1, 0.3, 1) both;
     }
 
     @keyframes pop {
-      0% {
-        transform: scale(0.9);
-      }
-
-      60% {
-        transform: scale(1.03);
-      }
-
-      100% {
-        transform: scale(1);
-      }
+      0% { transform: scale(0.92); }
+      60% { transform: scale(1.05); }
+      100% { transform: scale(1); }
     }
 
     .pop {
-      animation: pop 0.25s ease-out both;
+      animation: pop 0.28s ease-out both;
+    }
+
+    @keyframes tick-blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.25; }
+    }
+
+    .blink-colon {
+      animation: tick-blink 1s infinite;
+    }
+
+    /* Checklist checkmark ripple animation */
+    @keyframes check-ripple {
+      0% { transform: scale(0.8); opacity: 0.5; }
+      50% { transform: scale(1.15); opacity: 1; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    .checked-bounce {
+      animation: check-ripple 0.32s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    /* Custom scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: rgba(20, 20, 25, 0.5);
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(147, 51, 234, 0.35);
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(147, 51, 234, 0.6);
     }
   </style>
 </head>
 
-<body class="bg-neutral-950 text-neutral-100 min-h-screen relative overflow-x-hidden">
+<body class="bg-neutral-950 text-neutral-100 min-h-screen relative overflow-x-hidden selection:bg-purple-600 selection:text-white">
 
   <!-- Ambient Glow Effects -->
-  <div
-    class="fixed top-[-10%] left-[-10%] w-[500px] h-[500px] bg-purple-600/20 rounded-full blur-[120px] pointer-events-none glow-bg">
-  </div>
-  <div
-    class="fixed bottom-[-10%] right-[-10%] w-[500px] h-[500px] bg-indigo-600/20 rounded-full blur-[120px] pointer-events-none glow-bg">
-  </div>
+  <div class="fixed top-[-12%] left-[-10%] w-[520px] h-[520px] bg-purple-600/18 rounded-full blur-[130px] pointer-events-none glow-bg"></div>
+  <div class="fixed bottom-[-12%] right-[-10%] w-[520px] h-[520px] bg-indigo-600/18 rounded-full blur-[130px] pointer-events-none glow-bg"></div>
+  <div class="fixed top-[35%] right-[25%] w-[380px] h-[380px] bg-pink-600/10 rounded-full blur-[140px] pointer-events-none glow-bg"></div>
 
-  <div class="max-w-5xl mx-auto px-4 py-10 relative z-10">
+  <div class="max-w-6xl mx-auto px-4 py-8 md:py-10 relative z-10">
 
-    <!-- Header Section -->
-    <header class="text-center mb-10 space-y-3">
-      <span
-        class="inline-block px-4 py-1 text-xs font-semibold uppercase tracking-wider text-purple-400 bg-purple-950/60 border border-purple-800/50 rounded-full">
-        Self-Care & Anti-Overthinking Hub
-      </span>
-      <h1
-        class="text-4xl md:text-5xl font-extrabold tracking-tight bg-gradient-to-r from-purple-400 via-pink-400 to-indigo-400 bg-clip-text text-transparent">
-        Jadwal Waktu Gabut
-      </h1>
-      <p class="text-sm md:text-base text-neutral-400 max-w-xl mx-auto italic font-medium">
-        "Jadwal gabut buat orang stres yang gatau mau ngapain plus ga punya pasangan."
-      </p>
+    <!-- Top Grid: Header with Red Box (Mood Tracker) & White Box (Live Digital Clock) -->
+    <header class="mb-10">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 items-stretch">
+        
+        <!-- [KOTAK MERAH]: Mood Tracker Hari Ini -->
+        <div class="lg:col-span-4 glass rounded-3xl p-5 border border-pink-500/20 shadow-2xl flex flex-col justify-between relative overflow-hidden group hover:border-pink-500/40 transition-all duration-300">
+          <div class="absolute -right-8 -top-8 w-24 h-24 bg-pink-500/10 rounded-full blur-2xl pointer-events-none"></div>
+          <div>
+            <div class="flex items-center justify-between mb-2">
+              <span class="inline-flex items-center gap-1.5 px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-pink-400 bg-pink-950/50 border border-pink-800/50 rounded-full">
+                <span class="w-1.5 h-1.5 rounded-full bg-pink-400 animate-ping"></span> Mood Hari Ini
+              </span>
+              <button onclick="openMoodHistoryModal()" class="text-xs text-neutral-400 hover:text-pink-300 transition flex items-center gap-1 font-medium">
+                <span>👥</span> Siapa yang klik?
+              </button>
+            </div>
+            <p class="text-xs text-neutral-400 mb-3">Pilih perasaan lu hari ini & tinggalkan jejak nama:</p>
+
+            <!-- Mood Buttons Grid (Senang, Marah, Kesal, Sedih, Datar, Kecewa, Sepi, Takut, Putus Asa) -->
+            <div class="grid grid-cols-3 gap-2" id="moodButtonsGrid">
+              <!-- Rendered dynamically -->
+            </div>
+          </div>
+
+          <div class="mt-3 pt-3 border-t border-neutral-800/80 flex items-center justify-between text-[11px] text-neutral-400">
+            <span id="activeUserMoodStatus">Status: <span class="text-neutral-300 font-semibold">Belum memilih</span></span>
+            <span id="totalMoodCountBadge" class="text-purple-400 font-mono font-semibold">0 Vote</span>
+          </div>
+        </div>
+
+        <!-- Center Title Banner -->
+        <div class="lg:col-span-4 flex flex-col items-center justify-center text-center space-y-3 py-3">
+          <span class="inline-block px-4 py-1 text-xs font-semibold uppercase tracking-wider text-purple-400 bg-purple-950/60 border border-purple-800/50 rounded-full shadow-inner">
+            Self-Care & Anti-Overthinking Hub
+          </span>
+          <h1 class="text-3xl md:text-4xl lg:text-5xl font-extrabold tracking-tight bg-gradient-to-r from-purple-400 via-pink-400 to-indigo-400 bg-clip-text text-transparent drop-shadow-sm">
+            Jadwal Waktu Gabut
+          </h1>
+          <p class="text-xs md:text-sm text-neutral-400 max-w-md italic font-medium leading-relaxed">
+            "Jadwal gabut buat orang stres yang gatau mau ngapain plus ga punya pasangan."
+          </p>
+        </div>
+
+        <!-- [KOTAK PUTIH]: Real Live Digital Clock (Jam : Menit : Detik) -->
+        <div class="lg:col-span-4 glass rounded-3xl p-5 border border-indigo-500/20 shadow-2xl flex flex-col justify-between relative overflow-hidden group hover:border-indigo-500/40 transition-all duration-300">
+          <div class="absolute -left-8 -bottom-8 w-24 h-24 bg-indigo-500/10 rounded-full blur-2xl pointer-events-none"></div>
+          <div class="flex items-center justify-between mb-2">
+            <span class="inline-flex items-center gap-1.5 px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-indigo-400 bg-indigo-950/50 border border-indigo-800/50 rounded-full">
+              <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> Waktu Nyata
+            </span>
+            <span id="liveClockTimeZone" class="text-xs text-neutral-400 font-mono">WIB (UTC+7)</span>
+          </div>
+
+          <!-- Digital Clock Display -->
+          <div class="my-auto py-2 text-center">
+            <div class="font-mono-time text-4xl md:text-5xl font-black text-transparent bg-gradient-to-r from-white via-neutral-100 to-indigo-200 bg-clip-text tracking-wider flex items-center justify-center gap-1">
+              <span id="clockHours" class="bg-neutral-900/90 px-2.5 py-1 rounded-xl border border-neutral-800 shadow-inner">00</span>
+              <span class="blink-colon text-indigo-400">:</span>
+              <span id="clockMinutes" class="bg-neutral-900/90 px-2.5 py-1 rounded-xl border border-neutral-800 shadow-inner">00</span>
+              <span class="blink-colon text-indigo-400">:</span>
+              <span id="clockSeconds" class="bg-neutral-900/90 px-2.5 py-1 rounded-xl border border-neutral-800 text-indigo-400 shadow-inner">00</span>
+            </div>
+            <p id="liveFullDate" class="text-xs md:text-sm text-neutral-400 mt-3 font-medium capitalize"></p>
+          </div>
+
+          <div class="pt-2 border-t border-neutral-800/80 flex items-center justify-between text-[11px] text-neutral-400">
+            <span>Zona Waktu Indonesia</span>
+            <span class="text-emerald-400 font-mono flex items-center gap-1">
+              <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span> Online Sync
+            </span>
+          </div>
+        </div>
+
+      </div>
     </header>
 
-    <!-- Grid Container -->
+    <!-- Grid Container Main Content -->
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
 
-      <!-- Left Column: Kalender Tahunan & Navigasi -->
+      <!-- Left Column: Kalender & Form Absen -->
       <section class="lg:col-span-5 space-y-6">
-        <div class="glass p-6 rounded-2xl shadow-xl">
+        <!-- Kalender -->
+        <div class="glass p-6 rounded-3xl shadow-xl border border-neutral-800/80">
           <div class="flex items-center justify-between mb-4">
-            <h2 id="calendarMonthYear" class="font-bold text-lg text-white"></h2>
+            <h2 id="calendarMonthYear" class="font-bold text-lg text-white tracking-wide"></h2>
             <div class="flex space-x-2">
               <button onclick="changeMonth(-1)"
-                class="p-2 hover:bg-neutral-800 rounded-lg text-neutral-400 hover:text-white transition">◀</button>
+                class="p-2 hover:bg-neutral-800 rounded-xl text-neutral-400 hover:text-white transition active:scale-95">◀</button>
               <button onclick="changeMonth(1)"
-                class="p-2 hover:bg-neutral-800 rounded-lg text-neutral-400 hover:text-white transition">▶</button>
+                class="p-2 hover:bg-neutral-800 rounded-xl text-neutral-400 hover:text-white transition active:scale-95">▶</button>
             </div>
           </div>
 
@@ -120,16 +209,18 @@
           <div class="grid grid-cols-7 gap-1 text-center text-xs font-semibold text-neutral-400 mb-2">
             <span>Min</span><span>Sen</span><span>Sel</span><span>Rab</span><span>Kam</span><span>Jum</span><span>Sab</span>
           </div>
-          <div id="calendarDays" class="grid grid-cols-7 gap-1 text-sm text-center"></div>
+          <div id="calendarDays" class="grid grid-cols-7 gap-1.5 text-sm text-center"></div>
 
           <div class="mt-4 pt-4 border-t border-neutral-800 flex items-center justify-between text-xs text-neutral-400">
-            <span>* Klik tanggal untuk melihat agenda gabut</span>
-            <button onclick="goToToday()" class="text-purple-400 hover:underline">Hari Ini</button>
+            <span>* Klik tanggal untuk agenda harian</span>
+            <button onclick="goToToday()" class="text-purple-400 hover:underline font-semibold flex items-center gap-1">
+              <span>🎯</span> Hari Ini
+            </button>
           </div>
         </div>
 
         <!-- Form Keterangan / Skip Jadwal -->
-        <div class="glass p-6 rounded-2xl shadow-xl space-y-4">
+        <div class="glass p-6 rounded-3xl shadow-xl border border-neutral-800/80 space-y-4">
           <h3 class="font-bold text-md text-white flex items-center gap-2">
             <span>📝</span> Keterangan Absen Gabut
           </h3>
@@ -140,20 +231,20 @@
             <div>
               <label class="block text-xs font-medium text-neutral-300 mb-1">Nama</label>
               <input type="text" id="absentName" required placeholder="Contoh: Kiky / Anon"
-                class="w-full px-3 py-2 bg-neutral-900 border border-neutral-700 rounded-xl text-sm text-white focus:outline-none focus:border-purple-500">
+                class="w-full px-3 py-2 bg-neutral-900 border border-neutral-700 rounded-xl text-sm text-white focus:outline-none focus:border-purple-500 transition">
             </div>
             <div>
               <label class="block text-xs font-medium text-neutral-300 mb-1">Tanggal Terkait</label>
               <input type="date" id="absentDate" required
-                class="w-full px-3 py-2 bg-neutral-900 border border-neutral-700 rounded-xl text-sm text-white focus:outline-none focus:border-purple-500">
+                class="w-full px-3 py-2 bg-neutral-900 border border-neutral-700 rounded-xl text-sm text-white focus:outline-none focus:border-purple-500 transition">
             </div>
             <div>
               <label class="block text-xs font-medium text-neutral-300 mb-1">Alasan Skip</label>
               <textarea id="absentReason" required rows="2" placeholder="Capek, lembur, mendadak healing, dll..."
-                class="w-full px-3 py-2 bg-neutral-900 border border-neutral-700 rounded-xl text-sm text-white focus:outline-none focus:border-purple-500"></textarea>
+                class="w-full px-3 py-2 bg-neutral-900 border border-neutral-700 rounded-xl text-sm text-white focus:outline-none focus:border-purple-500 transition"></textarea>
             </div>
             <button type="submit" id="absentSubmitBtn"
-              class="w-full py-2.5 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 font-semibold rounded-xl text-sm transition duration-200 shadow-md disabled:opacity-60">
+              class="w-full py-2.5 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 font-semibold rounded-xl text-sm transition duration-200 shadow-md disabled:opacity-60 active:scale-[0.99]">
               Kirim Keterangan Publik
             </button>
             <p id="absentFormError" class="text-xs text-red-400 hidden"></p>
@@ -161,40 +252,60 @@
         </div>
       </section>
 
-      <!-- Right Column: Detail Jadwal Terpilih & Log Keterangan Publik -->
+      <!-- Right Column: Detail Jadwal Terpilih & Board Absen -->
       <section class="lg:col-span-7 space-y-6">
 
         <!-- Kartu Agenda Hari Ini / Terpilih -->
-        <div class="glass p-6 rounded-2xl shadow-xl relative overflow-hidden">
-          <div class="flex items-center justify-between border-b border-neutral-800 pb-4 mb-4">
+        <div class="glass p-6 rounded-3xl shadow-xl relative overflow-hidden border border-neutral-800/80">
+          <div class="flex flex-wrap items-center justify-between border-b border-neutral-800 pb-4 mb-4 gap-3">
             <div>
               <span id="selectedDayName" class="text-xs uppercase font-bold tracking-widest text-purple-400"></span>
               <h2 id="selectedDateDisplay" class="text-2xl font-black text-white"></h2>
             </div>
-            <span class="px-3 py-1 bg-neutral-800/80 text-neutral-300 text-xs rounded-full font-mono"
-              id="timeSlot"></span>
+            <div class="flex items-center gap-2">
+              <span class="px-3 py-1 bg-neutral-900/90 border border-neutral-700 text-neutral-300 text-xs rounded-full font-mono flex items-center gap-1.5"
+                id="timeSlot">
+                <span class="w-1.5 h-1.5 rounded-full bg-purple-400"></span>
+                <span>Pukul 22.00 s.d Selesai</span>
+              </span>
+              <button onclick="addNewCustomTaskPrompt()" title="Tambah Agenda Kustom" class="px-2.5 py-1 bg-purple-950/60 hover:bg-purple-900 text-purple-300 border border-purple-800/60 rounded-full text-xs font-semibold flex items-center gap-1 transition">
+                <span>+</span> Tambah
+              </button>
+            </div>
           </div>
 
-          <div id="scheduleDetails" class="space-y-3">
+          <!-- Petunjuk Visual untuk Kotak Kuning & Kotak Biru -->
+          <div class="mb-4 px-3.5 py-2 bg-neutral-900/50 rounded-2xl border border-neutral-800/80 flex flex-wrap items-center justify-between text-[11px] text-neutral-400 gap-2">
+            <span class="flex items-center gap-1.5">
+              <span class="w-2 h-2 rounded-full bg-amber-400"></span>
+              <span><strong>Kotak Kuning:</strong> Klik teks/waktu untuk mengedit langsung</span>
+            </span>
+            <span class="flex items-center gap-1.5">
+              <span class="w-2 h-2 rounded-full bg-blue-400"></span>
+              <span><strong>Kotak Biru:</strong> Klik tombol tag untuk centang selesai</span>
+            </span>
+          </div>
+
+          <!-- Container Task List -->
+          <div id="scheduleDetails" class="space-y-3.5">
             <!-- Diisi lewat Javascript -->
           </div>
         </div>
 
         <!-- Board Semua Keterangan / Izin Publik -->
-        <div class="glass p-6 rounded-2xl shadow-xl space-y-4">
+        <div class="glass p-6 rounded-3xl shadow-xl space-y-4 border border-neutral-800/80">
           <div class="flex flex-wrap items-center justify-between border-b border-neutral-800 pb-3 gap-2">
             <h3 class="font-bold text-md text-white flex items-center gap-2">
               <span>📢</span> Board Pengumuman & Alasan Skip
             </h3>
             <div class="flex items-center gap-2">
-              <span
-                class="text-xs text-neutral-400 bg-neutral-800/80 px-2.5 py-1 rounded-full border border-neutral-700 font-mono flex items-center gap-1.5">
+              <span class="text-xs text-neutral-400 bg-neutral-800/80 px-2.5 py-1 rounded-full border border-neutral-700 font-mono flex items-center gap-1.5">
                 <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span> JSON DB
               </span>
             </div>
           </div>
 
-          <div id="absenceList" class="space-y-3 max-h-[300px] overflow-y-auto pr-1">
+          <div id="absenceList" class="space-y-3 max-h-[280px] overflow-y-auto pr-1">
             <p class="text-xs text-neutral-500 italic">Memuat data JSON...</p>
           </div>
 
@@ -203,16 +314,16 @@
             <span class="text-neutral-400 font-medium">🗄️ Database JSON Lokal</span>
             <div class="flex items-center gap-2">
               <button onclick="exportJSONDB()" title="Ekspor ke file JSON"
-                class="px-3 py-1.5 bg-neutral-800 hover:bg-neutral-700 text-purple-300 hover:text-purple-200 rounded-lg border border-purple-900/50 flex items-center gap-1.5 transition font-semibold">
+                class="px-3 py-1.5 bg-neutral-800 hover:bg-neutral-700 text-purple-300 hover:text-purple-200 rounded-xl border border-purple-900/50 flex items-center gap-1.5 transition font-semibold active:scale-95">
                 <span>💾</span> Ekspor JSON
               </button>
               <label title="Impor dari file JSON"
-                class="px-3 py-1.5 bg-neutral-800 hover:bg-neutral-700 text-indigo-300 hover:text-indigo-200 rounded-lg border border-indigo-900/50 flex items-center gap-1.5 cursor-pointer transition font-semibold">
+                class="px-3 py-1.5 bg-neutral-800 hover:bg-neutral-700 text-indigo-300 hover:text-indigo-200 rounded-xl border border-indigo-900/50 flex items-center gap-1.5 cursor-pointer transition font-semibold active:scale-95">
                 <span>📥</span> Impor JSON
                 <input type="file" id="jsonFileInput" accept=".json" onchange="importJSONDB(event)" class="hidden">
               </label>
               <button onclick="resetJSONDB()" title="Reset data ke default"
-                class="px-2.5 py-1.5 bg-neutral-800 hover:bg-red-950/50 text-neutral-400 hover:text-red-400 rounded-lg border border-neutral-700 hover:border-red-900/50 transition">
+                class="px-2.5 py-1.5 bg-neutral-800 hover:bg-red-950/50 text-neutral-400 hover:text-red-400 rounded-xl border border-neutral-700 hover:border-red-900/50 transition active:scale-95">
                 🗑️
               </button>
             </div>
@@ -222,67 +333,316 @@
       </section>
     </div>
 
-    <footer class="text-center text-xs text-neutral-600 mt-10">
-      Dibuat dengan sepenuh gabut. Semua jadwal & keterangan tersinkron untuk siapa pun yang membuka halaman ini.
+    <!-- Footer -->
+    <footer class="text-center text-xs text-neutral-500 mt-12 space-y-1">
+      <p>Dibuat dengan sepenuh gabut. Real-time Clock, Mood Tracker Interaktif & Editable Schedule.</p>
     </footer>
   </div>
 
+  <!-- MODAL: Detail Siapa Saja yang Klik Mood -->
+  <div id="moodModal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-50 hidden items-center justify-center p-4">
+    <div class="glass max-w-md w-full rounded-3xl p-6 border border-neutral-700 shadow-2xl relative space-y-4 fade-in-up">
+      <div class="flex items-center justify-between border-b border-neutral-800 pb-3">
+        <h3 class="font-bold text-base text-white flex items-center gap-2">
+          <span>📊</span> Detail Suara Mood Hari Ini
+        </h3>
+        <button onclick="closeMoodHistoryModal()" class="text-neutral-400 hover:text-white p-1 text-lg leading-none transition">✕</button>
+      </div>
+
+      <div id="moodBreakdownList" class="space-y-3 max-h-[350px] overflow-y-auto pr-1">
+        <!-- Rendered dynamically -->
+      </div>
+
+      <div class="pt-3 border-t border-neutral-800 flex justify-between items-center text-xs">
+        <button onclick="clearMoodHistoryToday()" class="text-red-400 hover:underline">Reset Suara Hari Ini</button>
+        <button onclick="closeMoodHistoryModal()" class="px-4 py-2 bg-neutral-800 hover:bg-neutral-700 text-white rounded-xl transition font-semibold">Tutup</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: Prompt Nama Saat Klik Mood Pertama Kali -->
+  <div id="moodNameModal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-50 hidden items-center justify-center p-4">
+    <div class="glass max-w-sm w-full rounded-3xl p-6 border border-pink-500/30 shadow-2xl relative space-y-4 fade-in-up">
+      <div class="text-center space-y-1">
+        <div id="modalMoodEmojiDisplay" class="text-4xl mb-1">😊</div>
+        <h3 class="font-bold text-lg text-white" id="modalMoodTitle">Pilih Mood</h3>
+        <p class="text-xs text-neutral-400">Tuliskan nama atau inisialmu agar tercatat di papan mood hari ini:</p>
+      </div>
+      <form id="moodVoteForm" class="space-y-3">
+        <input type="text" id="moodVoterNameInput" required placeholder="Contoh: Kiky, Sultan, Anonim..."
+          class="w-full px-3.5 py-2.5 bg-neutral-900 border border-neutral-700 rounded-xl text-sm text-white focus:outline-none focus:border-pink-500 transition">
+        <div class="flex gap-2">
+          <button type="button" onclick="closeMoodNameModal()" class="w-1/2 py-2.5 bg-neutral-800 hover:bg-neutral-700 text-neutral-300 text-xs font-semibold rounded-xl transition">Batal</button>
+          <button type="submit" class="w-1/2 py-2.5 bg-gradient-to-r from-pink-600 to-purple-600 hover:from-pink-500 hover:to-purple-500 text-white text-xs font-bold rounded-xl transition shadow-lg">Simpan Mood</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
   <script>
-    // Master data jadwal rutin per hari (0: Minggu, 1: Senin, dst.)
+    // ==========================================
+    // 1. [KOTAK PUTIH]: REAL LIVE DIGITAL CLOCK
+    // ==========================================
+    function updateLiveClock() {
+      const now = new Date();
+      const hours = String(now.getHours()).padStart(2, "0");
+      const minutes = String(now.getMinutes()).padStart(2, "0");
+      const seconds = String(now.getSeconds()).padStart(2, "0");
+
+      document.getElementById("clockHours").textContent = hours;
+      document.getElementById("clockMinutes").textContent = minutes;
+      document.getElementById("clockSeconds").textContent = seconds;
+
+      const dateStr = now.toLocaleDateString("id-ID", {
+        weekday: "long",
+        day: "numeric",
+        month: "long",
+        year: "numeric"
+      });
+      document.getElementById("liveFullDate").textContent = `📅 ${dateStr}`;
+    }
+    setInterval(updateLiveClock, 1000);
+    updateLiveClock();
+
+    // ==========================================
+    // 2. [KOTAK MERAH]: MOOD TRACKER INTERAKTIF
+    // ==========================================
+    const MOOD_LIST = [
+      { id: "senang", label: "Senang", emoji: "😊", color: "hover:border-emerald-500 hover:bg-emerald-950/30" },
+      { id: "marah", label: "Marah", emoji: "😡", color: "hover:border-red-500 hover:bg-red-950/30" },
+      { id: "kesal", label: "Kesal", emoji: "😤", color: "hover:border-orange-500 hover:bg-orange-950/30" },
+      { id: "sedih", label: "Sedih", emoji: "😢", color: "hover:border-blue-500 hover:bg-blue-950/30" },
+      { id: "datar", label: "Datar", emoji: "😐", color: "hover:border-gray-500 hover:bg-gray-900/40" },
+      { id: "kecewa", label: "Kecewa", emoji: "😞", color: "hover:border-amber-500 hover:bg-amber-950/30" },
+      { id: "sepi", label: "Sepi", emoji: "🥺", color: "hover:border-indigo-500 hover:bg-indigo-950/30" },
+      { id: "takut", label: "Takut", emoji: "😨", color: "hover:border-violet-500 hover:bg-violet-950/30" },
+      { id: "putus-asa", label: "Putus Asa", emoji: "😩", color: "hover:border-rose-600 hover:bg-rose-950/30" }
+    ];
+
+    const MOOD_DB_KEY = "gabut_mood_votes_v1";
+    let pendingMoodSelection = null;
+
+    function getTodayKey() {
+      const now = new Date();
+      return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
+    }
+
+    function getMoodData() {
+      try {
+        const raw = localStorage.getItem(MOOD_DB_KEY);
+        return raw ? JSON.parse(raw) : {};
+      } catch (e) {
+        return {};
+      }
+    }
+
+    function saveMoodData(data) {
+      localStorage.setItem(MOOD_DB_KEY, JSON.stringify(data));
+    }
+
+    function renderMoodButtons() {
+      const data = getMoodData();
+      const today = getTodayKey();
+      const todayVotes = data[today] || [];
+      const container = document.getElementById("moodButtonsGrid");
+      container.innerHTML = "";
+
+      let totalClicks = todayVotes.length;
+      document.getElementById("totalMoodCountBadge").textContent = `${totalClicks} Vote`;
+
+      const userSavedName = localStorage.getItem("gabut_user_name") || "";
+      const userTodayVote = todayVotes.find(v => v.name.toLowerCase() === userSavedName.toLowerCase());
+
+      const statusEl = document.getElementById("activeUserMoodStatus");
+      if (userTodayVote) {
+        const m = MOOD_LIST.find(item => item.id === userTodayVote.moodId);
+        statusEl.innerHTML = `Mood kamu: <span class="text-pink-400 font-bold">${m ? m.emoji : ""} ${m ? m.label : ""}</span>`;
+      } else {
+        statusEl.innerHTML = `Status: <span class="text-neutral-400 font-semibold">Belum vote</span>`;
+      }
+
+      MOOD_LIST.forEach(mood => {
+        const count = todayVotes.filter(v => v.moodId === mood.id).length;
+        const btn = document.createElement("button");
+        const isUserChoice = userTodayVote && userTodayVote.moodId === mood.id;
+
+        btn.className = `p-2 rounded-xl border flex flex-col items-center justify-center gap-1 transition-all duration-200 text-xs active:scale-95 group relative overflow-hidden ${
+          isUserChoice 
+            ? "bg-pink-950/60 border-pink-500 text-white shadow-lg ring-1 ring-pink-400" 
+            : "bg-neutral-900/80 border-neutral-800 text-neutral-300 hover:border-neutral-600"
+        } ${mood.color}`;
+
+        btn.onclick = () => selectMood(mood.id);
+
+        btn.innerHTML = `
+          <span class="text-xl group-hover:scale-125 transition duration-200">${mood.emoji}</span>
+          <span class="font-medium text-[11px] truncate w-full text-center">${mood.label}</span>
+          <span class="inline-flex items-center px-1.5 py-0.5 rounded-full text-[10px] font-mono ${
+            count > 0 ? "bg-purple-900/70 text-purple-200 border border-purple-700/50" : "text-neutral-500"
+          }">
+            ${count}
+          </span>
+        `;
+        container.appendChild(btn);
+      });
+    }
+
+    function selectMood(moodId) {
+      pendingMoodSelection = moodId;
+      const targetMood = MOOD_LIST.find(m => m.id === moodId);
+      const savedName = localStorage.getItem("gabut_user_name") || "";
+
+      document.getElementById("modalMoodEmojiDisplay").textContent = targetMood.emoji;
+      document.getElementById("modalMoodTitle").textContent = `Mood: ${targetMood.label}`;
+      document.getElementById("moodVoterNameInput").value = savedName;
+
+      document.getElementById("moodNameModal").classList.remove("hidden");
+      document.getElementById("moodNameModal").classList.add("flex");
+      document.getElementById("moodVoterNameInput").focus();
+    }
+
+    function closeMoodNameModal() {
+      document.getElementById("moodNameModal").classList.add("hidden");
+      document.getElementById("moodNameModal").classList.remove("flex");
+      pendingMoodSelection = null;
+    }
+
+    document.getElementById("moodVoteForm").addEventListener("submit", (e) => {
+      e.preventDefault();
+      const name = document.getElementById("moodVoterNameInput").value.trim();
+      if (!name || !pendingMoodSelection) return;
+
+      localStorage.setItem("gabut_user_name", name);
+
+      const data = getMoodData();
+      const today = getTodayKey();
+      if (!data[today]) data[today] = [];
+
+      // Update jika nama sudah pernah vote hari ini, atau tambahkan vote baru
+      const existingIdx = data[today].findIndex(v => v.name.toLowerCase() === name.toLowerCase());
+      if (existingIdx >= 0) {
+        data[today][existingIdx].moodId = pendingMoodSelection;
+        data[today][existingIdx].timestamp = new Date().toISOString();
+      } else {
+        data[today].push({
+          name: name,
+          moodId: pendingMoodSelection,
+          timestamp: new Date().toISOString()
+        });
+      }
+
+      saveMoodData(data);
+      closeMoodNameModal();
+      renderMoodButtons();
+    });
+
+    function openMoodHistoryModal() {
+      const data = getMoodData();
+      const today = getTodayKey();
+      const todayVotes = data[today] || [];
+      const listEl = document.getElementById("moodBreakdownList");
+      listEl.innerHTML = "";
+
+      if (todayVotes.length === 0) {
+        listEl.innerHTML = `<p class="text-xs text-neutral-400 text-center py-6">Belum ada yang memberikan suara mood untuk hari ini.</p>`;
+      } else {
+        MOOD_LIST.forEach(mood => {
+          const voters = todayVotes.filter(v => v.moodId === mood.id);
+          if (voters.length > 0) {
+            const block = document.createElement("div");
+            block.className = "p-3 bg-neutral-900/70 border border-neutral-800 rounded-2xl space-y-1.5";
+            const voterNames = voters.map(v => `<span class="px-2 py-0.5 bg-neutral-800 border border-neutral-700 text-purple-300 rounded-md font-medium">${escapeHtml(v.name)}</span>`).join(" ");
+            block.innerHTML = `
+              <div class="flex items-center justify-between">
+                <span class="font-bold text-sm text-white flex items-center gap-1.5">
+                  <span>${mood.emoji}</span> <span>${mood.label}</span>
+                </span>
+                <span class="px-2 py-0.5 text-xs bg-purple-950 border border-purple-800 text-purple-300 rounded-full font-mono">${voters.length} orang</span>
+              </div>
+              <div class="text-xs text-neutral-300 flex flex-wrap gap-1 pt-1">${voterNames}</div>
+            `;
+            listEl.appendChild(block);
+          }
+        });
+      }
+
+      document.getElementById("moodModal").classList.remove("hidden");
+      document.getElementById("moodModal").classList.add("flex");
+    }
+
+    function closeMoodHistoryModal() {
+      document.getElementById("moodModal").classList.add("hidden");
+      document.getElementById("moodModal").classList.remove("flex");
+    }
+
+    function clearMoodHistoryToday() {
+      if (confirm("Reset semua riwayat voting mood untuk hari ini?")) {
+        const data = getMoodData();
+        const today = getTodayKey();
+        delete data[today];
+        saveMoodData(data);
+        renderMoodButtons();
+        closeMoodHistoryModal();
+      }
+    }
+
+    // ==========================================================
+    // 3 & 4. [KOTAK KUNING] & [KOTAK BIRU]: EDITABLE & CHECKLIST
+    // ==========================================================
     const routineSchedule = {
       1: {
         day: "Senin",
         time: "Pukul 22.00 s.d Selesai",
         tasks: [
-          { title: "Nonton Netflix", tag: "Hiburan" },
-          { title: "Latihan Gitar", tag: "Skill" }
+          { id: "m1", title: "Nonton Netflix", subtext: "Pukul 22.00 s.d Selesai", tag: "Hiburan" },
+          { id: "m2", title: "Latihan Gitar", subtext: "Pukul 22.00 s.d Selesai", tag: "Skill" }
         ]
       },
       2: {
         day: "Selasa",
         time: "Pukul 22.00 s.d Selesai",
         tasks: [
-          { title: "Boren ke Kota / Pembahasan Trading", tag: "Finance & Chill" },
-          { title: "Istirahat Roasting TIKTOK", tag: "Relaksasi" }
+          { id: "t1", title: "Boren ke Kota / Pembahasan Trading", subtext: "Pukul 22.00 s.d Selesai", tag: "Finance & Chill" },
+          { id: "t2", title: "Istirahat Roasting TIKTOK", subtext: "Pukul 22.00 s.d Selesai", tag: "Relaksasi" }
         ]
       },
       3: {
         day: "Rabu",
         time: "Pukul 22.00 s.d Selesai",
         tasks: [
-          { title: "Belajar Coding", tag: "Tech" },
-          { title: "Belajar Gitar", tag: "Music" }
+          { id: "w1", title: "Belajar Coding", subtext: "Pukul 22.00 s.d Selesai", tag: "Tech" },
+          { id: "w2", title: "Belajar Gitar", subtext: "Pukul 22.00 s.d Selesai", tag: "Music" }
         ]
       },
       4: {
         day: "Kamis",
         time: "Pukul 22.00 s.d Selesai",
         tasks: [
-          { title: "Nonton", tag: "Streaming" },
-          { title: "Roasting Tiktok", tag: "Hiburan" }
+          { id: "th1", title: "Nonton", subtext: "Pukul 22.00 s.d Selesai", tag: "Streaming" },
+          { id: "th2", title: "Roasting Tiktok", subtext: "Pukul 22.00 s.d Selesai", tag: "Hiburan" }
         ]
       },
       5: {
         day: "Jumat",
         time: "Pukul 15.00 s.d Selesai",
         tasks: [
-          { title: "Pukul 15.00 – 20.00: Kiky Boren Kota", tag: "Keluar Rumah" },
-          { title: "Pukul 20.00 – Selesai: Trading / Coding / Nonton (Via Voting)", tag: "Community Vote" }
+          { id: "f1", title: "Kiky Boren Kota", subtext: "Pukul 15.00 – 20.00", tag: "Keluar Rumah" },
+          { id: "f2", title: "Trading / Coding / Nonton (Via Voting)", subtext: "Pukul 20.00 – Selesai", tag: "Community Vote" }
         ]
       },
       6: {
         day: "Sabtu",
         time: "Pukul Sesuka Hati",
         tasks: [
-          { title: "Kegiatan Sesuka Hati (Bebas total tanpa aturan)", tag: "Free Mode" }
+          { id: "s1", title: "Kegiatan Sesuka Hati (Bebas total tanpa aturan)", subtext: "Pukul Sesuka Hati", tag: "Free Mode" }
         ]
       },
       0: {
         day: "Minggu",
         time: "Pukul 22.00 s.d Selesai",
         tasks: [
-          { title: "Belajar Coding", tag: "Tech" },
-          { title: "Belajar Gitar", tag: "Music" }
+          { id: "su1", title: "Belajar Coding", subtext: "Pukul 22.00 s.d Selesai", tag: "Tech" },
+          { id: "su2", title: "Belajar Gitar", subtext: "Pukul 22.00 s.d Selesai", tag: "Music" }
         ]
       }
     };
@@ -293,25 +653,38 @@
     const monthNames = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
     const dayNames = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
 
-    // Sistem Database JSON lokal via LocalStorage
-    const DB_KEY = "gabut_absences_db";
+    const CUSTOM_TASKS_KEY = "gabut_custom_tasks_v2";
+    const COMPLETED_TASKS_KEY = "gabut_completed_tasks_v2";
 
-    const defaultAbsences = [
-      {
-        id: "1",
-        name: "Kiky",
-        date: "2026-09-22",
-        reason: "Capek banget abis ngoding seharian, pengen rebahan dulu.",
-        createdAt: new Date().toISOString()
-      },
-      {
-        id: "2",
-        name: "Anon Gabut",
-        date: "2026-09-21",
-        reason: "Ketiduran pas mau ikut agenda jam 10 malam.",
-        createdAt: new Date(Date.now() - 86400000).toISOString()
+    function getCustomTasks() {
+      try {
+        const raw = localStorage.getItem(CUSTOM_TASKS_KEY);
+        return raw ? JSON.parse(raw) : {};
+      } catch (e) {
+        return {};
       }
-    ];
+    }
+
+    function saveCustomTasks(data) {
+      localStorage.setItem(CUSTOM_TASKS_KEY, JSON.stringify(data));
+    }
+
+    function getCompletedMap() {
+      try {
+        const raw = localStorage.getItem(COMPLETED_TASKS_KEY);
+        return raw ? JSON.parse(raw) : {};
+      } catch (e) {
+        return {};
+      }
+    }
+
+    function saveCompletedMap(map) {
+      localStorage.setItem(COMPLETED_TASKS_KEY, JSON.stringify(map));
+    }
+
+    function getDateISO(date) {
+      return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+    }
 
     function renderCalendar() {
       const year = currentDate.getFullYear();
@@ -333,13 +706,13 @@
       for (let day = 1; day <= totalDays; day++) {
         const btn = document.createElement("button");
         btn.innerText = day;
-        btn.className = "py-2 rounded-lg font-medium transition hover:bg-neutral-800 text-neutral-300";
+        btn.className = "py-2.5 rounded-xl font-medium transition hover:bg-neutral-800 text-neutral-300 active:scale-95";
 
         const isToday = (day === new Date().getDate() && month === new Date().getMonth() && year === new Date().getFullYear());
         const isSelected = (day === selectedDate.getDate() && month === selectedDate.getMonth() && year === selectedDate.getFullYear());
 
         if (isSelected) {
-          btn.className += " bg-purple-600 text-white font-bold ring-2 ring-purple-400 pop";
+          btn.className += " bg-purple-600 text-white font-bold ring-2 ring-purple-400 pop shadow-lg shadow-purple-900/30";
         } else if (isToday) {
           btn.className += " border border-purple-500 text-purple-400 font-semibold";
         }
@@ -369,33 +742,161 @@
     function renderSchedule() {
       const dayIndex = selectedDate.getDay();
       const dayData = routineSchedule[dayIndex];
+      const dateKey = getDateISO(selectedDate);
 
       document.getElementById("selectedDayName").innerText = dayNames[dayIndex].toUpperCase();
       document.getElementById("selectedDateDisplay").innerText = `${selectedDate.getDate()} ${monthNames[selectedDate.getMonth()]} ${selectedDate.getFullYear()}`;
-      document.getElementById("timeSlot").innerText = dayData.time;
+      document.getElementById("timeSlot").innerHTML = `<span>⏰</span><span>${escapeHtml(dayData.time)}</span>`;
 
       const scheduleDetails = document.getElementById("scheduleDetails");
       scheduleDetails.innerHTML = "";
 
-      dayData.tasks.forEach((t, idx) => {
+      // Gabungkan jadwal master default dan jadwal kustom user jika ada
+      const customStore = getCustomTasks();
+      const customDayTasks = customStore[dateKey] || [];
+      const allTasks = [...dayData.tasks, ...customDayTasks];
+
+      const completedMap = getCompletedMap();
+      const dateCompleted = completedMap[dateKey] || {};
+
+      allTasks.forEach((t, idx) => {
+        const taskId = t.id || `custom_${idx}`;
+        const isDone = !!dateCompleted[taskId];
         const card = document.createElement("div");
-        card.className = "p-4 bg-neutral-900/80 border border-neutral-800 rounded-xl flex items-center justify-between transition hover:border-neutral-700 fade-in-up";
+
+        // Kotak kuning diimplementasikan sebagai area teks/waktu yang editable dengan border aksen kuning lembut
+        // Kotak biru diimplementasikan sebagai tombol checklist interaktif dengan aksen biru estetik
+        card.className = `p-4 glass-card rounded-2xl border transition duration-300 flex items-center justify-between gap-4 fade-in-up group ${
+          isDone ? "border-emerald-900/50 bg-neutral-900/40 opacity-70" : "border-neutral-800 hover:border-neutral-700"
+        }`;
         card.style.animationDelay = `${idx * 60}ms`;
+
         card.innerHTML = `
-          <div>
-            <h4 class="font-bold text-white text-base">${escapeHtml(t.title)}</h4>
-            <span class="text-xs text-neutral-400 font-mono">${escapeHtml(dayData.time)}</span>
+          <div class="flex items-center gap-3.5 grow min-w-0">
+            <!-- Checklist Circle Icon -->
+            <button onclick="toggleTaskCompletion('${dateKey}', '${taskId}')" title="Klik untuk menandai selesai"
+              class="w-7 h-7 rounded-xl flex items-center justify-center transition shrink-0 border ${
+                isDone 
+                  ? "bg-emerald-500/20 border-emerald-500 text-emerald-400 checked-bounce" 
+                  : "border-neutral-700 hover:border-blue-400 bg-neutral-900/80 text-transparent hover:text-blue-400"
+              }">
+              <span class="text-sm font-bold">✓</span>
+            </button>
+
+            <!-- [KOTAK KUNING]: Kolom Judul & Jam yang bisa diubah oleh User -->
+            <div class="space-y-1 grow min-w-0">
+              <div class="flex items-center gap-2">
+                <span id="title_${taskId}" class="font-bold text-white text-base truncate cursor-pointer hover:text-amber-300 transition ${isDone ? 'line-through text-neutral-500' : ''}" 
+                  onclick="editTaskInline('${dateKey}', '${taskId}', 'title')" title="Klik untuk mengedit judul agenda">
+                  ${escapeHtml(t.title)}
+                </span>
+                <button onclick="editTaskInline('${dateKey}', '${taskId}', 'title')" class="text-neutral-500 hover:text-amber-300 text-xs transition opacity-0 group-hover:opacity-100" title="Edit Judul">✏️</button>
+              </div>
+
+              <!-- Bagian Subteks / Waktu (KOTAK KUNING) -->
+              <div class="flex items-center gap-1.5">
+                <div onclick="editTaskInline('${dateKey}', '${taskId}', 'subtext')" 
+                  title="Klik untuk mengubah jam atau catatan"
+                  class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-lg border border-amber-500/40 bg-amber-950/20 hover:bg-amber-950/40 hover:border-amber-400 text-amber-300 text-xs font-mono transition cursor-pointer group/yellow shadow-sm">
+                  <span class="text-amber-400 text-[10px]">✏️</span>
+                  <span id="subtext_${taskId}" class="${isDone ? 'line-through opacity-70' : ''}">
+                    ${escapeHtml(t.subtext || dayData.time)}
+                  </span>
+                </div>
+              </div>
+            </div>
           </div>
-          <span class="px-2.5 py-1 text-xs rounded-full bg-purple-950/80 text-purple-300 border border-purple-800/40">${escapeHtml(t.tag)}</span>
+
+          <!-- [KOTAK BIRU]: Tombol Tag Interaktif & Centang -->
+          <div class="flex items-center gap-2 shrink-0">
+            <button onclick="toggleTaskCompletion('${dateKey}', '${taskId}')" 
+              title="Klik kotak biru ini untuk centang selesai"
+              class="px-3.5 py-1.5 text-xs font-bold rounded-xl border transition-all duration-200 flex items-center gap-2 active:scale-95 shadow-md ${
+                isDone 
+                  ? "bg-emerald-950/80 text-emerald-300 border-emerald-500 ring-1 ring-emerald-400/50" 
+                  : "bg-blue-950/70 hover:bg-blue-900/80 text-blue-300 hover:text-white border-blue-600/60 hover:border-blue-400 ring-1 ring-blue-500/20 hover:shadow-blue-950/60"
+              }">
+              <span class="w-4 h-4 rounded-lg flex items-center justify-center border ${
+                isDone ? "bg-emerald-400 text-black border-transparent" : "border-blue-400/60 text-transparent"
+              }">
+                ✓
+              </span>
+              <span class="tracking-wide">${escapeHtml(t.tag)}</span>
+              ${isDone ? '<span class="text-[10px] uppercase font-mono px-1 py-0.2 bg-emerald-900/80 rounded">Selesai</span>' : ''}
+            </button>
+          </div>
         `;
         scheduleDetails.appendChild(card);
       });
 
-      // Sinkronkan input tanggal form absen otomatis
-      const year = selectedDate.getFullYear();
-      const m = String(selectedDate.getMonth() + 1).padStart(2, "0");
-      const d = String(selectedDate.getDate()).padStart(2, "0");
-      document.getElementById("absentDate").value = `${year}-${m}-${d}`;
+      // Sinkronkan input tanggal form absen
+      document.getElementById("absentDate").value = dateKey;
+    }
+
+    function toggleTaskCompletion(dateKey, taskId) {
+      const map = getCompletedMap();
+      if (!map[dateKey]) map[dateKey] = {};
+
+      map[dateKey][taskId] = !map[dateKey][taskId];
+      saveCompletedMap(map);
+      renderSchedule();
+    }
+
+    function editTaskInline(dateKey, taskId, field) {
+      const targetElement = document.getElementById(`${field}_${taskId}`);
+      const currentText = targetElement ? targetElement.innerText.trim() : "";
+      const promptLabel = field === 'title' ? 'Ubah Judul Agenda:' : 'Ubah Waktu / Keterangan Jadwal:';
+      
+      const newText = prompt(promptLabel, currentText);
+      if (newText === null || newText.trim() === "") return;
+
+      // Cek apakah taskId berasal dari master atau kustom
+      const customStore = getCustomTasks();
+      if (!customStore[dateKey]) customStore[dateKey] = [];
+
+      let customIndex = customStore[dateKey].findIndex(t => t.id === taskId);
+      if (customIndex >= 0) {
+        customStore[dateKey][customIndex][field] = newText.trim();
+      } else {
+        // Jika task bawaan dimodifikasi, kita override dan simpan ke store kustom untuk tanggal ini
+        const dayIndex = selectedDate.getDay();
+        const baseTask = routineSchedule[dayIndex].tasks.find(t => t.id === taskId);
+        const clonedTask = {
+          id: taskId,
+          title: baseTask ? baseTask.title : currentText,
+          subtext: baseTask ? (baseTask.subtext || routineSchedule[dayIndex].time) : currentText,
+          tag: baseTask ? baseTask.tag : "Gabut"
+        };
+        clonedTask[field] = newText.trim();
+
+        // Gantikan referensi di render
+        customStore[dateKey].push(clonedTask);
+      }
+
+      saveCustomTasks(customStore);
+      renderSchedule();
+    }
+
+    function addNewCustomTaskPrompt() {
+      const title = prompt("Nama agenda baru:");
+      if (!title || !title.trim()) return;
+
+      const subtext = prompt("Waktu / Jam pelaksanaan:", "Pukul 21.00 s.d Selesai") || "Pukul Sesuka Hati";
+      const tag = prompt("Kategori / Label (Kotak Biru):", "Chill") || "Gabut";
+
+      const dateKey = getDateISO(selectedDate);
+      const customStore = getCustomTasks();
+      if (!customStore[dateKey]) customStore[dateKey] = [];
+
+      customStore[dateKey].push({
+        id: `custom_${Date.now()}`,
+        title: title.trim(),
+        subtext: subtext.trim(),
+        tag: tag.trim()
+      });
+
+      saveCustomTasks(customStore);
+      renderSchedule();
     }
 
     function escapeHtml(str) {
@@ -404,7 +905,27 @@
       return div.innerHTML;
     }
 
-    // --- DOKUMEN DATABASE JSON ENGINE ---
+    // ==========================================
+    // 5. DATABASE JSON ABSEN (LOCALSTORAGE)
+    // ==========================================
+    const DB_KEY = "gabut_absences_db";
+    const defaultAbsences = [
+      {
+        id: "1",
+        name: "Kiky",
+        date: "2026-09-22",
+        reason: "Capek banget abis ngoding seharian, pengen rebahan dulu.",
+        createdAt: new Date().toISOString()
+      },
+      {
+        id: "2",
+        name: "Anon Gabut",
+        date: "2026-09-21",
+        reason: "Ketiduran pas mau ikut agenda jam 10 malam.",
+        createdAt: new Date(Date.now() - 86400000).toISOString()
+      }
+    ];
+
     function getAbsencesFromJSON() {
       try {
         const raw = localStorage.getItem(DB_KEY);
@@ -415,7 +936,6 @@
         const parsed = JSON.parse(raw);
         return Array.isArray(parsed) ? parsed : defaultAbsences;
       } catch (e) {
-        console.error("Gagal membaca database JSON dari localStorage:", e);
         return defaultAbsences;
       }
     }
@@ -447,13 +967,13 @@
         try {
           const importedData = JSON.parse(e.target.result);
           if (!Array.isArray(importedData)) {
-            throw new Error("Format file JSON tidak valid. Data harus berupa daftar/array entri.");
+            throw new Error("Format file JSON harus array data.");
           }
           saveAbsencesToJSON(importedData);
           refreshAbsences();
-          alert("✅ Database JSON berhasil di-impor dari file!");
+          alert("✅ Database JSON berhasil di-impor!");
         } catch (err) {
-          alert("❌ Gagal mengimpor file JSON: " + err.message);
+          alert("❌ Gagal impor: " + err.message);
         } finally {
           event.target.value = "";
         }
@@ -462,7 +982,7 @@
     }
 
     function resetJSONDB() {
-      if (confirm("Apakah Anda yakin ingin mereset database JSON ke data default?")) {
+      if (confirm("Reset database JSON ke data default?")) {
         saveAbsencesToJSON(defaultAbsences);
         refreshAbsences();
       }
@@ -479,7 +999,7 @@
 
       list.forEach((item, idx) => {
         const itemEl = document.createElement("div");
-        itemEl.className = "p-3 bg-neutral-900/60 border border-neutral-800 rounded-xl text-xs space-y-1 fade-in-up flex items-start justify-between gap-2";
+        itemEl.className = "p-3 bg-neutral-900/60 border border-neutral-800 rounded-2xl text-xs space-y-1 fade-in-up flex items-start justify-between gap-2";
         itemEl.style.animationDelay = `${idx * 40}ms`;
         const submitted = item.createdAt
           ? new Date(item.createdAt).toLocaleString("id-ID", { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" })
@@ -554,22 +1074,17 @@
         errorEl.classList.remove("hidden");
       } finally {
         submitBtn.disabled = false;
-        submitBtn.innerText = "Kirim Keterangan (Simpan JSON)";
-      }
-    });
-
-    // Sinkronisasi antar-tab browser secara real-time
-    window.addEventListener("storage", (e) => {
-      if (e.key === DB_KEY) {
-        refreshAbsences();
+        submitBtn.innerText = "Kirim Keterangan Publik";
       }
     });
 
     // Inisialisasi awal
     renderCalendar();
     renderSchedule();
+    renderMoodButtons();
     refreshAbsences();
   </script>
 </body>
 
 </html>
+
