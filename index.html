@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+  <meta charset="UTF-8">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Jadwal Waktu Gabut</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap"
+    rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+
+    .glass {
+      background: rgba(23, 23, 23, 0.75);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    @keyframes pulse-glow {
+
+      0%,
+      100% {
+        opacity: 0.4;
+      }
+
+      50% {
+        opacity: 0.8;
+      }
+    }
+
+    .glow-bg {
+      animation: pulse-glow 6s infinite ease-in-out;
+    }
+
+    @keyframes fade-in-up {
+      from {
+        opacity: 0;
+        transform: translateY(8px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .fade-in-up {
+      animation: fade-in-up 0.35s ease-out both;
+    }
+
+    @keyframes pop {
+      0% {
+        transform: scale(0.9);
+      }
+
+      60% {
+        transform: scale(1.03);
+      }
+
+      100% {
+        transform: scale(1);
+      }
+    }
+
+    .pop {
+      animation: pop 0.25s ease-out both;
+    }
+  </style>
+</head>
+
+<body class="bg-neutral-950 text-neutral-100 min-h-screen relative overflow-x-hidden">
+
+  <!-- Ambient Glow Effects -->
+  <div
+    class="fixed top-[-10%] left-[-10%] w-[500px] h-[500px] bg-purple-600/20 rounded-full blur-[120px] pointer-events-none glow-bg">
+  </div>
+  <div
+    class="fixed bottom-[-10%] right-[-10%] w-[500px] h-[500px] bg-indigo-600/20 rounded-full blur-[120px] pointer-events-none glow-bg">
+  </div>
+
+  <div class="max-w-5xl mx-auto px-4 py-10 relative z-10">
+
+    <!-- Header Section -->
+    <header class="text-center mb-10 space-y-3">
+      <span
+        class="inline-block px-4 py-1 text-xs font-semibold uppercase tracking-wider text-purple-400 bg-purple-950/60 border border-purple-800/50 rounded-full">
+        Self-Care & Anti-Overthinking Hub
+      </span>
+      <h1
+        class="text-4xl md:text-5xl font-extrabold tracking-tight bg-gradient-to-r from-purple-400 via-pink-400 to-indigo-400 bg-clip-text text-transparent">
+        Jadwal Waktu Gabut
+      </h1>
+      <p class="text-sm md:text-base text-neutral-400 max-w-xl mx-auto italic font-medium">
+        "Jadwal gabut buat orang stres yang gatau mau ngapain plus ga punya pasangan."
+      </p>
+    </header>
+
+    <!-- Grid Container -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+
+      <!-- Left Column: Kalender Tahunan & Navigasi -->
+      <section class="lg:col-span-5 space-y-6">
+        <div class="glass p-6 rounded-2xl shadow-xl">
+          <div class="flex items-center justify-between mb-4">
+            <h2 id="calendarMonthYear" class="font-bold text-lg text-white"></h2>
+            <div class="flex space-x-2">
+              <button onclick="changeMonth(-1)"
+                class="p-2 hover:bg-neutral-800 rounded-lg text-neutral-400 hover:text-white transition">◀</button>
+              <button onclick="changeMonth(1)"
+                class="p-2 hover:bg-neutral-800 rounded-lg text-neutral-400 hover:text-white transition">▶</button>
+            </div>
+          </div>
+
+          <!-- Kalender Grid -->
+          <div class="grid grid-cols-7 gap-1 text-center text-xs font-semibold text-neutral-400 mb-2">
+            <span>Min</span><span>Sen</span><span>Sel</span><span>Rab</span><span>Kam</span><span>Jum</span><span>Sab</span>
+          </div>
+          <div id="calendarDays" class="grid grid-cols-7 gap-1 text-sm text-center"></div>
+
+          <div class="mt-4 pt-4 border-t border-neutral-800 flex items-center justify-between text-xs text-neutral-400">
+            <span>* Klik tanggal untuk melihat agenda gabut</span>
+            <button onclick="goToToday()" class="text-purple-400 hover:underline">Hari Ini</button>
+          </div>
+        </div>
+
+        <!-- Form Keterangan / Skip Jadwal -->
+        <div class="glass p-6 rounded-2xl shadow-xl space-y-4">
+          <h3 class="font-bold text-md text-white flex items-center gap-2">
+            <span>📝</span> Keterangan Absen Gabut
+          </h3>
+          <p class="text-xs text-neutral-400 leading-relaxed">
+            Gak bisa ikut agenda? Isi form ini, semua pengunjung bakal tahu lu lagi skip jadwal.
+          </p>
+          <form id="absenceForm" class="space-y-3">
+            <div>
+              <label class="block text-xs font-medium text-neutral-300 mb-1">Nama</label>
+              <input type="text" id="absentName" required placeholder="Contoh: Kiky / Anon"
+                class="w-full px-3 py-2 bg-neutral-900 border border-neutral-700 rounded-xl text-sm text-white focus:outline-none focus:border-purple-500">
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-neutral-300 mb-1">Tanggal Terkait</label>
+              <input type="date" id="absentDate" required
+                class="w-full px-3 py-2 bg-neutral-900 border border-neutral-700 rounded-xl text-sm text-white focus:outline-none focus:border-purple-500">
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-neutral-300 mb-1">Alasan Skip</label>
+              <textarea id="absentReason" required rows="2" placeholder="Capek, lembur, mendadak healing, dll..."
+                class="w-full px-3 py-2 bg-neutral-900 border border-neutral-700 rounded-xl text-sm text-white focus:outline-none focus:border-purple-500"></textarea>
+            </div>
+            <button type="submit" id="absentSubmitBtn"
+              class="w-full py-2.5 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 font-semibold rounded-xl text-sm transition duration-200 shadow-md disabled:opacity-60">
+              Kirim Keterangan Publik
+            </button>
+            <p id="absentFormError" class="text-xs text-red-400 hidden"></p>
+          </form>
+        </div>
+      </section>
+
+      <!-- Right Column: Detail Jadwal Terpilih & Log Keterangan Publik -->
+      <section class="lg:col-span-7 space-y-6">
+
+        <!-- Kartu Agenda Hari Ini / Terpilih -->
+        <div class="glass p-6 rounded-2xl shadow-xl relative overflow-hidden">
+          <div class="flex items-center justify-between border-b border-neutral-800 pb-4 mb-4">
+            <div>
+              <span id="selectedDayName" class="text-xs uppercase font-bold tracking-widest text-purple-400"></span>
+              <h2 id="selectedDateDisplay" class="text-2xl font-black text-white"></h2>
+            </div>
+            <span class="px-3 py-1 bg-neutral-800/80 text-neutral-300 text-xs rounded-full font-mono"
+              id="timeSlot"></span>
+          </div>
+
+          <div id="scheduleDetails" class="space-y-3">
+            <!-- Diisi lewat Javascript -->
+          </div>
+        </div>
+
+        <!-- Board Semua Keterangan / Izin Publik -->
+        <div class="glass p-6 rounded-2xl shadow-xl space-y-4">
+          <div class="flex flex-wrap items-center justify-between border-b border-neutral-800 pb-3 gap-2">
+            <h3 class="font-bold text-md text-white flex items-center gap-2">
+              <span>📢</span> Board Pengumuman & Alasan Skip
+            </h3>
+            <div class="flex items-center gap-2">
+              <span
+                class="text-xs text-neutral-400 bg-neutral-800/80 px-2.5 py-1 rounded-full border border-neutral-700 font-mono flex items-center gap-1.5">
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span> JSON DB
+              </span>
+            </div>
+          </div>
+
+          <div id="absenceList" class="space-y-3 max-h-[300px] overflow-y-auto pr-1">
+            <p class="text-xs text-neutral-500 italic">Memuat data JSON...</p>
+          </div>
+
+          <!-- Panel Kontrol Database JSON -->
+          <div class="pt-3 border-t border-neutral-800 flex flex-wrap items-center justify-between gap-2 text-xs">
+            <span class="text-neutral-400 font-medium">🗄️ Database JSON Lokal</span>
+            <div class="flex items-center gap-2">
+              <button onclick="exportJSONDB()" title="Ekspor ke file JSON"
+                class="px-3 py-1.5 bg-neutral-800 hover:bg-neutral-700 text-purple-300 hover:text-purple-200 rounded-lg border border-purple-900/50 flex items-center gap-1.5 transition font-semibold">
+                <span>💾</span> Ekspor JSON
+              </button>
+              <label title="Impor dari file JSON"
+                class="px-3 py-1.5 bg-neutral-800 hover:bg-neutral-700 text-indigo-300 hover:text-indigo-200 rounded-lg border border-indigo-900/50 flex items-center gap-1.5 cursor-pointer transition font-semibold">
+                <span>📥</span> Impor JSON
+                <input type="file" id="jsonFileInput" accept=".json" onchange="importJSONDB(event)" class="hidden">
+              </label>
+              <button onclick="resetJSONDB()" title="Reset data ke default"
+                class="px-2.5 py-1.5 bg-neutral-800 hover:bg-red-950/50 text-neutral-400 hover:text-red-400 rounded-lg border border-neutral-700 hover:border-red-900/50 transition">
+                🗑️
+              </button>
+            </div>
+          </div>
+        </div>
+
+      </section>
+    </div>
+
+    <footer class="text-center text-xs text-neutral-600 mt-10">
+      Dibuat dengan sepenuh gabut. Semua jadwal & keterangan tersinkron untuk siapa pun yang membuka halaman ini.
+    </footer>
+  </div>
+
+  <script>
+    // Master data jadwal rutin per hari (0: Minggu, 1: Senin, dst.)
+    const routineSchedule = {
+      1: {
+        day: "Senin",
+        time: "Pukul 22.00 s.d Selesai",
+        tasks: [
+          { title: "Nonton Netflix", tag: "Hiburan" },
+          { title: "Latihan Gitar", tag: "Skill" }
+        ]
+      },
+      2: {
+        day: "Selasa",
+        time: "Pukul 22.00 s.d Selesai",
+        tasks: [
+          { title: "Boren ke Kota / Pembahasan Trading", tag: "Finance & Chill" },
+          { title: "Istirahat Roasting TIKTOK", tag: "Relaksasi" }
+        ]
+      },
+      3: {
+        day: "Rabu",
+        time: "Pukul 22.00 s.d Selesai",
+        tasks: [
+          { title: "Belajar Coding", tag: "Tech" },
+          { title: "Belajar Gitar", tag: "Music" }
+        ]
+      },
+      4: {
+        day: "Kamis",
+        time: "Pukul 22.00 s.d Selesai",
+        tasks: [
+          { title: "Nonton", tag: "Streaming" },
+          { title: "Roasting Tiktok", tag: "Hiburan" }
+        ]
+      },
+      5: {
+        day: "Jumat",
+        time: "Pukul 15.00 s.d Selesai",
+        tasks: [
+          { title: "Pukul 15.00 – 20.00: Kiky Boren Kota", tag: "Keluar Rumah" },
+          { title: "Pukul 20.00 – Selesai: Trading / Coding / Nonton (Via Voting)", tag: "Community Vote" }
+        ]
+      },
+      6: {
+        day: "Sabtu",
+        time: "Pukul Sesuka Hati",
+        tasks: [
+          { title: "Kegiatan Sesuka Hati (Bebas total tanpa aturan)", tag: "Free Mode" }
+        ]
+      },
+      0: {
+        day: "Minggu",
+        time: "Pukul 22.00 s.d Selesai",
+        tasks: [
+          { title: "Belajar Coding", tag: "Tech" },
+          { title: "Belajar Gitar", tag: "Music" }
+        ]
+      }
+    };
+
+    let currentDate = new Date();
+    let selectedDate = new Date();
+
+    const monthNames = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
+    const dayNames = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
+
+    // Sistem Database JSON lokal via LocalStorage
+    const DB_KEY = "gabut_absences_db";
+
+    const defaultAbsences = [
+      {
+        id: "1",
+        name: "Kiky",
+        date: "2026-09-22",
+        reason: "Capek banget abis ngoding seharian, pengen rebahan dulu.",
+        createdAt: new Date().toISOString()
+      },
+      {
+        id: "2",
+        name: "Anon Gabut",
+        date: "2026-09-21",
+        reason: "Ketiduran pas mau ikut agenda jam 10 malam.",
+        createdAt: new Date(Date.now() - 86400000).toISOString()
+      }
+    ];
+
+    function renderCalendar() {
+      const year = currentDate.getFullYear();
+      const month = currentDate.getMonth();
+
+      document.getElementById("calendarMonthYear").innerText = `${monthNames[month]} ${year}`;
+
+      const firstDayIndex = new Date(year, month, 1).getDay();
+      const totalDays = new Date(year, month + 1, 0).getDate();
+
+      const daysContainer = document.getElementById("calendarDays");
+      daysContainer.innerHTML = "";
+
+      for (let i = 0; i < firstDayIndex; i++) {
+        const emptyDiv = document.createElement("div");
+        daysContainer.appendChild(emptyDiv);
+      }
+
+      for (let day = 1; day <= totalDays; day++) {
+        const btn = document.createElement("button");
+        btn.innerText = day;
+        btn.className = "py-2 rounded-lg font-medium transition hover:bg-neutral-800 text-neutral-300";
+
+        const isToday = (day === new Date().getDate() && month === new Date().getMonth() && year === new Date().getFullYear());
+        const isSelected = (day === selectedDate.getDate() && month === selectedDate.getMonth() && year === selectedDate.getFullYear());
+
+        if (isSelected) {
+          btn.className += " bg-purple-600 text-white font-bold ring-2 ring-purple-400 pop";
+        } else if (isToday) {
+          btn.className += " border border-purple-500 text-purple-400 font-semibold";
+        }
+
+        btn.onclick = () => {
+          selectedDate = new Date(year, month, day);
+          renderCalendar();
+          renderSchedule();
+        };
+
+        daysContainer.appendChild(btn);
+      }
+    }
+
+    function changeMonth(offset) {
+      currentDate.setMonth(currentDate.getMonth() + offset);
+      renderCalendar();
+    }
+
+    function goToToday() {
+      currentDate = new Date();
+      selectedDate = new Date();
+      renderCalendar();
+      renderSchedule();
+    }
+
+    function renderSchedule() {
+      const dayIndex = selectedDate.getDay();
+      const dayData = routineSchedule[dayIndex];
+
+      document.getElementById("selectedDayName").innerText = dayNames[dayIndex].toUpperCase();
+      document.getElementById("selectedDateDisplay").innerText = `${selectedDate.getDate()} ${monthNames[selectedDate.getMonth()]} ${selectedDate.getFullYear()}`;
+      document.getElementById("timeSlot").innerText = dayData.time;
+
+      const scheduleDetails = document.getElementById("scheduleDetails");
+      scheduleDetails.innerHTML = "";
+
+      dayData.tasks.forEach((t, idx) => {
+        const card = document.createElement("div");
+        card.className = "p-4 bg-neutral-900/80 border border-neutral-800 rounded-xl flex items-center justify-between transition hover:border-neutral-700 fade-in-up";
+        card.style.animationDelay = `${idx * 60}ms`;
+        card.innerHTML = `
+          <div>
+            <h4 class="font-bold text-white text-base">${escapeHtml(t.title)}</h4>
+            <span class="text-xs text-neutral-400 font-mono">${escapeHtml(dayData.time)}</span>
+          </div>
+          <span class="px-2.5 py-1 text-xs rounded-full bg-purple-950/80 text-purple-300 border border-purple-800/40">${escapeHtml(t.tag)}</span>
+        `;
+        scheduleDetails.appendChild(card);
+      });
+
+      // Sinkronkan input tanggal form absen otomatis
+      const year = selectedDate.getFullYear();
+      const m = String(selectedDate.getMonth() + 1).padStart(2, "0");
+      const d = String(selectedDate.getDate()).padStart(2, "0");
+      document.getElementById("absentDate").value = `${year}-${m}-${d}`;
+    }
+
+    function escapeHtml(str) {
+      const div = document.createElement("div");
+      div.innerText = str ?? "";
+      return div.innerHTML;
+    }
+
+    // --- DOKUMEN DATABASE JSON ENGINE ---
+    function getAbsencesFromJSON() {
+      try {
+        const raw = localStorage.getItem(DB_KEY);
+        if (!raw) {
+          saveAbsencesToJSON(defaultAbsences);
+          return defaultAbsences;
+        }
+        const parsed = JSON.parse(raw);
+        return Array.isArray(parsed) ? parsed : defaultAbsences;
+      } catch (e) {
+        console.error("Gagal membaca database JSON dari localStorage:", e);
+        return defaultAbsences;
+      }
+    }
+
+    function saveAbsencesToJSON(list) {
+      localStorage.setItem(DB_KEY, JSON.stringify(list, null, 2));
+    }
+
+    function exportJSONDB() {
+      const data = getAbsencesFromJSON();
+      const jsonStr = JSON.stringify(data, null, 2);
+      const blob = new Blob([jsonStr], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `absences_backup_${new Date().toISOString().slice(0, 10)}.json`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+
+    function importJSONDB(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        try {
+          const importedData = JSON.parse(e.target.result);
+          if (!Array.isArray(importedData)) {
+            throw new Error("Format file JSON tidak valid. Data harus berupa daftar/array entri.");
+          }
+          saveAbsencesToJSON(importedData);
+          refreshAbsences();
+          alert("✅ Database JSON berhasil di-impor dari file!");
+        } catch (err) {
+          alert("❌ Gagal mengimpor file JSON: " + err.message);
+        } finally {
+          event.target.value = "";
+        }
+      };
+      reader.readAsText(file);
+    }
+
+    function resetJSONDB() {
+      if (confirm("Apakah Anda yakin ingin mereset database JSON ke data default?")) {
+        saveAbsencesToJSON(defaultAbsences);
+        refreshAbsences();
+      }
+    }
+
+    function renderAbsenceItems(list) {
+      const container = document.getElementById("absenceList");
+      container.innerHTML = "";
+
+      if (!list || list.length === 0) {
+        container.innerHTML = `<p class="text-xs text-neutral-500 italic">Belum ada data izin di database JSON.</p>`;
+        return;
+      }
+
+      list.forEach((item, idx) => {
+        const itemEl = document.createElement("div");
+        itemEl.className = "p-3 bg-neutral-900/60 border border-neutral-800 rounded-xl text-xs space-y-1 fade-in-up flex items-start justify-between gap-2";
+        itemEl.style.animationDelay = `${idx * 40}ms`;
+        const submitted = item.createdAt
+          ? new Date(item.createdAt).toLocaleString("id-ID", { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" })
+          : "";
+        itemEl.innerHTML = `
+          <div class="space-y-1 grow">
+            <div class="flex items-center justify-between font-semibold">
+              <span class="text-purple-400 font-bold">${escapeHtml(item.name)}</span>
+              <span class="text-neutral-500 font-mono">${escapeHtml(item.date)}${submitted ? ` · ${submitted}` : ""}</span>
+            </div>
+            <p class="text-neutral-300">"${escapeHtml(item.reason)}"</p>
+          </div>
+          <button onclick="deleteAbsenceEntry('${escapeHtml(item.id)}')" title="Hapus entri ini" class="text-neutral-600 hover:text-red-400 p-1 transition shrink-0">
+            ✕
+          </button>
+        `;
+        container.appendChild(itemEl);
+      });
+    }
+
+    function deleteAbsenceEntry(id) {
+      const list = getAbsencesFromJSON().filter(item => String(item.id) !== String(id));
+      saveAbsencesToJSON(list);
+      refreshAbsences();
+    }
+
+    function refreshAbsences() {
+      try {
+        const list = getAbsencesFromJSON();
+        renderAbsenceItems(list);
+      } catch (err) {
+        console.error("Gagal refresh data JSON:", err);
+      }
+    }
+
+    document.getElementById("absenceForm").addEventListener("submit", (e) => {
+      e.preventDefault();
+      const errorEl = document.getElementById("absentFormError");
+      const submitBtn = document.getElementById("absentSubmitBtn");
+      errorEl.classList.add("hidden");
+
+      const name = document.getElementById("absentName").value.trim();
+      const date = document.getElementById("absentDate").value;
+      const reason = document.getElementById("absentReason").value.trim();
+
+      if (!name || !date || !reason) {
+        errorEl.innerText = "Semua kolom harus diisi!";
+        errorEl.classList.remove("hidden");
+        return;
+      }
+
+      submitBtn.disabled = true;
+      submitBtn.innerText = "Menyimpan ke JSON...";
+
+      try {
+        const currentList = getAbsencesFromJSON();
+        const newEntry = {
+          id: Date.now().toString(),
+          name,
+          date,
+          reason,
+          createdAt: new Date().toISOString()
+        };
+
+        currentList.unshift(newEntry);
+        saveAbsencesToJSON(currentList);
+
+        document.getElementById("absentReason").value = "";
+        refreshAbsences();
+      } catch (err) {
+        errorEl.innerText = "Gagal menyimpan data: " + err.message;
+        errorEl.classList.remove("hidden");
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.innerText = "Kirim Keterangan (Simpan JSON)";
+      }
+    });
+
+    // Sinkronisasi antar-tab browser secara real-time
+    window.addEventListener("storage", (e) => {
+      if (e.key === DB_KEY) {
+        refreshAbsences();
+      }
+    });
+
+    // Inisialisasi awal
+    renderCalendar();
+    renderSchedule();
+    refreshAbsences();
+  </script>
+</body>
+
+</html>
