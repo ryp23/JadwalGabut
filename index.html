@@ -7,7 +7,7 @@
   <title>Jadwal Waktu Gabut</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
-  <!-- P2P Live Network Sync (Tanpa Setup / Server Khusus) -->
+  <!-- P2P Live Network Sync -->
   <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
 
   <style>
@@ -229,7 +229,7 @@
       </p>
     </div>
 
-    <!-- BARIS 2: Status User, Indikator Waktu Langit & Hyperlink Media -->
+    <!-- BARIS 2: Status User, Indikator Langit & Dock Link -->
     <div class="space-y-4 mb-8 pb-4 border-b border-neutral-800/80">
       <div class="flex flex-wrap items-center justify-between gap-3">
         <div class="flex items-center gap-2.5">
@@ -367,8 +367,8 @@
             <span id="quoteTopicBadge" class="inline-block px-2.5 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider text-purple-300 bg-purple-950/70 border border-purple-800/50">
               Quotes Hidup
             </span>
-            <span id="quoteTimerInfo" class="text-[10px] font-mono text-neutral-400 flex items-center gap-1" title="Quotes berganti otomatis setiap 5 menit">
-              <span>🔄 5 mnt</span>
+            <span id="quoteTimerInfo" class="text-[10px] font-mono text-neutral-400 flex items-center gap-1" title="Quotes berganti otomatis setiap 10 detik">
+              <span>🔄 10 dtk</span>
             </span>
           </div>
 
@@ -427,20 +427,21 @@
             <div>
               <label class="block text-xs font-medium text-neutral-300 mb-1">Nama</label>
               <input type="text" id="absentName" required placeholder="Nama kamu..."
-                class="w-full px-3.5 py-2 bg-neutral-900/90 border border-neutral-700/80 rounded-xl text-sm text-white focus:outline-none focus:border-rose-500 transition">
+                class="w-full px-3.5 py-2 bg-neutral-900/90 border border-neutral-700/80 rounded-xl text-sm text-white focus:outline-none focus:border-neutral-500 transition">
             </div>
             <div>
               <label class="block text-xs font-medium text-neutral-300 mb-1">Tanggal Terkait</label>
               <input type="date" id="absentDate" required
-                class="w-full px-3.5 py-2 bg-neutral-900/90 border border-neutral-700/80 rounded-xl text-sm text-white focus:outline-none focus:border-rose-500 transition">
+                class="w-full px-3.5 py-2 bg-neutral-900/90 border border-neutral-700/80 rounded-xl text-sm text-white focus:outline-none focus:border-neutral-500 transition">
             </div>
             <div>
               <label class="block text-xs font-medium text-neutral-300 mb-1">Alasan Skip</label>
               <textarea id="absentReason" required rows="2" placeholder="Capek, lembur, mendadak healing, dll..."
-                class="w-full px-3.5 py-2 bg-neutral-900/90 border border-neutral-700/80 rounded-xl text-sm text-white focus:outline-none focus:border-rose-500 transition"></textarea>
+                class="w-full px-3.5 py-2 bg-neutral-900/90 border border-neutral-700/80 rounded-xl text-sm text-white focus:outline-none focus:border-neutral-500 transition"></textarea>
             </div>
+            <!-- Tombol Warna Abu-abu -->
             <button type="submit" id="absentSubmitBtn"
-              class="w-full py-2.5 bg-gradient-to-r from-rose-500 via-purple-600 to-emerald-600 hover:opacity-90 font-semibold rounded-xl text-sm transition duration-200 shadow-md disabled:opacity-60 active:scale-[0.99]">
+              class="w-full py-2.5 bg-neutral-700 hover:bg-neutral-600 active:bg-neutral-800 text-neutral-100 font-semibold rounded-xl text-sm transition duration-200 shadow-md border border-neutral-600 disabled:opacity-60 active:scale-[0.99]">
               Kirim Keterangan Publik
             </button>
             <p id="absentFormError" class="text-xs text-rose-400 hidden"></p>
@@ -574,6 +575,24 @@
 
   <script>
     // ========================================================
+    // UUID / DEVICE ID GENERATOR UNTUK VOTER
+    // ========================================================
+    function getOrCreateDeviceId() {
+      let id = localStorage.getItem("gabut_device_id");
+      if (!id) {
+        if (typeof crypto !== "undefined" && crypto.randomUUID) {
+          id = crypto.randomUUID();
+        } else {
+          id = "dev_" + Math.random().toString(36).substring(2, 11) + "_" + Date.now().toString(36);
+        }
+        localStorage.setItem("gabut_device_id", id);
+      }
+      return id;
+    }
+
+    const currentDeviceId = getOrCreateDeviceId();
+
+    // ========================================================
     // SIKLUS MATAHARI & BULAN REAL LIVE TIME
     // ========================================================
     function generateStars() {
@@ -686,18 +705,31 @@
     setInterval(updateSkyAndCelestialCycle, 60000);
 
     // ========================================================
-    // QUOTES & JAM DIGITAL
+    // QUOTES SINKRON GLOBAL (TIAP 10 DETIK SAMA UNTUK SEMUA USER)
     // ========================================================
     const ALL_QUOTES = [
       { topic: "Hidup", text: "Hidup bukan tentang menunggu badai reda, melainkan belajar menari di tengah hujan lebat." },
       { topic: "Hidup", text: "Batasan terbesar dalam hidupmu adalah keraguan yang kamu pelihara sendiri." },
       { topic: "Waktu", text: "Waktu terus berjalan tanpa kompromi; jangan sia-siakan untuk hal yang tidak bermakna." },
-      { topic: "Ketenangan", text: "Ketenangan sejati bermula saat kamu berhenti menuntut dunia agar selalu adil." }
+      { topic: "Ketenangan", text: "Ketenangan sejati bermula saat kamu berhenti menuntut dunia agar selalu adil." },
+      { topic: "Uang", text: "Kebutuhan hidup itu murah, yang mahal adalah gaya hidup dan gengsi manusia." },
+      { topic: "Istirahat", text: "Kadang hal paling produktif yang bisa kamu lakukan hari ini adalah tidur dan istirahat." },
+      { topic: "Hobi", text: "Hobi adalah ruang bernapas bagi jiwa di tengah bising dan monotonnya rutinitas harian." },
+      { topic: "Teman", text: "Teman sejati mengerti keheninganmu sama baiknya dengan mereka memahami kata-katamu." }
     ];
-    let currentQuoteIndex = 0;
 
-    function renderCurrentQuote() {
-      const q = ALL_QUOTES[currentQuoteIndex];
+    let manualQuoteOffset = 0;
+    let lastRenderedIndex = -1;
+
+    function renderSynchronizedQuote() {
+      // Sinkronisasi epoch per 10 detik: semua orang di dunia melihat quote yang sama
+      const globalTimeStep = Math.floor(Date.now() / 10000);
+      const quoteIndex = (globalTimeStep + manualQuoteOffset) % ALL_QUOTES.length;
+
+      if (quoteIndex === lastRenderedIndex) return;
+      lastRenderedIndex = quoteIndex;
+
+      const q = ALL_QUOTES[quoteIndex];
       const badge = document.getElementById("quoteTopicBadge");
       const text = document.getElementById("quoteContentText");
       if (badge && text) {
@@ -710,10 +742,12 @@
     }
 
     function rotateNextQuote(isManual = false) {
-      currentQuoteIndex = (currentQuoteIndex + 1) % ALL_QUOTES.length;
-      renderCurrentQuote();
+      if (isManual) manualQuoteOffset++;
+      renderSynchronizedQuote();
     }
-    setInterval(() => rotateNextQuote(false), 5 * 60 * 1000);
+
+    // Periksa perpindahan detik quote
+    setInterval(renderSynchronizedQuote, 1000);
 
     function updateLiveClock() {
       const now = new Date();
@@ -733,7 +767,7 @@
     updateLiveClock();
 
     // ========================================================
-    // 1. GATE ABSEN AWAL
+    // 1. GATE ABSEN AWAL & NAMA PENGGUNA
     // ========================================================
     let currentUser = localStorage.getItem("gabut_user_name") || "";
 
@@ -765,6 +799,10 @@
 
       currentUser = val;
       localStorage.setItem("gabut_user_name", currentUser);
+
+      // Sinkronkan nama baru ke entri mood yang terikat pada deviceId ini
+      updateVoterNameInMoods(currentUser);
+
       initUserGate();
       renderMoodButtons();
       renderSchedule();
@@ -779,12 +817,16 @@
     }
 
     // ========================================================
-    // 2. NETWORK P2P REALTIME LENGKAP (MOOD + KEGIATAN + ABSEN)
+    // 2. NETWORK P2P REALTIME LENGKAP
     // ========================================================
     const MOOD_DB_KEY = "gabut_mood_votes_v3";
     const TASKS_STORE_KEY = "gabut_tasks_v3";
     const COMPLETED_MAP_KEY = "gabut_completed_map_v3";
     const ABSENCE_KEY = "gabut_absences_v3";
+
+    function safeParseJSON(raw, fallback) {
+      try { return raw ? JSON.parse(raw) : fallback; } catch (e) { return fallback; }
+    }
 
     let liveMoodData = safeParseJSON(localStorage.getItem(MOOD_DB_KEY), {});
     let liveTasksStore = safeParseJSON(localStorage.getItem(TASKS_STORE_KEY), {});
@@ -792,10 +834,6 @@
     let liveAbsences = safeParseJSON(localStorage.getItem(ABSENCE_KEY), [
       { id: "1", name: "Kiky", date: "2026-09-22", reason: "Capek banget abis aktivitas seharian, pengen rebahan dulu.", createdAt: new Date().toISOString() }
     ]);
-
-    function safeParseJSON(raw, fallback) {
-      try { return raw ? JSON.parse(raw) : fallback; } catch (e) { return fallback; }
-    }
 
     const ROOM_HUB_ID = "ruang-gabut-kiky-2026";
     let myPeer = null;
@@ -824,7 +862,6 @@
       myPeer.on("connection", (conn) => {
         setupConnectionEvents(conn);
         conn.on("open", () => {
-          // Kirim snapshot data lengkap ke pengunjung baru
           conn.send({
             type: "ALL_SYNC",
             data: {
@@ -907,7 +944,7 @@
     initP2PNetwork();
 
     // ========================================================
-    // 3. MOOD TRACKER INTERAKTIF
+    // 3. MOOD TRACKER BERBASIS DEVICE_ID
     // ========================================================
     const MOOD_LIST = [
       { id: "senang", label: "Senang", emoji: "😊", bgHover: "hover:bg-emerald-950/40 hover:text-emerald-300" },
@@ -926,6 +963,25 @@
       return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
     }
 
+    // Jika ganti nama, perbarui nama vote lama tanpa menambah vote baru
+    function updateVoterNameInMoods(newName) {
+      let changed = false;
+      Object.keys(liveMoodData).forEach(dateKey => {
+        if (Array.isArray(liveMoodData[dateKey])) {
+          liveMoodData[dateKey].forEach(vote => {
+            if (vote.deviceId === currentDeviceId) {
+              vote.name = newName;
+              changed = true;
+            }
+          });
+        }
+      });
+      if (changed) {
+        localStorage.setItem(MOOD_DB_KEY, JSON.stringify(liveMoodData));
+        broadcastState("MOOD_SYNC", liveMoodData);
+      }
+    }
+
     function renderMoodButtons() {
       const today = getTodayKey();
       const todayVotes = liveMoodData[today] || [];
@@ -936,7 +992,8 @@
       let totalClicks = todayVotes.length;
       document.getElementById("totalMoodCountBadge").textContent = `${totalClicks} Vote`;
 
-      const userTodayVote = todayVotes.find(v => v.name && v.name.toLowerCase() === currentUser.toLowerCase());
+      // Cek pilihan berdasarkan deviceId (bukan nama string)
+      const userTodayVote = todayVotes.find(v => v.deviceId === currentDeviceId);
 
       const statusEl = document.getElementById("activeUserMoodStatus");
       if (userTodayVote) {
@@ -1007,12 +1064,16 @@
       const today = getTodayKey();
       if (!liveMoodData[today]) liveMoodData[today] = [];
 
-      const existingIdx = liveMoodData[today].findIndex(v => v.name && v.name.toLowerCase() === currentUser.toLowerCase());
+      // Validasi mutlak berdasarkan deviceId unik
+      const existingIdx = liveMoodData[today].findIndex(v => v.deviceId === currentDeviceId);
+
       if (existingIdx >= 0) {
         liveMoodData[today][existingIdx].moodId = moodId;
+        liveMoodData[today][existingIdx].name = currentUser; // Selaraskan nama terkini
         liveMoodData[today][existingIdx].timestamp = new Date().toISOString();
       } else {
         liveMoodData[today].push({
+          deviceId: currentDeviceId,
           name: currentUser,
           moodId: moodId,
           timestamp: new Date().toISOString()
@@ -1074,7 +1135,7 @@
     }
 
     // ========================================================
-    // 4. JADWAL GABUT & REALTIME MULTI-USER CENTANG KEGIATAN
+    // 4. JADWAL GABUT & REALTIME MULTI-USER KEGIATAN
     // ========================================================
     const baseRoutineSchedule = {
       1: { day: "Senin", time: "Pukul 22.00 s.d Selesai", tasks: [{ id: "m1", title: "Nonton Netflix", subtext: "Pukul 22.00 s.d Selesai", tag: "Hiburan" }, { id: "m2", title: "Latihan Gitar", subtext: "Pukul 22.00 s.d Selesai", tag: "Skill" }] },
@@ -1176,7 +1237,6 @@
         const taskId = t.id || `task_${idx}`;
         const rawDone = dateCompleted[taskId];
         
-        // Multi-user completions array
         let completionList = [];
         if (Array.isArray(rawDone)) {
           completionList = rawDone;
@@ -1189,7 +1249,6 @@
         const isUserDone = currentUser ? completionList.some(name => name.toLowerCase() === currentUser.toLowerCase()) : false;
         const totalDoneCount = completionList.length;
 
-        // Render Chip Nama-nama yang centang
         let doneByChips = "";
         if (totalDoneCount > 0) {
           const namesBadges = completionList.map(n => 
@@ -1217,7 +1276,6 @@
         card.innerHTML = `
           <div class="flex items-center justify-between gap-3 w-full">
             <div class="flex items-center gap-3 grow min-w-0">
-              <!-- Tombol Centang Checklist User -->
               <button onclick="toggleTaskCompletion('${dateKey}', '${taskId}')" title="Klik untuk centang / batalkan centang kegiatan ini"
                 class="w-8 h-8 rounded-xl flex items-center justify-center transition shrink-0 border ${
                   isUserDone 
@@ -1252,7 +1310,6 @@
               </div>
             </div>
 
-            <!-- Tombol Aksi Kanan -->
             <div class="flex items-center gap-2 shrink-0">
               <button onclick="toggleTaskCompletion('${dateKey}', '${taskId}')" 
                 class="px-3 py-1.5 text-xs font-bold rounded-xl border transition-all duration-200 flex items-center gap-1.5 active:scale-95 shadow-md ${
@@ -1272,7 +1329,6 @@
             </div>
           </div>
 
-          <!-- Tampilan Nama-nama yang sudah centang kegiatan ini -->
           ${doneByChips}
         `;
         scheduleDetails.appendChild(card);
@@ -1296,10 +1352,8 @@
 
       const existingIndex = list.findIndex(n => n.toLowerCase() === currentUser.toLowerCase());
       if (existingIndex >= 0) {
-        // Hapus centang pengguna ini
         list.splice(existingIndex, 1);
       } else {
-        // Tambahkan centang pengguna ini
         list.push(currentUser);
       }
 
@@ -1514,7 +1568,7 @@
     renderSchedule();
     renderMoodButtons();
     renderAbsenceItems(liveAbsences);
-    renderCurrentQuote();
+    renderSynchronizedQuote();
   </script>
 </body>
 
