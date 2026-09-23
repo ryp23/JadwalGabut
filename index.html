@@ -1077,7 +1077,66 @@
         submitBtn.innerText = "Kirim Keterangan Publik";
       }
     });
+<!-- Input di Kolom Kegiatan -->
+<div class="form-group">
+  <label for="fotoKegiatan">Foto Kegiatan:</label>
+  <input 
+    type="file" 
+    id="fotoKegiatan" 
+    accept="image/*" 
+    capture="environment" 
+  />
+</div>
 
+<hr />
+
+<!-- Area Tampilan: Bagian Pengumuman -->
+<div class="section-pengumuman">
+  <h3>Pengumuman</h3>
+  <div id="previewPengumumanContainer">
+    <p>Belum ada foto kegiatan.</p>
+  </div>
+</div>
+
+<hr />
+
+<!-- Area Tampilan: Alasan Skip -->
+<div class="section-alasan-skip">
+  <h3>Alasan Skip</h3>
+  <div id="previewSkipContainer">
+    <p>Belum ada foto kegiatan.</p>
+  </div>
+</div>
+
+const inputFoto = document.getElementById("fotoKegiatan");
+const previewPengumuman = document.getElementById("previewPengumumanContainer");
+const previewSkip = document.getElementById("previewSkipContainer");
+
+inputFoto.addEventListener("change", function () {
+  const file = this.files[0];
+
+  if (file) {
+    const reader = new FileReader();
+
+    reader.onload = function (e) {
+      const imgMarkup = `
+        <img 
+          src="${e.target.result}" 
+          alt="Foto Kegiatan" 
+          style="max-width: 100%; height: auto; border-radius: 8px; margin-top: 8px;" 
+        />
+      `;
+
+      // Render foto ke kedua bagian
+      previewPengumuman.innerHTML = imgMarkup;
+      previewSkip.innerHTML = imgMarkup;
+    };
+
+    reader.readAsDataURL(file);
+  }
+});
+
+    
     // Inisialisasi awal
     renderCalendar();
     renderSchedule();
