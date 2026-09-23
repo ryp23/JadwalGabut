@@ -7,6 +7,9 @@
   <title>Jadwal Waktu Gabut</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+  <!-- P2P Live Network Sync (Tanpa Login / Setup) -->
+  <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
+
   <style>
     body {
       font-family: 'Plus Jakarta Sans', sans-serif;
@@ -108,12 +111,6 @@
       animation: fade-in-up 0.35s cubic-bezier(0.16, 1, 0.3, 1) both;
     }
 
-    @keyframes pop {
-      0% { transform: scale(0.93); }
-      60% { transform: scale(1.04); }
-      100% { transform: scale(1); }
-    }
-
     .pop {
       animation: pop 0.25s ease-out both;
     }
@@ -202,7 +199,7 @@
           Tulis nama atau panggilan kamu sebelum masuk ke arena jadwal santai kita.
         </p>
 
-        <!-- Form Nama: Kolom berlatar transparan cenderung warna merah -->
+        <!-- Form Nama -->
         <form id="gateForm" class="pt-4 space-y-4">
           <div class="relative">
             <input type="text" id="gateNameInput" required placeholder="Ketik nama kamu di sini..."
@@ -227,7 +224,7 @@
   <!-- ======================================================== -->
   <div id="mainDashboard" class="max-w-6xl mx-auto px-4 py-6 md:py-8 relative z-10 opacity-0 pointer-events-none transition-opacity duration-500">
 
-    <!-- BARIS 1: JUDUL UTAMA PALING ATAS (MANDIRI) -->
+    <!-- BARIS 1: JUDUL UTAMA -->
     <div class="w-full text-center mb-8 space-y-3 pt-2">
       <span class="inline-block px-4 py-1 text-xs font-bold uppercase tracking-wider text-emerald-300 bg-emerald-950/60 border border-emerald-700/50 rounded-full shadow-inner">
         Self-Care & Anti-Overthinking Hub
@@ -240,7 +237,7 @@
       </p>
     </div>
 
-    <!-- BARIS 2: Status User, Indikator Waktu Langit & Hyperlink Media / Sosmed Dock -->
+    <!-- BARIS 2: Status User, Indikator Waktu Langit & Hyperlink Media -->
     <div class="space-y-4 mb-8 pb-4 border-b border-neutral-800/80">
       <div class="flex flex-wrap items-center justify-between gap-3">
         <!-- Info User login -->
@@ -251,10 +248,17 @@
           <button onclick="reOpenGateModal()" title="Ganti Nama" class="text-[11px] text-neutral-400 hover:text-white underline ml-1 transition">Ganti</button>
         </div>
 
-        <!-- Sky Phase Badge -->
-        <span id="skyPhaseBadge" class="inline-flex items-center gap-1.5 px-3 py-1 text-[11px] font-bold text-amber-300 bg-neutral-900/60 border border-neutral-800 rounded-full shadow-inner">
-          <span>☀️</span> <span id="skyPhaseText">Waktu Berjalan</span>
-        </span>
+        <div class="flex items-center gap-2">
+          <!-- Indikator Online Real-Time Antar Pengunjung -->
+          <span id="onlineStatusBadge" class="inline-flex items-center gap-1.5 px-3 py-1 text-[11px] font-bold text-emerald-300 bg-emerald-950/60 border border-emerald-800/60 rounded-full shadow-inner">
+            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span> <span id="onlineStatusText">Online Live Sync</span>
+          </span>
+
+          <!-- Sky Phase Badge -->
+          <span id="skyPhaseBadge" class="inline-flex items-center gap-1.5 px-3 py-1 text-[11px] font-bold text-amber-300 bg-neutral-900/60 border border-neutral-800 rounded-full shadow-inner">
+            <span>☀️</span> <span id="skyPhaseText">Waktu Berjalan</span>
+          </span>
+        </div>
       </div>
 
       <!-- Quick Media & Social Links Dock -->
@@ -314,7 +318,7 @@
           <span class="text-[10px] font-bold text-rose-400 mt-1 tracking-wider uppercase group-hover:text-rose-300">Netflix</span>
         </a>
 
-        <!-- 6. chordtela.com -->
+        <!-- 6. Chordtela -->
         <a href="https://www.chordtela.com" target="_blank" rel="noopener noreferrer"
           class="flex flex-col items-center group transition transform hover:scale-105 active:scale-95 shrink-0" title="Buka Kunci Gitar chordtela.com">
           <div class="w-10 h-10 rounded-2xl bg-amber-500/20 group-hover:bg-amber-500/35 border border-amber-500/40 flex items-center justify-center shadow-lg transition">
@@ -376,7 +380,7 @@
             </button>
           </div>
 
-          <!-- Grid Tombol Mood Real-Time -->
+          <!-- Grid Tombol Mood Real-Time Otomatis -->
           <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 pt-1" id="moodButtonsGrid">
             <!-- Rendered via JS -->
           </div>
@@ -437,24 +441,19 @@
 
     </div>
 
-    <!-- BARIS 4: Konten Utama (Kalender, Agenda & Board Absen) -->
+    <!-- BARIS 4: Konten Utama -->
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
-
-      <!-- Left Column: Kalender & Form Absen -->
+      <!-- Kalender & Form Absen -->
       <section class="lg:col-span-5 space-y-6">
-        <!-- Kalender -->
         <div class="glass-panel p-6 rounded-3xl shadow-xl">
           <div class="flex items-center justify-between mb-4">
             <h2 id="calendarMonthYear" class="font-bold text-lg text-white tracking-wide"></h2>
             <div class="flex space-x-2">
-              <button onclick="changeMonth(-1)"
-                class="p-2 hover:bg-neutral-800/80 rounded-xl text-neutral-300 hover:text-white transition active:scale-95">◀</button>
-              <button onclick="changeMonth(1)"
-                class="p-2 hover:bg-neutral-800/80 rounded-xl text-neutral-300 hover:text-white transition active:scale-95">▶</button>
+              <button onclick="changeMonth(-1)" class="p-2 hover:bg-neutral-800/80 rounded-xl text-neutral-300 hover:text-white transition active:scale-95">◀</button>
+              <button onclick="changeMonth(1)" class="p-2 hover:bg-neutral-800/80 rounded-xl text-neutral-300 hover:text-white transition active:scale-95">▶</button>
             </div>
           </div>
 
-          <!-- Kalender Grid -->
           <div class="grid grid-cols-7 gap-1 text-center text-xs font-semibold text-neutral-400 mb-2">
             <span>Min</span><span>Sen</span><span>Sel</span><span>Rab</span><span>Kam</span><span>Jum</span><span>Sab</span>
           </div>
@@ -501,10 +500,8 @@
         </div>
       </section>
 
-      <!-- Right Column: Detail Jadwal Terpilih & Board Absen -->
+      <!-- Right Column: Detail Jadwal & Board Absen -->
       <section class="lg:col-span-7 space-y-6">
-
-        <!-- Kartu Agenda Hari Ini / Terpilih -->
         <div class="glass-panel p-6 rounded-3xl shadow-xl relative overflow-hidden">
           <div class="flex flex-wrap items-center justify-between border-b border-neutral-800 pb-4 mb-4 gap-3">
             <div>
@@ -523,10 +520,7 @@
             </div>
           </div>
 
-          <!-- Container Task List -->
-          <div id="scheduleDetails" class="space-y-3.5">
-            <!-- Diisi lewat Javascript -->
-          </div>
+          <div id="scheduleDetails" class="space-y-3.5"></div>
         </div>
 
         <!-- Board Semua Keterangan / Izin Publik -->
@@ -546,9 +540,9 @@
             <p class="text-xs text-neutral-500 italic">Memuat data...</p>
           </div>
 
-          <!-- Panel Kontrol Sinkronisasi JSON -->
+          <!-- Sinkronisasi File Cadangan -->
           <div class="pt-3 border-t border-neutral-800 flex flex-wrap items-center justify-between gap-2 text-xs">
-            <span class="text-neutral-400 font-medium">🗄️ Sinkronisasi Data Bersama</span>
+            <span class="text-neutral-400 font-medium">🗄️ Sinkronisasi Data Cadangan</span>
             <div class="flex items-center gap-2">
               <button onclick="exportJSONDB()" title="Ekspor ke file JSON"
                 class="px-3 py-1.5 bg-neutral-800/90 hover:bg-neutral-700 text-purple-300 hover:text-purple-200 rounded-xl border border-purple-800/50 flex items-center gap-1.5 transition font-semibold active:scale-95">
@@ -566,11 +560,10 @@
             </div>
           </div>
         </div>
-
       </section>
     </div>
 
-    <!-- Footer dengan Hyperlink Lengkap -->
+    <!-- Footer -->
     <footer class="text-center text-xs text-neutral-400 mt-12 py-6 space-y-4 border-t border-neutral-800/60">
       <div class="flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-neutral-300">
         <a href="https://wa.me/qr/RTXI2XYEUCJ6C1" target="_blank" class="hover:text-pink-400 flex items-center gap-1.5 transition">
@@ -623,9 +616,7 @@
         <button onclick="closeMoodHistoryModal()" class="text-neutral-400 hover:text-white p-1 text-lg leading-none transition">✕</button>
       </div>
 
-      <div id="moodBreakdownList" class="space-y-3 max-h-[350px] overflow-y-auto pr-1">
-        <!-- Rendered via JS -->
-      </div>
+      <div id="moodBreakdownList" class="space-y-3 max-h-[350px] overflow-y-auto pr-1"></div>
 
       <div class="pt-3 border-t border-neutral-800 flex justify-between items-center text-xs">
         <button onclick="clearMoodHistoryToday()" class="text-rose-400 hover:underline">Reset Suara Hari Ini</button>
@@ -636,7 +627,7 @@
 
   <script>
     // ========================================================
-    // SIKLUS MATAHARI & BULAN REAL LIVE TIME (BACKGROUND OTOMATIS)
+    // SIKLUS MATAHARI & BULAN REAL LIVE TIME
     // ========================================================
     function generateStars() {
       const container = document.getElementById("starContainer");
@@ -671,7 +662,6 @@
 
       skyBody.className = "text-neutral-100 min-h-screen relative overflow-x-hidden selection:bg-rose-500 selection:text-white transition-all duration-1000";
 
-      // 1. FAJAR / SUBUH: 05.00 - 06.30 (Terbit)
       if (totalMinutes >= 300 && totalMinutes < 390) {
         skyBody.classList.add("sky-dawn");
         const progress = (totalMinutes - 300) / 90;
@@ -682,9 +672,7 @@
         stars.style.opacity = `${0.6 * (1 - progress)}`;
         horizonGlow.style.background = "linear-gradient(to top, rgba(249, 115, 22, 0.35), transparent)";
         if (phaseBadgeText) phaseBadgeText.textContent = "Fajar / Terbit";
-      }
-      // 2. PAGI: 06.30 - 11.30 (Matahari Naik Menuju Puncak)
-      else if (totalMinutes >= 390 && totalMinutes < 690) {
+      } else if (totalMinutes >= 390 && totalMinutes < 690) {
         skyBody.classList.add("sky-morning");
         const progress = (totalMinutes - 390) / 300;
         sun.style.opacity = "1";
@@ -694,9 +682,7 @@
         stars.style.opacity = "0";
         horizonGlow.style.background = "linear-gradient(to top, rgba(56, 189, 248, 0.2), transparent)";
         if (phaseBadgeText) phaseBadgeText.textContent = "Pagi Cerah";
-      }
-      // 3. SIANG: 11.30 - 15.00 (Matahari di Puncak Langit)
-      else if (totalMinutes >= 690 && totalMinutes < 900) {
+      } else if (totalMinutes >= 690 && totalMinutes < 900) {
         skyBody.classList.add("sky-noon");
         const progress = (totalMinutes - 690) / 210;
         sun.style.opacity = "1";
@@ -706,9 +692,7 @@
         stars.style.opacity = "0";
         horizonGlow.style.background = "linear-gradient(to top, rgba(234, 179, 8, 0.15), transparent)";
         if (phaseBadgeText) phaseBadgeText.textContent = "Siang Terang";
-      }
-      // 4. SORE: 15.00 - 17.30 (Matahari Menurun)
-      else if (totalMinutes >= 900 && totalMinutes < 1050) {
+      } else if (totalMinutes >= 900 && totalMinutes < 1050) {
         skyBody.classList.add("sky-afternoon");
         const progress = (totalMinutes - 900) / 150;
         sun.style.opacity = "0.95";
@@ -718,9 +702,7 @@
         stars.style.opacity = "0";
         horizonGlow.style.background = "linear-gradient(to top, rgba(244, 63, 94, 0.25), transparent)";
         if (phaseBadgeText) phaseBadgeText.textContent = "Sore Teduh";
-      }
-      // 5. SENJA / SUNSET: 17.30 - 18.45 (Matahari Terbenam)
-      else if (totalMinutes >= 1050 && totalMinutes < 1125) {
+      } else if (totalMinutes >= 1050 && totalMinutes < 1125) {
         skyBody.classList.add("sky-sunset");
         const progress = (totalMinutes - 1050) / 75;
         sun.style.opacity = `${1 - progress * 0.8}`;
@@ -732,9 +714,7 @@
         stars.style.opacity = `${progress * 0.6}`;
         horizonGlow.style.background = "linear-gradient(to top, rgba(239, 68, 68, 0.4), transparent)";
         if (phaseBadgeText) phaseBadgeText.textContent = "Senja Terbenam";
-      }
-      // 6. PETANG: 18.45 - 20.00 (Muncul Bulan)
-      else if (totalMinutes >= 1125 && totalMinutes < 1200) {
+      } else if (totalMinutes >= 1125 && totalMinutes < 1200) {
         skyBody.classList.add("sky-dusk");
         sun.style.opacity = "0";
         moon.style.opacity = "0.9";
@@ -743,18 +723,11 @@
         stars.style.opacity = "0.85";
         horizonGlow.style.background = "linear-gradient(to top, rgba(168, 85, 247, 0.2), transparent)";
         if (phaseBadgeText) phaseBadgeText.textContent = "Petang / Bulan";
-      }
-      // 7. MALAM: 20.00 - 05.00 (Langit Malam & Bintang)
-      else {
+      } else {
         skyBody.classList.add("sky-night");
         sun.style.opacity = "0";
         moon.style.opacity = "1";
-        let nightProgress;
-        if (totalMinutes >= 1200) {
-          nightProgress = (totalMinutes - 1200) / 540;
-        } else {
-          nightProgress = (totalMinutes + 240) / 540;
-        }
+        let nightProgress = (totalMinutes >= 1200) ? (totalMinutes - 1200) / 540 : (totalMinutes + 240) / 540;
         moon.style.left = `${25 + nightProgress * 45}%`;
         moon.style.top = `${16 + Math.sin(nightProgress * Math.PI) * -6}%`;
         stars.style.opacity = "1";
@@ -762,28 +735,28 @@
         if (phaseBadgeText) phaseBadgeText.textContent = "Malam Bertabur Bintang";
       }
     }
-
     updateSkyAndCelestialCycle();
     setInterval(updateSkyAndCelestialCycle, 60000);
 
     // ========================================================
-    // DATA 260 QUOTES (13 TOPIK X 20 KUTIPAN)
+    // QUOTES & JAM DIGITAL
     // ========================================================
-    const ALL_QUOTES = [{"topic": "Hidup", "text": "Hidup bukan tentang menunggu badai reda, melainkan belajar menari di tengah hujan lebat."}, {"topic": "Hidup", "text": "Batasan terbesar dalam hidupmu adalah keraguan yang kamu pelihara sendiri."}, {"topic": "Hidup", "text": "Waktu terus berjalan tanpa kompromi; jangan sia-siakan untuk hal yang tidak bermakna."}, {"topic": "Hidup", "text": "Ketenangan sejati bermula saat kamu berhenti menuntut dunia agar selalu adil."}, {"topic": "Hidup", "text": "Hari kemarin adalah sejarah, hari esok adalah misteri, dan hari ini adalah anugerah nyata."}, {"topic": "Hidup", "text": "Jangan habiskan sisa umurmu hanya untuk memenuhi ekspektasi orang lain."}, {"topic": "Hidup", "text": "Hidup yang bermakna bukan tentang berapa lama kamu bernapas, melainkan seberapa dalam kamu memberi arti."}, {"topic": "Hidup", "text": "Setiap luka membawa pelajaran berharga jika kamu bersedia menerimanya dengan lapang dada."}, {"topic": "Hidup", "text": "Masa depanmu ditentukan oleh apa yang kamu mulai hari ini, bukan esok lusa."}, {"topic": "Hidup", "text": "Keberanian sejati adalah melangkah maju meski kedua kakimu gemetar ketakutan."}, {"topic": "Hidup", "text": "Hargai hal-hal kecil di sekitarmu sebelum waktu mengubahnya menjadi kenangan mahal."}, {"topic": "Hidup", "text": "Kamu tidak bisa mengendalikan arah angin, tetapi kamu selalu bisa mengatur arah layarmu."}, {"topic": "Hidup", "text": "Hidup terlalu singkat untuk dihabiskan dengan menyimpan dendam masa lalu."}, {"topic": "Hidup", "text": "Ketika satu pintu tertutup rapat, carilah jendela yang terbuka untuk jalan keluar."}, {"topic": "Hidup", "text": "Kualitas hidupmu berbanding lurus dengan kualitas keputusan yang berani kamu ambil."}, {"topic": "Hidup", "text": "Terkadang kamu harus tersesat terlebih dahulu untuk menemukan jalan terbaikmu."}, {"topic": "Hidup", "text": "Jangan biarkan opini bising orang lain menenggelamkan bisikan lembut nuranimu."}, {"topic": "Hidup", "text": "Hidup adalah kanvas kosong; goreskan warna terbaikmu sebelum waktunya habis."}, {"topic": "Hidup", "text": "Kedewasaan dimulai ketika kamu berhenti menyalahkan keadaan atas jalan hidupmu."}, {"topic": "Hidup", "text": "Jadilah versi terbaik dari dirimu sendiri, bukan tiruan kelas dua dari orang lain."}, {"topic": "Uang", "text": "Uang adalah pelayan yang sangat setia, tetapi merupakan tuan yang sangat kejam."}, {"topic": "Uang", "text": "Kekayaan sejati tidak dinilai dari nominal tabungan, melainkan rasa syukur dalam hati."}, {"topic": "Uang", "text": "Jangan membeli barang yang tak berguna demi mengesankan orang yang tak peduli."}, {"topic": "Uang", "text": "Kebebasan finansial sejati adalah memiliki kendali penuh atas waktu hidupmu."}, {"topic": "Uang", "text": "Uang bisa membeli ranjang yang empuk, namun tidak pernah bisa membeli tidur yang nyenyak."}, {"topic": "Uang", "text": "Bukan seberapa banyak uang yang masuk, melainkan seberapa bijak kamu menahannya keluar."}, {"topic": "Uang", "text": "Investasi terbaik yang memberi bunga abadi adalah investasi pada leher ke atas."}, {"topic": "Uang", "text": "Uang hanya memperjelas karakter asli seseorang; yang tamak kian tamak, yang dermawan kian pemurah."}, {"topic": "Uang", "text": "Kebutuhan hidup itu murah, yang mahal adalah gaya hidup dan gengsi manusia."}, {"topic": "Uang", "text": "Carilah uang dengan cara halal agar berkahnya menenteramkan seluruh anggota keluarga."}, {"topic": "Uang", "text": "Jangan sampai mengejar uang membuatmu lupa pada hal-hal yang tak bisa dibeli dengan uang."}, {"topic": "Uang", "text": "Kekayaan yang datang dalam sekejap mata sering kali lenyap dalam sekejap napas."}, {"topic": "Uang", "text": "Uang di tangan orang bijak adalah solusi; di tangan orang bodoh adalah petaka."}, {"topic": "Uang", "text": "Mengatur keuangan bukan tentang menahan lapar, melainkan merancang kebebasan masa depan."}, {"topic": "Uang", "text": "Kemiskinan paling berbahaya bukanlah tidak beruang, melainkan hilangnya mimpi dan etika."}, {"topic": "Uang", "text": "Uang dapat membeli obat termahal, namun tak mampu membeli sebutir kesehatan yang hilang."}, {"topic": "Uang", "text": "Bekerjalah demi nilai dan manfaat, maka uang akan datang mengikutimu secara sukarela."}, {"topic": "Uang", "text": "Gaya hidup sederhana adalah tameng terkuat dari jeratan utang konsumtif."}, {"topic": "Uang", "text": "Uang adalah alat tukar, jangan sampai kamu menukar integritasmu demi mendapatkannya."}, {"topic": "Uang", "text": "Kaya bukan tentang memiliki segalanya, melainkan merasa cukup dengan apa yang ada di tangan."}, {"topic": "Cinta", "text": "Cinta sejati bukan saling menatap mata, melainkan menatap bersama ke satu arah."}, {"topic": "Cinta", "text": "Mencintai berarti memberi kebebasan bagi pasanganmu untuk bertumbuh apa adanya."}, {"topic": "Cinta", "text": "Cinta tanpa komitmen dan pengorbanan hanyalah letupan emosi sesaat."}, {"topic": "Cinta", "text": "Bentuk cinta tertinggi adalah menjaga kehormatan dan mendoakan kebaikan dalam diam."}, {"topic": "Cinta", "text": "Jangan mencari sosok yang sempurna, carilah yang siap berproses dan belajar bersamamu."}, {"topic": "Cinta", "text": "Cinta tidak buta; cinta melihat kekurangan dan tetap memilih bertahan dengan setia."}, {"topic": "Cinta", "text": "Kehangatan sebuah hubungan dijaga lewat komunikasi jujur dan saling memaafkan."}, {"topic": "Cinta", "text": "Mencintai diri sendiri adalah pondasi utama sebelum kamu mampu mencintai orang lain."}, {"topic": "Cinta", "text": "Cinta bukan tentang siapa yang datang pertama, melainkan siapa yang bertahan sampai akhir."}, {"topic": "Cinta", "text": "Kemesraan bisa pudar oleh usia, tetapi rasa hormat dan kasih sayang akan bertahan selamanya."}, {"topic": "Cinta", "text": "Cinta sejati tidak pernah mengekang kebebasan, ia justru menjadi tempat pulang paling aman."}, {"topic": "Cinta", "text": "Terkadang cinta berarti merelakan pergi demi melihatnya bahagia di jalan lain."}, {"topic": "Cinta", "text": "Tindakan kecil penuh ketulusan jauh lebih bermakna daripada untaian janji manis berbusa."}, {"topic": "Cinta", "text": "Hubungan yang sehat adalah tempat di mana kedua belah pihak merasa didengar dan dihargai."}, {"topic": "Cinta", "text": "Cinta tidak menuntut timbal balik sempurna, ia menemukan kebahagiaan dari ketulusan memberi."}, {"topic": "Cinta", "text": "Pertengkaran dalam cinta adalah bumbu, kedewasaan untuk saling memahami adalah intinya."}, {"topic": "Cinta", "text": "Jangan jatuh cinta hanya karena sepi; cintailah seseorang saat hatimu telah siap berbagi."}, {"topic": "Cinta", "text": "Cinta adalah keputusan harian untuk tetap memilih orang yang sama tanpa rasa jenuh."}, {"topic": "Cinta", "text": "Kepercayaan adalah oksigen bagi cinta; sekali tercemar, hubungan akan perlahan mati."}, {"topic": "Cinta", "text": "Cinta yang tulus adalah doa tak bersuara yang terus dipanjatkan demi keselamatan pasangannya."}, {"topic": "Teman", "text": "Teman sejati masuk ke dalam hidupmu saat seluruh dunia memilih untuk angkat kaki."}, {"topic": "Teman", "text": "Lebih baik satu sahabat yang setia daripada seribu kawan yang hanya hadir saat pesta."}, {"topic": "Teman", "text": "Persahabatan sejati tidak diuji saat tawa, melainkan saat air mata mulai berlinang."}, {"topic": "Teman", "text": "Teman yang baik adalah cermin jujur; ia menegur kesalahanmu tanpa merendahkan harga dirimu."}, {"topic": "Teman", "text": "Pilihlah lingkungan yang memicu potensimu berkembang, bukan yang membuatmu lelah berpura-pura."}, {"topic": "Teman", "text": "Jarak dan waktu tidak akan mampu mengikis ikatan persahabatan yang dilandasi ketulusan."}, {"topic": "Teman", "text": "Sahabat adalah keluarga yang kamu pilih sendiri berdasarkan kecocokan jiwa dan nilai hidup."}, {"topic": "Teman", "text": "Hati-hati dengan teman yang selalu memuji di depan namun mencibir di belakangmu."}, {"topic": "Teman", "text": "Teman yang berkualitas tidak akan merasa tersaingi ketika melihat pencapaian dan kemajuanmu."}, {"topic": "Teman", "text": "Persahabatan yang sehat memberi ruang untuk saling berbeda pendapat tanpa rasa benci."}, {"topic": "Teman", "text": "Jangan buang energimu untuk mempertahankan orang yang hanya datang saat sedang butuh."}, {"topic": "Teman", "text": "Teman sejati mengerti keheninganmu sama baiknya dengan mereka memahami kata-katamu."}, {"topic": "Teman", "text": "Kehilangan teman palsu bukanlah kerugian, melainkan pembersihan takdir dari hal beracun."}, {"topic": "Teman", "text": "Kawan tertawa mudah dicari di mana saja, kawan berjuang hanya ditemukan lewat seleksi waktu."}, {"topic": "Teman", "text": "Jadilah jenis teman yang kamu sendiri ingin temui di saat-saat terpuruk hidupmu."}, {"topic": "Teman", "text": "Persahabatan butuh pupuk saling percaya dan siraman rasa hormat agar tak layu."}, {"topic": "Teman", "text": "Teman yang baik akan mengingatkanmu pada kebaikan, bukan mengajakmu larut dalam keburukan."}, {"topic": "Teman", "text": "Jangan biarkan salah paham kecil memutus tali persaudaraan yang dirajut bertahun-tahun."}, {"topic": "Teman", "text": "Lingkaran pertemananmu menentukan cara pandangmu terhadap dunia; pilihlah dengan cermat."}, {"topic": "Teman", "text": "Sahabat sejati adalah mereka yang tahu segala kelemahanmu, namun tetap memilih tinggal di sisimu."}, {"topic": "Kerja", "text": "Bekerjalah dengan tekun dalam sunyi, biarkan hasil karyamu yang membuat kegaduhan."}, {"topic": "Kerja", "text": "Disiplin adalah jembatan kokoh yang menghubungkan antara cita-cita dan pencapaian nyata."}, {"topic": "Kerja", "text": "Bekerja bukan sekadar berburu rupiah, melainkan sarana menjaga martabat diri."}, {"topic": "Kerja", "text": "Rasa lelah bekerja akan hilang oleh istirahat, namun karya yang bermanfaat akan abadi."}, {"topic": "Kerja", "text": "Jangan menuntut imbalan besar sebelum kamu membuktikan kontribusi nyata yang bernilai."}, {"topic": "Kerja", "text": "Profesionalisme adalah menyelesaikan tugas dengan standar terbaik meski suasana hati sedang buruk."}, {"topic": "Kerja", "text": "Kerja cerdas memanfaatkan peluang, kerja keras memastikan peluang itu tidak terbuang sia-sia."}, {"topic": "Kerja", "text": "Tuntaskan apa yang sudah kamu mulai; reputasi dibangun dari integritas penyelesaian kerja."}, {"topic": "Kerja", "text": "Jangan takut pada pekerjaan sulit; di sanalah letak ruang belajar yang sesungguhnya."}, {"topic": "Kerja", "text": "Etos kerja yang tinggi adalah cerminan dari rasa hormatmu terhadap waktu dan komitmen."}, {"topic": "Kerja", "text": "Keahlian membuka pintu kesempatan, tetapi karakter dan sikap yang akan menjaganya tetap terbuka."}, {"topic": "Kerja", "text": "Bekerjalah seolah-olah kamu pemilik tempat itu, maka kamu akan belajar memimpin."}, {"topic": "Kerja", "text": "Keluhan tidak akan meringankan beban tugasmu; tindakan nyata yang menyelesaikannya."}, {"topic": "Kerja", "text": "Konsistensi harian selalu mengalahkan letupan motivasi sesaat dalam dunia kerja."}, {"topic": "Kerja", "text": "Keringat yang menetes dalam mencari nafkah halal bernilai ibadah di mata Sang Pencipta."}, {"topic": "Kerja", "text": "Jangan batasi dirimu hanya pada deskripsi kerja; perluas wawasan dan dampak kehadiranmu."}, {"topic": "Kerja", "text": "Karier cemerlang dibangun bata demi bata melalui kesabaran dan ketekunan menahun."}, {"topic": "Kerja", "text": "Belajarlah menyukai prosesnya, bukan sekadar terpaku pada gaji di akhir bulan."}, {"topic": "Kerja", "text": "Jadikan setiap kritik kerja sebagai bahan bakar untuk memoles kualitas dirimu berikutnya."}, {"topic": "Kerja", "text": "Bekerjalah dengan jujur; rezeki yang berkah jauh lebih menenangkan daripada hasil curang."}, {"topic": "Orang Tua", "text": "Keridaan Allah bergantung pada keridaan orang tua, dan murka-Nya ada pada murka mereka."}, {"topic": "Orang Tua", "text": "Orang tua adalah sosok yang rela menelan lelah demi melihat senyum bahagia di bibir anak-anaknya."}, {"topic": "Orang Tua", "text": "Waktumu bersama orang tua sangat terbatas; jangan biarkan kesibukan merebut sisa waktu itu."}, {"topic": "Orang Tua", "text": "Doa seorang ibu adalah tameng gaib terkuat yang menembus langit demi keselamatan anaknya."}, {"topic": "Orang Tua", "text": "Seiring bertambahnya usia, kamu akan paham beratnya beban pundak ayah yang tak pernah ia keluhkan."}, {"topic": "Orang Tua", "text": "Berbaktilah selagi ada kesempatan; penyesalan di depan nisan tak akan memutar balik waktu."}, {"topic": "Orang Tua", "text": "Orang tua memaafkan ribuan kesalahan kita, tetapi kita sering kali pelit memaafkan satu kelalaian mereka."}, {"topic": "Orang Tua", "text": "Bukan materi mewah yang paling mereka inginkan di hari tua, melainkan kabar dan kehadiranmu."}, {"topic": "Orang Tua", "text": "Kasih sayang orang tua laksana air mengalir; tanpa pamrih dan tak pernah menuntut balas."}, {"topic": "Orang Tua", "text": "Jangan pernah membantah mereka dengan nada tinggi, ingatlah siapa yang mengajarimu bicara."}, {"topic": "Orang Tua", "text": "Keberhasilan yang kamu capai hari ini adalah buah dari air mata dan sujud panjang orang tuamu."}, {"topic": "Orang Tua", "text": "Rawatlah orang tuamu saat mereka menua dengan kelembutan yang sama saat mereka merawat bayimu."}, {"topic": "Orang Tua", "text": "Orang tua tidak pernah pensiun mencemaskan kesejahteraan dan masa depan darah dagingnya."}, {"topic": "Orang Tua", "text": "Rumah terhangat di dunia adalah pelukan ibu, pelindung terkuat adalah keteguhan hati ayah."}, {"topic": "Orang Tua", "text": "Membahagiakan orang tua adalah pintu rezeki paling lebar yang sering kali terabaikan."}, {"topic": "Orang Tua", "text": "Jangan sampai teman dan pasanganmu mendapat waktu terbaikmu, sementara orang tuamu mendapat sisa lelahmu."}, {"topic": "Orang Tua", "text": "Ketika orang tua telah tiada, separuh dari keberkahan hidupmu seakan ikut terkubur bersama mereka."}, {"topic": "Orang Tua", "text": "Ucapkan terima kasih dan cinta kepada mereka sekarang, selagi telinga mereka masih bisa mendengar."}, {"topic": "Orang Tua", "text": "Jadikan kebaikan akhlakmu sebagai amal jariyah yang terus mengalirkan pahala bagi kedua orang tuamu."}, {"topic": "Orang Tua", "text": "Di balik setiap anak yang mandiri dan sukses, ada orang tua yang rela mengorbankan mimpinya sendiri."}, {"topic": "Islam", "text": "Dunia ini hanyalah jembatan penyeberangan sementara; negeri akhiratlah tujuan akhir yang kekal abadi."}, {"topic": "Islam", "text": "Kekuatan terbesar seorang hamba muslim terletak pada sujud panjang di keheningan sepertiga malam."}, {"topic": "Islam", "text": "Tawakal bukan berarti berpangku tangan, melainkan berserah penuh pasca mengerahkan seluruh ikhtiar terbaik."}, {"topic": "Islam", "text": "Hati yang selalu terpaut pada Allah tidak akan pernah hancur oleh kekecewaan terhadap makhluk."}, {"topic": "Islam", "text": "Islam adalah lentera kedamaian; pancarkan cahayanya melalui luhurnya akhlak dan tutur katamu."}, {"topic": "Islam", "text": "Perbaiki hubunganmu dengan Allah secara rahasia, maka Dia akan memperbaiki urusan duniamu secara terbuka."}, {"topic": "Islam", "text": "Setiap musibah yang menimpamu adalah sarana penggugur dosa dan pengangkat derajat keimanan."}, {"topic": "Islam", "text": "Jadikan salat sebagai kebutuhan utama penenang jiwa, bukan sekadar rutinitas penggugur kewajiban."}, {"topic": "Islam", "text": "Orang yang paling mulia di sisi Allah bukanlah yang paling berharta, melainkan yang paling bertakwa."}, {"topic": "Islam", "text": "Ikhlas adalah rahasia terindah; melakukan kebaikan tanpa mengharapkan ucapan terima kasih dari manusia."}, {"topic": "Islam", "text": "Dunia ini penjara bagi orang mukmin dan surga bagi orang kafir; bersabarlah dalam ketaatan."}, {"topic": "Islam", "text": "Jangan biarkan gemerlap dunia yang fana membutakan mata hatimu dari kampung akhirat."}, {"topic": "Islam", "text": "Istigfar adalah kunci pembuka pintu rezeki yang sempit dan penawar dari gundahnya hati."}, {"topic": "Islam", "text": "Kematian adalah kepastian mutlak yang datang tanpa permisi; siapkan bekal terbaik sebelum terlambat."}, {"topic": "Islam", "text": "Agama Islam dibangun atas dasar kemudahan dan kasih sayang, bukan paksaan dan kekerasan."}, {"topic": "Islam", "text": "Tanda kebaikan Islam seseorang adalah kemampuannya meninggalkan hal-hal yang tidak berguna."}, {"topic": "Islam", "text": "Kaya yang sesungguhnya dalam Islam adalah kaya hati yang senantiasa qanaah atas takdir Ilahi."}, {"topic": "Islam", "text": "Jaga lisanmu dari menyakiti orang lain; keselamatan seorang muslim ada pada penjagaan lidahnya."}, {"topic": "Islam", "text": "Rencana Allah selalu lebih indah daripada semua rangkaian impian terliar yang kita susun."}, {"topic": "Islam", "text": "Jadikan rida Allah sebagai satu-satunya standar utama dalam menentukan setiap langkah hidupmu."}, {"topic": "Al-Qur'an", "text": "Al-Qur'an adalah lentera penerang bagi jiwa yang tersesat di tengah pekatnya tipu daya dunia."}, {"topic": "Al-Qur'an", "text": "Bacalah Al-Qur'an, niscaya kamu akan merengkuh ketenangan yang tak bisa ditawarkan oleh isi semesta."}, {"topic": "Al-Qur'an", "text": "Setiap ayat di dalamnya adalah petunjuk jalan hidup, obat pelipur lara, dan rahmat bagi yang beriman."}, {"topic": "Al-Qur'an", "text": "Semakin akrab kamu berinteraksi dengan Al-Qur'an, semakin lapang dadamu memikul beratnya ujian hidup."}, {"topic": "Al-Qur'an", "text": "Al-Qur'an bukan sekadar bacaan di bibir, melainkan pedoman moral praktis yang harus dihidupkan."}, {"topic": "Al-Qur'an", "text": "Hati yang kering akan kembali subur dan hidup ketika disiram oleh lantunan ayat-ayat suci Al-Qur'an."}, {"topic": "Al-Qur'an", "text": "Al-Qur'an akan datang pada hari kiamat sebagai saksi pembela bagi orang-orang yang gemar membacanya."}, {"topic": "Al-Qur'an", "text": "Sebaik-baik manusia di antara kalian adalah yang mempelajari Al-Qur'an lalu mengajarkannya kepada sesama."}, {"topic": "Al-Qur'an", "text": "Jangan biarkan lembaran mushafmu berdebu di lemari, sementara hatimu gersang dari bimbingan wahyu."}, {"topic": "Al-Qur'an", "text": "Satu huruf yang dibaca dari Al-Qur'an bernilai sepuluh kebaikan; jangan remehkan tabungan pahala ini."}, {"topic": "Al-Qur'an", "text": "Ketika kamu merasa sendiri dan putus asa, bukalah Al-Qur'an; temukan pesan cinta Allah untukmu di sana."}, {"topic": "Al-Qur'an", "text": "Al-Qur'an adalah mukjizat abadi yang tak lekang oleh zaman dan tak lapuk oleh perubahan peradaban."}, {"topic": "Al-Qur'an", "text": "Tadaburi maknanya, bukan hanya mengejar khatam; pemahamanlah yang akan mengubah cara hidupmu."}, {"topic": "Al-Qur'an", "text": "Rumah yang dibacakan Al-Qur'an di dalamnya akan terasa luas, didatangi malaikat, dan dijauhi setan."}, {"topic": "Al-Qur'an", "text": "Al-Qur'an adalah penawar terbaik bagi segala penyakit hati, mulai dari dengki hingga keputusasaan."}, {"topic": "Al-Qur'an", "text": "Hafalan Al-Qur'an yang dijaga dalam dada akan memahkotai kedua orang tuamu dengan kemuliaan di akhirat."}, {"topic": "Al-Qur'an", "text": "Jadikan Al-Qur'an sebagai sahabat karibmu di dunia agar ia menjadi penerang kuburmu di alam barzakh."}, {"topic": "Al-Qur'an", "text": "Kebenaran Al-Qur'an bersifat mutlak; tiada keraguan sedikit pun bagi mereka yang berakal sehat."}, {"topic": "Al-Qur'an", "text": "Menangislah karena rasa takut dan harap saat meresapi ancaman dan kabar gembira dalam ayat-ayat-Nya."}, {"topic": "Al-Qur'an", "text": "Al-Qur'an menurunkan keberkahan pada waktu, rezeki, dan pikiran siapa saja yang memuliakannya."}, {"topic": "Hobi", "text": "Hobi adalah ruang bernapas bagi jiwa di tengah bising dan monotonnya rutinitas harian."}, {"topic": "Hobi", "text": "Luangkan waktu untuk hal yang kamu cintai demi menjaga kewarasan pikiran, bukan demi pengakuan pamer."}, {"topic": "Hobi", "text": "Kreativitas bertumbuh paling subur saat kamu berkarya murni karena rasa suka tanpa beban materi."}, {"topic": "Hobi", "text": "Hobi yang bermakna adalah kegiatan yang membuatmu lupa waktu dan merasa kembali utuh sebagai manusia."}, {"topic": "Hobi", "text": "Jangan biarkan hidupmu hanya habis untuk bekerja dan tidur; nyalakan semangatmu lewat hobi yang sehat."}, {"topic": "Hobi", "text": "Menekuni hobi adalah bentuk meditasi aktif untuk melepaskan penat dari tumpukan stres pekerjaan."}, {"topic": "Hobi", "text": "Hobi yang ditekuni secara konsisten bisa bermetamorfosis menjadi pintu rezeki yang tak terduga."}, {"topic": "Hobi", "text": "Dunia terasa lebih berwarna ketika kamu memiliki wadah untuk mengekspresikan imajinasimu secara bebas."}, {"topic": "Hobi", "text": "Hobi mempertemukanmu dengan komunitas baru yang memiliki frekuensi dan gairah yang serupa."}, {"topic": "Hobi", "text": "Waktu yang kamu nikmati untuk berkarya bukanlah waktu yang terbuang sia-sia."}, {"topic": "Hobi", "text": "Melalui hobi, kamu belajar bersabar menikmati proses panjang demi sebuah kepuasan batiniah."}, {"topic": "Hobi", "text": "Hobi mengajarkan kita arti kegembiraan murni yang lepas dari ikatan target dan tekanan target."}, {"topic": "Hobi", "text": "Temukan setidaknya satu hobi yang menyehatkan fisik, satu yang memicu kreativitas, dan satu yang menenangkan jiwa."}, {"topic": "Hobi", "text": "Hobi adalah tempat pelarian paling sehat saat dunia nyata terasa terlalu melelahkan untuk dihadapi."}, {"topic": "Hobi", "text": "Ketika hasrat bertemu dengan latihan rutin dalam sebuah hobi, mahakarya indah akan tercipta dengan sendirinya."}, {"topic": "Hobi", "text": "Hobi menjaga rasa ingin tahu anak-anak dalam dirimu agar tetap hidup dan menyala hingga tua."}, {"topic": "Hobi", "text": "Bukan tentang seberapa mahir hasil karyamu, melainkan seberapa bahagia hatimu saat mengerjakannya."}, {"topic": "Hobi", "text": "Jangan merasa bersalah menikmati hobimu; merawat kebahagiaan diri sendiri adalah sebuah keharusan."}, {"topic": "Hobi", "text": "Hobi memberikan warna pembeda dalam kepribadianmu di luar identitas profesi kerjamu."}, {"topic": "Hobi", "text": "Keluarlah sejenak dari layar gawaimu; sentuh kembali hal-hal nyata lewat hobi yang menggerakkan tubuh."}, {"topic": "Istirahat", "text": "Berhenti sejenak bukan berarti kamu kalah; istirahat adalah bagian mutlak dari proses melangkah jauh."}, {"topic": "Istirahat", "text": "Tubuh dan pikiranmu memiliki hak istirahat; jangan pernah paksa dirimu bekerja hingga remuk."}, {"topic": "Istirahat", "text": "Tidur pulas dan pikiran hening adalah obat alami terbaik dari racun stres yang menumpuk."}, {"topic": "Istirahat", "text": "Kamu tidak bisa menuang air dari cangkir yang kosong; rawat dirimu sebelum mengurus hal lain."}, {"topic": "Istirahat", "text": "Kadang hal paling produktif yang bisa kamu lakukan hari ini adalah tidur dan tidak memikirkan apa pun."}, {"topic": "Istirahat", "text": "Jeda bukanlah pemborosan waktu, melainkan proses mengisi ulang bahan bakar energi hidupmu."}, {"topic": "Istirahat", "text": "Kelelahan ekstrem adalah sinyal keras dari tubuhmu agar kamu segera melambatkan ritme langkah."}, {"topic": "Istirahat", "text": "Jangan tunggu jatuh sakit hanya untuk memberi izin pada tubuhmu menikmati hak istirahat."}, {"topic": "Istirahat", "text": "Istirahat terbaik bagi jiwa yang gelisah adalah melepaskan beban kontrol atas hal di luar kuasamu."}, {"topic": "Istirahat", "text": "Dunia tidak akan runtuh hanya karena kamu mengambil jeda sejenak untuk menarik napas dalam-dalam."}, {"topic": "Istirahat", "text": "Keseimbangan antara kerja keras dan istirahat berkualitas adalah rahasia dari ketahanan jangka panjang."}, {"topic": "Istirahat", "text": "Beri ruang pada pikiranmu untuk melamun tenang; dari keheningan itulah ide-ide brilian sering kali lahir."}, {"topic": "Istirahat", "text": "Tidur malam yang cukup adalah bentuk investasi terbaik untuk menjaga ketajaman konsentrasi esok hari."}, {"topic": "Istirahat", "text": "Menolak ajakan lembur yang berlebihan demi kesehatan fisik adalah bentuk keberanian mencintai diri."}, {"topic": "Istirahat", "text": "Istirahatkan matamu dari layar biru gawai dan istirahatkan hatimu dari ambisi yang berlebihan."}, {"topic": "Istirahat", "text": "Pikiran yang terus dipaksa berpikir tanpa henti akan tumpul laksana pisau yang tak pernah diasah."},
-    {"topic": "Istirahat", "text": "Tenangkan dirimu dalam keheningan; di sanalah suara nuranimu akan terdengar lebih jernih dan jujur."}, {"topic": "Istirahat", "text": "Istirahat yang sadar adalah pemulihan terencana, bukan sekadar pelarian malas dari kenyataan hidup."}, {"topic": "Istirahat", "text": "Nikmati hari liburmu tanpa rasa bersalah; kamu telah berjuang sangat keras sepanjang pekan kemarin."}, {"topic": "Istirahat", "text": "Belajarlah untuk beristirahat saat lelah menyerang, jangan pernah memilih untuk langsung menyerah kalah."}, {"topic": "Jodoh", "text": "Jodoh adalah cerminan dari proses pembenahan diri; perbaiki kualitasmu, maka yang datang akan sepadan."}, {"topic": "Jodoh", "text": "Jika ia memang ditakdirkan untukmu, sejauh apa pun terpisah, ia akan menemukan jalan pulang ke sisimu."}, {"topic": "Jodoh", "text": "Menunggu jodoh bukan dengan duduk berpangku tangan, melainkan dengan memantaskan diri di hadapan Tuhan."}, {"topic": "Jodoh", "text": "Jodoh terbaik bukan sekadar teman hidup di bumi, melainkan rekan seperjalanan yang menuntun menuju surga."}, {"topic": "Jodoh", "text": "Lepaskan orang yang salah agar semesta membuka ruang lebar bagi kehadiran sosok yang tepat."}, {"topic": "Jodoh", "text": "Jangan terburu-buru mengikat janji karena takut kesepian; salah memilih pasangan jauh lebih menyiksa."}, {"topic": "Jodoh", "text": "Jodoh datang di waktu yang paling tepat menurut ketetapan-Nya, bukan menurut desakan jadwal kita."}, {"topic": "Jodoh", "text": "Pertemuan dua hati yang ditakdirkan bersama akan selalu diiringi oleh rasa tenang dan kemudahan jalan."}, {"topic": "Jodoh", "text": "Cinta sejati dalam ikatan jodoh tidak menuntut kesempurnaan, melainkan kerelaan untuk saling melengkapi."}, {"topic": "Jodoh", "text": "Bukan tentang siapa yang datang paling cepat, melainkan siapa yang hadir dan berani berkomitmen selamanya."}, {"topic": "Jodoh", "text": "Jodohmu mungkin sedang dipersiapkan di belahan bumi lain; fokuslah memperbaiki kekurangan dirimu sekarang."}, {"topic": "Jodoh", "text": "Kriteria terpenting dari jodoh sejati adalah kesamaan nilai hidup dan akhlak yang mulia."}, {"topic": "Jodoh", "text": "Jangan memaksakan hati yang tidak tertuju padamu; tulang rusuk tidak akan pernah salah tertukar tempat."}, {"topic": "Jodoh", "text": "Pernikahan yang berkah bermula dari niat suci menjaga kehormatan, bukan sekadar pesta kemewahan duniawi."}, {"topic": "Jodoh", "text": "Jodoh yang baik adalah dia yang membuatmu semakin mencintai Tuhanmu dan menyayangi sesama."}, {"topic": "Jodoh", "text": "Terkadang penolakan yang kamu alami adalah cara halus takdir melindungimu dari orang yang keliru."}, {"topic": "Jodoh", "text": "Pertahankan standar nilaimu; orang yang tepat tidak akan pernah memintamu mengorbankan integritas diri."}, {"topic": "Jodoh", "text": "Jodoh adalah perpaduan antara doa yang tak putus dipanjatkan dan ikhtiar mencari yang bermartabat."}, {"topic": "Jodoh", "text": "Ketika waktu yang ditetapkan itu tiba, segala rintangan rumit akan terurai menjadi jalan pertemuan yang mudah."}, {"topic": "Jodoh", "text": "Cinta yang matang tahu kapan harus menunggu dengan sabar dan kapan harus melangkah maju menjemput kepastian."}, {"topic": "Kegagalan", "text": "Kegagalan adalah satu-satunya kesempatan berharga untuk memulai kembali dengan cara yang jauh lebih cerdas."}, {"topic": "Kegagalan", "text": "Kamu baru dinyatakan benar-benar gagal saat kamu mengambil keputusan untuk berhenti mencoba sama sekali."}, {"topic": "Kegagalan", "text": "Rasa perih akibat kegagalan jauh lebih terhormat daripada rasa sesal seumur hidup karena tak berani mencoba."}, {"topic": "Kegagalan", "text": "Batu sandungan yang membuatmu tersungkur hari ini adalah fondasi kekuatan mentalmu di masa depan."}, {"topic": "Kegagalan", "text": "Jangan pernah menilai seluruh nilai hidupmu hanya berdasarkan satu babak kegagalan yang pahit."}, {"topic": "Kegagalan", "text": "Kegagalan adalah guru yang sangat keras; ia memberi ujian terlebih dahulu sebelum memberikan pelajarannya."}, {"topic": "Kegagalan", "text": "Jalan menuju puncak kesuksesan selalu diaspal dengan rangkaian kegagalan yang berhasil dilewati."}, {"topic": "Kegagalan", "text": "Setiap kali kamu jatuh dan tersungkur, pastikan kamu bangkit dengan membawa sebongkah hikmah baru."}, {"topic": "Kegagalan", "text": "Kegagalan hanyalah tanda bahwa caramu harus diperbaiki, bukan tanda impianmu harus dimatikan."}, {"topic": "Kegagalan", "text": "Mereka yang tidak pernah berbuat salah adalah mereka yang tidak pernah berani mencoba hal baru apa pun."}, {"topic": "Kegagalan", "text": "Terima kegagalanmu dengan lapang dada, evaluasi secara dingin, lalu susun strategi baru yang lebih matang."}, {"topic": "Kegagalan", "text": "Rasa takut akan kegagalan adalah penjara tak kasat mata yang membunuh lebih banyak potensi daripada kegagalan itu sendiri."}, {"topic": "Kegagalan", "text": "Kegagalan tidak mendefinisikan siapa dirimu; responsmu terhadap kegagalan itulah yang menentukan kualitasmu."}, {"topic": "Kegagalan", "text": "Tersenyumlah pada kegagalanmu; ia adalah bukti nyata bahwa kamu telah berani turun ke arena pertarungan."}, {"topic": "Kegagalan", "text": "Kekalahan sementara bukanlah kehancuran mutlak, kecuali jika kamu sendiri yang menolak untuk berdiri lagi."}, {"topic": "Kegagalan", "text": "Patah hati karena rencana yang gagal sering kali merupakan berkah tersembunyi yang menyelamatkanmu dari bahaya."}, {"topic": "Kegagalan", "text": "Baja terkuat ditempa di dalam api yang paling panas; karakter tangguhmu dibentuk oleh ujian kegagalan."}, {"topic": "Kegagalan", "text": "Jangan sembunyikan kegagalanmu di bawah karpet; jadikan ia lencana kehormatan dari perjuangan kerasmu."}, {"topic": "Kegagalan", "text": "Satu pintu keberhasilan sering kali baru terbuka setelah sembilan puluh sembilan pintu kegagalan kamu ketuk."}, {"topic": "Kegagalan", "text": "Menangislah sejenak jika terasa sesak di dada, lalu hapus air matamu dan tatap kembali medan tempurmu."}, {"topic": "Kesuksesan", "text": "Kesuksesan sejati adalah ketika keberadaanmu mampu menghadirkan manfaat nyata bagi banyak orang di sekitarmu."}, {"topic": "Kesuksesan", "text": "Puncak kesuksesan tidak diraih dengan satu lompatan kilat, melainkan lewat ribuan langkah kecil yang konsisten."}, {"topic": "Kesuksesan", "text": "Tetaplah membumi saat berada di puncak kejayaan; tanah yang tinggi tidak pernah menahan air hujan."}, {"topic": "Kesuksesan", "text": "Ukuran hakiki dari suksesmu adalah seberapa tenang hatimu saat memejamkan mata di malam hari."}, {"topic": "Kesuksesan", "text": "Kesuksesan tanpa diimbangi rasa syukur yang tulus hanya akan melahirkan kesombongan dan kehampaan jiwa."}, {"topic": "Kesuksesan", "text": "Sukses bukan tentang mengalahkan orang lain dalam perlombaan, melainkan menaklukkan ego buruk dalam dirimu."}, {"topic": "Kesuksesan", "text": "Hargai setiap tetes keringat dalam proses berjuang; hasil akhir hanyalah akibat wajar dari dedikasi panjang."}, {"topic": "Kesuksesan", "text": "Orang sukses berani melakukan hal-hal sulit yang dihindari oleh orang-orang pemalas."}, {"topic": "Kesuksesan", "text": "Jadikan kesuksesanmu sebagai jembatan untuk mengangkat orang lain, bukan tangga untuk menginjak martabat sesama."}, {"topic": "Kesuksesan", "text": "Kunci pembuka kesuksesan adalah memulai sebelum kamu merasa siap dan bertahan lebih lama dari yang lain."}, {"topic": "Kesuksesan", "text": "Kesuksesan bukanlah tujuan akhir yang statis, melainkan perjalanan belajar dan bertumbuh tanpa batas waktu."}, {"topic": "Kesuksesan", "text": "Definisikan sendiri arti sukses menurut nuranimu, jangan biarkan standar masyarakat yang mendiktenya."}, {"topic": "Kesuksesan", "text": "Di balik setiap kisah sukses yang tampak instan, selalu ada bertahun-tahun kerja keras yang luput dari sorotan kamera."}, {"topic": "Kesuksesan", "text": "Pertahankan rasa lapar akan ilmu dan kerendahan hati untuk terus belajar, bahkan saat kamu telah berada di atas."}, {"topic": "Kesuksesan", "text": "Sukses materi tanpa integritas moral hanyalah bentuk kemiskinan batin yang dibungkus oleh kemewahan palsu."}, {"topic": "Kesuksesan", "text": "Keberhasilan terbesarmu adalah saat kamu mampu bangkit tegak kembali setelah dihancurkan oleh keadaan."}, {"topic": "Kesuksesan", "text": "Berbagilah lebih banyak ketika kamu menerima lebih banyak; di sanalah letak kelipatan berkah kesuksesan."}, {"topic": "Kesuksesan", "text": "Fokuslah menjadi pribadi yang bernilai dan berbobot, maka kesuksesan akan datang mengejarmu dengan sendirinya."}, {"topic": "Kesuksesan", "text": "Jangan biarkan pujian dunia atas suksesmu membuatmu lengah dan lupa pada siapa yang memberi pertolongan."}, {"topic": "Kesuksesan", "text": "Sukses paripurna adalah selamat di persinggahan dunia yang fana dan berbahagia di negeri akhirat yang abadi."}];
-
+    const ALL_QUOTES = [
+      { topic: "Hidup", text: "Hidup bukan tentang menunggu badai reda, melainkan belajar menari di tengah hujan lebat." },
+      { topic: "Hidup", text: "Batasan terbesar dalam hidupmu adalah keraguan yang kamu pelihara sendiri." },
+      { topic: "Waktu", text: "Waktu terus berjalan tanpa kompromi; jangan sia-siakan untuk hal yang tidak bermakna." },
+      { topic: "Ketenangan", text: "Ketenangan sejati bermula saat kamu berhenti menuntut dunia agar selalu adil." }
+    ];
     let currentQuoteIndex = 0;
 
     function renderCurrentQuote() {
       const q = ALL_QUOTES[currentQuoteIndex];
       const badge = document.getElementById("quoteTopicBadge");
       const text = document.getElementById("quoteContentText");
-
       if (badge && text) {
         text.classList.remove("quote-fade-enter");
         void text.offsetWidth;
         text.classList.add("quote-fade-enter");
-
         badge.textContent = `Quotes ${q.topic}`;
         text.textContent = `“${q.text}”`;
       }
@@ -793,39 +766,27 @@
       currentQuoteIndex = (currentQuoteIndex + 1) % ALL_QUOTES.length;
       renderCurrentQuote();
     }
+    setInterval(() => rotateNextQuote(false), 5 * 60 * 1000);
 
-    setInterval(() => {
-      rotateNextQuote(false);
-    }, 5 * 60 * 1000);
+    function updateLiveClock() {
+      const now = new Date();
+      document.getElementById("clockHours").textContent = String(now.getHours()).padStart(2, "0");
+      document.getElementById("clockMinutes").textContent = String(now.getMinutes()).padStart(2, "0");
+      document.getElementById("clockSeconds").textContent = String(now.getSeconds()).padStart(2, "0");
 
-    // ========================================================
-    // SINKRONISASI BERSAMA (CROSS-TAB, MULTI-USER CLOUD SYNC)
-    // ========================================================
-    const SYNC_CHANNEL = new BroadcastChannel("gabut_sync_channel");
-    SYNC_CHANNEL.onmessage = (event) => {
-      if (event.data && event.data.type === "DATA_UPDATED") {
-        renderSchedule();
-        renderMoodButtons();
-        refreshAbsences();
-      }
-    };
-
-    window.addEventListener("storage", (event) => {
-      if (event.key === MOOD_DB_KEY) {
-        renderMoodButtons();
-      } else if (event.key === TASKS_STORE_KEY || event.key === COMPLETED_MAP_KEY) {
-        renderSchedule();
-      } else if (event.key === ABSENCE_KEY) {
-        refreshAbsences();
-      }
-    });
-
-    function notifyDataUpdated() {
-      SYNC_CHANNEL.postMessage({ type: "DATA_UPDATED", timestamp: Date.now() });
+      const dateStr = now.toLocaleDateString("id-ID", {
+        weekday: "long",
+        day: "numeric",
+        month: "long",
+        year: "numeric"
+      });
+      document.getElementById("liveFullDate").textContent = `📅 ${dateStr}`;
     }
+    setInterval(updateLiveClock, 1000);
+    updateLiveClock();
 
     // ========================================================
-    // 1. GATE ABSEN AWAL ("Siapa nih yang lagi Gabut?")
+    // 1. GATE ABSEN AWAL
     // ========================================================
     let currentUser = localStorage.getItem("gabut_user_name") || "";
 
@@ -870,31 +831,95 @@
     }
 
     // ========================================================
-    // 2. REAL LIVE DIGITAL CLOCK (Kecil di pojok kanan atas)
+    // 2. NETWORK P2P REALTIME (OTOMATIS TERSINKRON DENGAN ORANG LAIN)
     // ========================================================
-    function updateLiveClock() {
+    const MOOD_DB_KEY = "gabut_mood_votes_v3";
+    let liveMoodData = {};
+
+    function getTodayKey() {
       const now = new Date();
-      const hours = String(now.getHours()).padStart(2, "0");
-      const minutes = String(now.getMinutes()).padStart(2, "0");
-      const seconds = String(now.getSeconds()).padStart(2, "0");
-
-      document.getElementById("clockHours").textContent = hours;
-      document.getElementById("clockMinutes").textContent = minutes;
-      document.getElementById("clockSeconds").textContent = seconds;
-
-      const dateStr = now.toLocaleDateString("id-ID", {
-        weekday: "long",
-        day: "numeric",
-        month: "long",
-        year: "numeric"
-      });
-      document.getElementById("liveFullDate").textContent = `📅 ${dateStr}`;
+      return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
     }
-    setInterval(updateLiveClock, 1000);
-    updateLiveClock();
+
+    try {
+      const raw = localStorage.getItem(MOOD_DB_KEY);
+      liveMoodData = raw ? JSON.parse(raw) : {};
+    } catch (e) {
+      liveMoodData = {};
+    }
+
+    // Jaringan PeerJS Room
+    const ROOM_HUB_ID = "ruang-gabut-kiky-2026";
+    let myPeer = null;
+    let peerConnections = [];
+
+    function broadcastMoodUpdate(payload) {
+      peerConnections.forEach(conn => {
+        if (conn && conn.open) {
+          conn.send({ type: "MOOD_SYNC", data: payload });
+        }
+      });
+    }
+
+    function initP2PNetwork() {
+      const randomId = "gabut_" + Math.random().toString(36).substring(2, 9);
+      myPeer = new Peer(randomId);
+
+      myPeer.on("open", (id) => {
+        // Coba hubungkan ke host utama
+        connectToHost();
+      });
+
+      myPeer.on("error", (err) => {
+        console.warn("P2P Notice:", err);
+      });
+
+      myPeer.on("connection", (conn) => {
+        setupConnectionEvents(conn);
+        // Kirimkan data mood terkini ke pengunjung yang baru masuk
+        conn.on("open", () => {
+          conn.send({ type: "MOOD_SYNC", data: liveMoodData });
+        });
+      });
+    }
+
+    function connectToHost() {
+      // Buat peer host utama jika belum ada, atau hubungkan sebagai client
+      const hostPeer = new Peer(ROOM_HUB_ID);
+      hostPeer.on("open", () => {
+        hostPeer.on("connection", (conn) => {
+          setupConnectionEvents(conn);
+          conn.on("open", () => {
+            conn.send({ type: "MOOD_SYNC", data: liveMoodData });
+          });
+        });
+      });
+
+      hostPeer.on("error", (err) => {
+        // Jika host utama sudah ada, sambungkan browser ini ke host tersebut
+        if (err.type === "unavailable-id") {
+          const clientConn = myPeer.connect(ROOM_HUB_ID);
+          setupConnectionEvents(clientConn);
+        }
+      });
+    }
+
+    function setupConnectionEvents(conn) {
+      peerConnections.push(conn);
+      conn.on("data", (msg) => {
+        if (msg && msg.type === "MOOD_SYNC") {
+          // Gabungkan data vote secara cerdas
+          liveMoodData = Object.assign({}, liveMoodData, msg.data);
+          localStorage.setItem(MOOD_DB_KEY, JSON.stringify(liveMoodData));
+          renderMoodButtons();
+        }
+      });
+    }
+
+    initP2PNetwork();
 
     // ========================================================
-    // 3. MOOD TRACKER INTERAKTIF (Real-Time Live Names & Counts)
+    // 3. MOOD TRACKER INTERAKTIF
     // ========================================================
     const MOOD_LIST = [
       { id: "senang", label: "Senang", emoji: "😊", bgHover: "hover:bg-emerald-950/40 hover:text-emerald-300" },
@@ -908,38 +933,17 @@
       { id: "putus-asa", label: "Putus Asa", emoji: "😩", bgHover: "hover:bg-red-950/40 hover:text-red-300" }
     ];
 
-    const MOOD_DB_KEY = "gabut_mood_votes_v3";
-
-    function getTodayKey() {
-      const now = new Date();
-      return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
-    }
-
-    function getMoodData() {
-      try {
-        const raw = localStorage.getItem(MOOD_DB_KEY);
-        return raw ? JSON.parse(raw) : {};
-      } catch (e) {
-        return {};
-      }
-    }
-
-    function saveMoodData(data) {
-      localStorage.setItem(MOOD_DB_KEY, JSON.stringify(data));
-      notifyDataUpdated();
-    }
-
     function renderMoodButtons() {
-      const data = getMoodData();
       const today = getTodayKey();
-      const todayVotes = data[today] || [];
+      const todayVotes = liveMoodData[today] || [];
       const container = document.getElementById("moodButtonsGrid");
+      if (!container) return;
       container.innerHTML = "";
 
       let totalClicks = todayVotes.length;
       document.getElementById("totalMoodCountBadge").textContent = `${totalClicks} Vote`;
 
-      const userTodayVote = todayVotes.find(v => v.name.toLowerCase() === currentUser.toLowerCase());
+      const userTodayVote = todayVotes.find(v => v.name && v.name.toLowerCase() === currentUser.toLowerCase());
 
       const statusEl = document.getElementById("activeUserMoodStatus");
       if (userTodayVote) {
@@ -955,11 +959,10 @@
         const btn = document.createElement("div");
         const isUserChoice = userTodayVote && userTodayVote.moodId === mood.id;
 
-        // Render Chip Nama-nama pemilih secara langsung
         let votersHtml = "";
         if (voters.length > 0) {
           const namesList = voters.map(v => 
-            `<span class="px-1.5 py-0.5 rounded bg-black/40 text-neutral-200 border border-white/10 text-[9px] font-medium leading-none">${escapeHtml(v.name)}</span>`
+            `<span class="px-1.5 py-0.5 rounded bg-black/50 text-neutral-200 border border-white/10 text-[9px] font-medium leading-none">${escapeHtml(v.name)}</span>`
           ).join("");
 
           votersHtml = `
@@ -1008,30 +1011,29 @@
         return;
       }
 
-      const data = getMoodData();
       const today = getTodayKey();
-      if (!data[today]) data[today] = [];
+      if (!liveMoodData[today]) liveMoodData[today] = [];
 
-      const existingIdx = data[today].findIndex(v => v.name.toLowerCase() === currentUser.toLowerCase());
+      const existingIdx = liveMoodData[today].findIndex(v => v.name && v.name.toLowerCase() === currentUser.toLowerCase());
       if (existingIdx >= 0) {
-        data[today][existingIdx].moodId = moodId;
-        data[today][existingIdx].timestamp = new Date().toISOString();
+        liveMoodData[today][existingIdx].moodId = moodId;
+        liveMoodData[today][existingIdx].timestamp = new Date().toISOString();
       } else {
-        data[today].push({
+        liveMoodData[today].push({
           name: currentUser,
           moodId: moodId,
           timestamp: new Date().toISOString()
         });
       }
 
-      saveMoodData(data);
+      localStorage.setItem(MOOD_DB_KEY, JSON.stringify(liveMoodData));
       renderMoodButtons();
+      broadcastMoodUpdate(liveMoodData);
     }
 
     function openMoodHistoryModal() {
-      const data = getMoodData();
       const today = getTodayKey();
-      const todayVotes = data[today] || [];
+      const todayVotes = liveMoodData[today] || [];
       const listEl = document.getElementById("moodBreakdownList");
       listEl.innerHTML = "";
 
@@ -1069,113 +1071,47 @@
 
     function clearMoodHistoryToday() {
       if (confirm("Reset semua riwayat voting mood untuk hari ini?")) {
-        const data = getMoodData();
         const today = getTodayKey();
-        delete data[today];
-        saveMoodData(data);
+        delete liveMoodData[today];
+        localStorage.setItem(MOOD_DB_KEY, JSON.stringify(liveMoodData));
         renderMoodButtons();
+        broadcastMoodUpdate(liveMoodData);
         closeMoodHistoryModal();
       }
     }
 
     // ========================================================
-    // 4. JADWAL GABUT: EDITABLE, CENTANG PUBLIK & BISA DIHAPUS
+    // 4. JADWAL GABUT & AGENDA
     // ========================================================
     const baseRoutineSchedule = {
-      1: {
-        day: "Senin",
-        time: "Pukul 22.00 s.d Selesai",
-        tasks: [
-          { id: "m1", title: "Nonton Netflix", subtext: "Pukul 22.00 s.d Selesai", tag: "Hiburan" },
-          { id: "m2", title: "Latihan Gitar", subtext: "Pukul 22.00 s.d Selesai", tag: "Skill" }
-        ]
-      },
-      2: {
-        day: "Selasa",
-        time: "Pukul 22.00 s.d Selesai",
-        tasks: [
-          { id: "t1", title: "Boren ke Kota / Pembahasan Trading", subtext: "Pukul 22.00 s.d Selesai", tag: "Finance & Chill" },
-          { id: "t2", title: "Istirahat Roasting TIKTOK", subtext: "Pukul 22.00 s.d Selesai", tag: "Relaksasi" }
-        ]
-      },
-      3: {
-        day: "Rabu",
-        time: "Pukul 22.00 s.d Selesai",
-        tasks: [
-          { id: "w1", title: "Belajar Coding", subtext: "Pukul 22.00 s.d Selesai", tag: "Tech" },
-          { id: "w2", title: "Belajar Gitar", subtext: "Pukul 22.00 s.d Selesai", tag: "Music" }
-        ]
-      },
-      4: {
-        day: "Kamis",
-        time: "Pukul 22.00 s.d Selesai",
-        tasks: [
-          { id: "th1", title: "Nonton", subtext: "Pukul 22.00 s.d Selesai", tag: "Streaming" },
-          { id: "th2", title: "Roasting Tiktok", subtext: "Pukul 22.00 s.d Selesai", tag: "Hiburan" }
-        ]
-      },
-      5: {
-        day: "Jumat",
-        time: "Pukul 15.00 s.d Selesai",
-        tasks: [
-          { id: "f1", title: "Kiky Boren Kota", subtext: "Pukul 15.00 – 20.00", tag: "Keluar Rumah" },
-          { id: "f2", title: "Trading / Coding / Nonton (Via Voting)", subtext: "Pukul 20.00 – Selesai", tag: "Community Vote" }
-        ]
-      },
-      6: {
-        day: "Sabtu",
-        time: "Pukul Sesuka Hati",
-        tasks: [
-          { id: "s1", title: "Kegiatan Sesuka Hati (Bebas total tanpa aturan)", subtext: "Pukul Sesuka Hati", tag: "Free Mode" }
-        ]
-      },
-      0: {
-        day: "Minggu",
-        time: "Pukul 22.00 s.d Selesai",
-        tasks: [
-          { id: "su1", title: "Belajar Coding", subtext: "Pukul 22.00 s.d Selesai", tag: "Tech" },
-          { id: "su2", title: "Belajar Gitar", subtext: "Pukul 22.00 s.d Selesai", tag: "Music" }
-        ]
-      }
+      1: { day: "Senin", time: "Pukul 22.00 s.d Selesai", tasks: [{ id: "m1", title: "Nonton Netflix", subtext: "Pukul 22.00 s.d Selesai", tag: "Hiburan" }, { id: "m2", title: "Latihan Gitar", subtext: "Pukul 22.00 s.d Selesai", tag: "Skill" }] },
+      2: { day: "Selasa", time: "Pukul 22.00 s.d Selesai", tasks: [{ id: "t1", title: "Boren ke Kota / Pembahasan Trading", subtext: "Pukul 22.00 s.d Selesai", tag: "Finance & Chill" }, { id: "t2", title: "Istirahat Roasting TIKTOK", subtext: "Pukul 22.00 s.d Selesai", tag: "Relaksasi" }] },
+      3: { day: "Rabu", time: "Pukul 22.00 s.d Selesai", tasks: [{ id: "w1", title: "Belajar Coding", subtext: "Pukul 22.00 s.d Selesai", tag: "Tech" }, { id: "w2", title: "Belajar Gitar", subtext: "Pukul 22.00 s.d Selesai", tag: "Music" }] },
+      4: { day: "Kamis", time: "Pukul 22.00 s.d Selesai", tasks: [{ id: "th1", title: "Nonton", subtext: "Pukul 22.00 s.d Selesai", tag: "Streaming" }, { id: "th2", title: "Roasting Tiktok", subtext: "Pukul 22.00 s.d Selesai", tag: "Hiburan" }] },
+      5: { day: "Jumat", time: "Pukul 15.00 s.d Selesai", tasks: [{ id: "f1", title: "Kiky Boren Kota", subtext: "Pukul 15.00 – 20.00", tag: "Keluar Rumah" }, { id: "f2", title: "Trading / Coding / Nonton (Via Voting)", subtext: "Pukul 20.00 – Selesai", tag: "Community Vote" }] },
+      6: { day: "Sabtu", time: "Pukul Sesuka Hati", tasks: [{ id: "s1", title: "Kegiatan Sesuka Hati (Bebas total tanpa aturan)", subtext: "Pukul Sesuka Hati", tag: "Free Mode" }] },
+      0: { day: "Minggu", time: "Pukul 22.00 s.d Selesai", tasks: [{ id: "su1", title: "Belajar Coding", subtext: "Pukul 22.00 s.d Selesai", tag: "Tech" }, { id: "su2", title: "Belajar Gitar", subtext: "Pukul 22.00 s.d Selesai", tag: "Music" }] }
     };
 
     let currentDate = new Date();
     let selectedDate = new Date();
-
     const monthNames = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
     const dayNames = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
-
     const TASKS_STORE_KEY = "gabut_tasks_v3";
     const COMPLETED_MAP_KEY = "gabut_completed_map_v3";
 
     function getTasksStore() {
-      try {
-        const raw = localStorage.getItem(TASKS_STORE_KEY);
-        return raw ? JSON.parse(raw) : {};
-      } catch (e) {
-        return {};
-      }
+      try { const raw = localStorage.getItem(TASKS_STORE_KEY); return raw ? JSON.parse(raw) : {}; } catch (e) { return {}; }
     }
-
     function saveTasksStore(data) {
       localStorage.setItem(TASKS_STORE_KEY, JSON.stringify(data));
-      notifyDataUpdated();
     }
-
     function getCompletedMap() {
-      try {
-        const raw = localStorage.getItem(COMPLETED_MAP_KEY);
-        return raw ? JSON.parse(raw) : {};
-      } catch (e) {
-        return {};
-      }
+      try { const raw = localStorage.getItem(COMPLETED_MAP_KEY); return raw ? JSON.parse(raw) : {}; } catch (e) { return {}; }
     }
-
     function saveCompletedMap(map) {
       localStorage.setItem(COMPLETED_MAP_KEY, JSON.stringify(map));
-      notifyDataUpdated();
     }
-
     function getDateISO(date) {
       return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
     }
@@ -1183,19 +1119,13 @@
     function renderCalendar() {
       const year = currentDate.getFullYear();
       const month = currentDate.getMonth();
-
       document.getElementById("calendarMonthYear").innerText = `${monthNames[month]} ${year}`;
-
       const firstDayIndex = new Date(year, month, 1).getDay();
       const totalDays = new Date(year, month + 1, 0).getDate();
-
       const daysContainer = document.getElementById("calendarDays");
       daysContainer.innerHTML = "";
 
-      for (let i = 0; i < firstDayIndex; i++) {
-        const emptyDiv = document.createElement("div");
-        daysContainer.appendChild(emptyDiv);
-      }
+      for (let i = 0; i < firstDayIndex; i++) daysContainer.appendChild(document.createElement("div"));
 
       for (let day = 1; day <= totalDays; day++) {
         const btn = document.createElement("button");
@@ -1216,7 +1146,6 @@
           renderCalendar();
           renderSchedule();
         };
-
         daysContainer.appendChild(btn);
       }
     }
@@ -1225,7 +1154,6 @@
       currentDate.setMonth(currentDate.getMonth() + offset);
       renderCalendar();
     }
-
     function goToToday() {
       currentDate = new Date();
       selectedDate = new Date();
@@ -1235,13 +1163,9 @@
 
     function getTasksForDate(dateKey, dayIndex) {
       const store = getTasksStore();
-      if (store[dateKey]) {
-        return store[dateKey];
-      }
-      const defaultTasks = (baseRoutineSchedule[dayIndex] && baseRoutineSchedule[dayIndex].tasks) 
-        ? JSON.parse(JSON.stringify(baseRoutineSchedule[dayIndex].tasks)) 
-        : [];
-      return defaultTasks;
+      if (store[dateKey]) return store[dateKey];
+      return (baseRoutineSchedule[dayIndex] && baseRoutineSchedule[dayIndex].tasks) 
+        ? JSON.parse(JSON.stringify(baseRoutineSchedule[dayIndex].tasks)) : [];
     }
 
     function renderSchedule() {
@@ -1264,7 +1188,7 @@
         scheduleDetails.innerHTML = `
           <div class="text-center py-10 text-neutral-400 space-y-2">
             <span class="text-3xl">☕</span>
-            <p class="text-sm">Tidak ada kegiatan di tanggal ini (semua dihapus / kosong).</p>
+            <p class="text-sm">Tidak ada kegiatan di tanggal ini.</p>
             <button onclick="addNewCustomTaskPrompt()" class="text-xs text-emerald-400 hover:underline">+ Tambah kegiatan sekarang</button>
           </div>
         `;
@@ -1285,93 +1209,62 @@
 
         card.innerHTML = `
           <div class="flex items-center gap-3 grow min-w-0">
-            <!-- Checklist Circle Icon -->
-            <button onclick="toggleTaskCompletion('${dateKey}', '${taskId}')" title="Klik untuk menandai selesai"
+            <button onclick="toggleTaskCompletion('${dateKey}', '${taskId}')" title="Centang selesai"
               class="w-7 h-7 rounded-xl flex items-center justify-center transition shrink-0 border ${
-                isDone 
-                  ? "bg-emerald-500/20 border-emerald-500 text-emerald-400 checked-bounce" 
-                  : "border-neutral-700 hover:border-blue-400 bg-neutral-900/80 text-transparent hover:text-blue-400"
+                isDone ? "bg-emerald-500/20 border-emerald-500 text-emerald-400 checked-bounce" 
+                       : "border-neutral-700 hover:border-blue-400 bg-neutral-900/80 text-transparent hover:text-blue-400"
               }">
               <span class="text-sm font-bold">✓</span>
             </button>
 
-            <!-- Kolom Judul & Jam yang bisa diisi & diubah user -->
             <div class="space-y-1 grow min-w-0">
               <div class="flex items-center gap-2">
                 <span id="title_${taskId}" class="font-bold text-white text-base truncate cursor-pointer hover:text-amber-300 transition ${isDone ? 'line-through text-neutral-400' : ''}" 
-                  onclick="editTaskInline('${dateKey}', '${taskId}', 'title')" title="Klik untuk mengedit judul kegiatan">
+                  onclick="editTaskInline('${dateKey}', '${taskId}', 'title')">
                   ${escapeHtml(t.title)}
                 </span>
-                <button onclick="editTaskInline('${dateKey}', '${taskId}', 'title')" class="text-neutral-500 hover:text-amber-300 text-xs transition opacity-0 group-hover:opacity-100" title="Edit Judul">✏️</button>
+                <button onclick="editTaskInline('${dateKey}', '${taskId}', 'title')" class="text-neutral-500 hover:text-amber-300 text-xs transition opacity-0 group-hover:opacity-100">✏️</button>
               </div>
 
-              <!-- Bagian Subteks / Jam -->
               <div class="flex flex-wrap items-center gap-2">
                 <div onclick="editTaskInline('${dateKey}', '${taskId}', 'subtext')" 
-                  title="Klik untuk mengubah jam atau catatan"
-                  class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-lg border border-amber-500/40 bg-amber-950/20 hover:bg-amber-950/40 hover:border-amber-400 text-amber-300 text-xs font-mono transition cursor-pointer group/yellow shadow-sm">
+                  class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-lg border border-amber-500/40 bg-amber-950/20 hover:bg-amber-950/40 hover:border-amber-400 text-amber-300 text-xs font-mono transition cursor-pointer">
                   <span class="text-amber-400 text-[10px]">✏️</span>
                   <span id="subtext_${taskId}" class="${isDone ? 'line-through opacity-70' : ''}">
                     ${escapeHtml(t.subtext || dayData.time)}
                   </span>
                 </div>
-
                 ${isDone && doneBy ? `<span class="text-[10px] text-emerald-400 bg-emerald-950/60 px-2 py-0.5 rounded-md">Dicentang oleh: <strong>${escapeHtml(doneBy)}</strong></span>` : ''}
               </div>
             </div>
           </div>
 
-          <!-- Bagian Kanan: Checklist Tag & Tombol Hapus Kegiatan -->
           <div class="flex items-center gap-2 shrink-0">
-            <!-- Checklist Button -->
             <button onclick="toggleTaskCompletion('${dateKey}', '${taskId}')" 
-              title="Klik untuk centang selesai"
               class="px-3 py-1.5 text-xs font-bold rounded-xl border transition-all duration-200 flex items-center gap-2 active:scale-95 shadow-md ${
-                isDone 
-                  ? "bg-emerald-950/80 text-emerald-300 border-emerald-500 ring-1 ring-emerald-400/50" 
-                  : "bg-blue-950/70 hover:bg-blue-900/80 text-blue-300 hover:text-white border-blue-600/60 hover:border-blue-400 ring-1 ring-blue-500/20"
+                isDone ? "bg-emerald-950/80 text-emerald-300 border-emerald-500 ring-1 ring-emerald-400/50" 
+                       : "bg-blue-950/70 hover:bg-blue-900/80 text-blue-300 hover:text-white border-blue-600/60 hover:border-blue-400"
               }">
-              <span class="w-4 h-4 rounded-lg flex items-center justify-center border ${
-                isDone ? "bg-emerald-400 text-black border-transparent" : "border-blue-400/60 text-transparent"
-              }">
-                ✓
-              </span>
-              <span class="tracking-wide">${escapeHtml(t.tag || 'Agenda')}</span>
-              ${isDone ? '<span class="text-[10px] uppercase font-mono px-1 py-0.2 bg-emerald-900 rounded">Done</span>' : ''}
+              <span class="w-4 h-4 rounded-lg flex items-center justify-center border ${isDone ? 'bg-emerald-400 text-black border-transparent' : 'border-blue-400/60 text-transparent'}">✓</span>
+              <span>${escapeHtml(t.tag || 'Agenda')}</span>
             </button>
-
-            <!-- Tombol Hapus Kegiatan -->
-            <button onclick="deleteTaskEntry('${dateKey}', '${taskId}')" 
-              title="Hapus kegiatan ini" 
-              class="p-2 rounded-xl text-neutral-500 hover:text-rose-400 hover:bg-rose-950/40 transition active:scale-90 opacity-70 group-hover:opacity-100">
-              🗑️
-            </button>
+            <button onclick="deleteTaskEntry('${dateKey}', '${taskId}')" class="p-2 rounded-xl text-neutral-500 hover:text-rose-400 transition opacity-70 group-hover:opacity-100">🗑️</button>
           </div>
         `;
         scheduleDetails.appendChild(card);
       });
-
       document.getElementById("absentDate").value = dateKey;
     }
 
     function toggleTaskCompletion(dateKey, taskId) {
-      if (!currentUser) {
-        reOpenGateModal();
-        return;
-      }
+      if (!currentUser) return reOpenGateModal();
       const map = getCompletedMap();
       if (!map[dateKey]) map[dateKey] = {};
-
       if (map[dateKey][taskId]) {
         delete map[dateKey][taskId];
       } else {
-        map[dateKey][taskId] = {
-          completed: true,
-          by: currentUser,
-          at: new Date().toISOString()
-        };
+        map[dateKey][taskId] = { completed: true, by: currentUser, at: new Date().toISOString() };
       }
-
       saveCompletedMap(map);
       renderSchedule();
     }
@@ -1379,16 +1272,12 @@
     function editTaskInline(dateKey, taskId, field) {
       const dayIndex = selectedDate.getDay();
       let currentTasks = getTasksForDate(dateKey, dayIndex);
-
       const targetTask = currentTasks.find(t => t.id === taskId);
       const currentVal = targetTask ? targetTask[field] : "";
-      const label = field === 'title' ? 'Ubah Judul Kegiatan:' : 'Ubah Waktu / Keterangan Jadwal:';
-
-      const newVal = prompt(label, currentVal);
+      const newVal = prompt(field === 'title' ? 'Ubah Judul Kegiatan:' : 'Ubah Waktu Pelaksanaan:', currentVal);
       if (newVal === null || newVal.trim() === "") return;
 
       targetTask[field] = newVal.trim();
-
       const store = getTasksStore();
       store[dateKey] = currentTasks;
       saveTasksStore(store);
@@ -1396,12 +1285,9 @@
     }
 
     function deleteTaskEntry(dateKey, taskId) {
-      if (!confirm("Yakin ingin menghapus kegiatan ini dari jadwal?")) return;
-
+      if (!confirm("Yakin ingin menghapus kegiatan ini?")) return;
       const dayIndex = selectedDate.getDay();
-      let currentTasks = getTasksForDate(dateKey, dayIndex);
-      currentTasks = currentTasks.filter(t => t.id !== taskId);
-
+      let currentTasks = getTasksForDate(dateKey, dayIndex).filter(t => t.id !== taskId);
       const store = getTasksStore();
       store[dateKey] = currentTasks;
       saveTasksStore(store);
@@ -1411,28 +1297,19 @@
         delete compMap[dateKey][taskId];
         saveCompletedMap(compMap);
       }
-
       renderSchedule();
     }
 
     function addNewCustomTaskPrompt() {
       const title = prompt("Nama agenda / kegiatan baru:");
       if (!title || !title.trim()) return;
-
       const subtext = prompt("Waktu / Jam pelaksanaan:", "Pukul 21.00 s.d Selesai") || "Pukul Sesuka Hati";
       const tag = prompt("Label / Kategori:", "Chill") || "Gabut";
-
       const dateKey = getDateISO(selectedDate);
       const dayIndex = selectedDate.getDay();
       let currentTasks = getTasksForDate(dateKey, dayIndex);
 
-      currentTasks.push({
-        id: `kegiatan_${Date.now()}`,
-        title: title.trim(),
-        subtext: subtext.trim(),
-        tag: tag.trim()
-      });
-
+      currentTasks.push({ id: `kegiatan_${Date.now()}`, title: title.trim(), subtext: subtext.trim(), tag: tag.trim() });
       const store = getTasksStore();
       store[dateKey] = currentTasks;
       saveTasksStore(store);
@@ -1446,33 +1323,17 @@
     }
 
     // ========================================================
-    // 5. DATABASE JSON ABSENAN SKIP
+    // 5. DATABASE ABSENAN SKIP
     // ========================================================
     const ABSENCE_KEY = "gabut_absences_v3";
     const defaultAbsences = [
-      {
-        id: "1",
-        name: "Kiky",
-        date: "2026-09-22",
-        reason: "Capek banget abis praktek seharian, pengen rebahan dulu.",
-        createdAt: new Date().toISOString()
-      },
-      {
-        id: "2",
-        name: "Anon Gabut",
-        date: "2026-09-21",
-        reason: "Ketiduran pas mau ikut agenda jam 10 malam.",
-        createdAt: new Date(Date.now() - 86400000).toISOString()
-      }
+      { id: "1", name: "Kiky", date: "2026-09-22", reason: "Capek banget abis aktivitas seharian, pengen rebahan dulu.", createdAt: new Date().toISOString() }
     ];
 
     function getAbsencesFromJSON() {
       try {
         const raw = localStorage.getItem(ABSENCE_KEY);
-        if (!raw) {
-          saveAbsencesToJSON(defaultAbsences);
-          return defaultAbsences;
-        }
+        if (!raw) { saveAbsencesToJSON(defaultAbsences); return defaultAbsences; }
         const parsed = JSON.parse(raw);
         return Array.isArray(parsed) ? parsed : defaultAbsences;
       } catch (e) {
@@ -1482,78 +1343,20 @@
 
     function saveAbsencesToJSON(list) {
       localStorage.setItem(ABSENCE_KEY, JSON.stringify(list, null, 2));
-      notifyDataUpdated();
-    }
-
-    function exportJSONDB() {
-      const allData = {
-        absences: getAbsencesFromJSON(),
-        moodVotes: getMoodData(),
-        tasks: getTasksStore(),
-        completed: getCompletedMap(),
-        exportedAt: new Date().toISOString()
-      };
-      const jsonStr = JSON.stringify(allData, null, 2);
-      const blob = new Blob([jsonStr], { type: "application/json" });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = `jadwal_gabut_backup_${new Date().toISOString().slice(0, 10)}.json`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-    }
-
-    function importJSONDB(event) {
-      const file = event.target.files[0];
-      if (!file) return;
-
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        try {
-          const imported = JSON.parse(e.target.result);
-          if (imported.absences) saveAbsencesToJSON(imported.absences);
-          if (imported.moodVotes) saveMoodData(imported.moodVotes);
-          if (imported.tasks) saveTasksStore(imported.tasks);
-          if (imported.completed) saveCompletedMap(imported.completed);
-
-          renderSchedule();
-          renderMoodButtons();
-          refreshAbsences();
-          alert("✅ Semua data jadwal, mood, dan absen berhasil disinkronkan!");
-        } catch (err) {
-          alert("❌ Gagal impor file: " + err.message);
-        } finally {
-          event.target.value = "";
-        }
-      };
-      reader.readAsText(file);
-    }
-
-    function resetJSONDB() {
-      if (confirm("Reset data absen ke default?")) {
-        saveAbsencesToJSON(defaultAbsences);
-        refreshAbsences();
-      }
     }
 
     function renderAbsenceItems(list) {
       const container = document.getElementById("absenceList");
       container.innerHTML = "";
-
       if (!list || list.length === 0) {
         container.innerHTML = `<p class="text-xs text-neutral-500 italic">Belum ada data izin yang dikirim.</p>`;
         return;
       }
-
       list.forEach((item, idx) => {
         const itemEl = document.createElement("div");
         itemEl.className = "p-3 bg-neutral-900/60 rounded-2xl text-xs space-y-1 fade-in-up flex items-start justify-between gap-2 border border-neutral-800/80";
         itemEl.style.animationDelay = `${idx * 40}ms`;
-        const submitted = item.createdAt
-          ? new Date(item.createdAt).toLocaleString("id-ID", { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" })
-          : "";
+        const submitted = item.createdAt ? new Date(item.createdAt).toLocaleString("id-ID", { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" }) : "";
         itemEl.innerHTML = `
           <div class="space-y-1 grow">
             <div class="flex items-center justify-between font-semibold">
@@ -1562,9 +1365,7 @@
             </div>
             <p class="text-neutral-300">"${escapeHtml(item.reason)}"</p>
           </div>
-          <button onclick="deleteAbsenceEntry('${escapeHtml(item.id)}')" title="Hapus entri ini" class="text-neutral-500 hover:text-rose-400 p-1 transition shrink-0">
-            ✕
-          </button>
+          <button onclick="deleteAbsenceEntry('${escapeHtml(item.id)}')" class="text-neutral-500 hover:text-rose-400 p-1 transition shrink-0">✕</button>
         `;
         container.appendChild(itemEl);
       });
@@ -1577,12 +1378,7 @@
     }
 
     function refreshAbsences() {
-      try {
-        const list = getAbsencesFromJSON();
-        renderAbsenceItems(list);
-      } catch (err) {
-        console.error("Gagal refresh data:", err);
-      }
+      try { renderAbsenceItems(getAbsencesFromJSON()); } catch (err) { console.error(err); }
     }
 
     document.getElementById("absenceForm").addEventListener("submit", (e) => {
@@ -1603,30 +1399,70 @@
 
       submitBtn.disabled = true;
       submitBtn.innerText = "Mengirim...";
-
       try {
         const currentList = getAbsencesFromJSON();
-        const newEntry = {
-          id: Date.now().toString(),
-          name,
-          date,
-          reason,
-          createdAt: new Date().toISOString()
-        };
-
-        currentList.unshift(newEntry);
+        currentList.unshift({ id: Date.now().toString(), name, date, reason, createdAt: new Date().toISOString() });
         saveAbsencesToJSON(currentList);
-
         document.getElementById("absentReason").value = "";
         refreshAbsences();
       } catch (err) {
-        errorEl.innerText = "Gagal menyimpan data: " + err.message;
+        errorEl.innerText = "Gagal menyimpan: " + err.message;
         errorEl.classList.remove("hidden");
       } finally {
         submitBtn.disabled = false;
         submitBtn.innerText = "Kirim Keterangan Publik";
       }
     });
+
+    function exportJSONDB() {
+      const allData = {
+        absences: getAbsencesFromJSON(),
+        moodVotes: liveMoodData,
+        tasks: getTasksStore(),
+        completed: getCompletedMap(),
+        exportedAt: new Date().toISOString()
+      };
+      const blob = new Blob([JSON.stringify(allData, null, 2)], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `jadwal_gabut_backup_${new Date().toISOString().slice(0, 10)}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    function importJSONDB(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        try {
+          const imported = JSON.parse(e.target.result);
+          if (imported.absences) saveAbsencesToJSON(imported.absences);
+          if (imported.moodVotes) {
+            liveMoodData = imported.moodVotes;
+            localStorage.setItem(MOOD_DB_KEY, JSON.stringify(liveMoodData));
+            broadcastMoodUpdate(liveMoodData);
+          }
+          if (imported.tasks) saveTasksStore(imported.tasks);
+          if (imported.completed) saveCompletedMap(imported.completed);
+          renderSchedule();
+          renderMoodButtons();
+          refreshAbsences();
+          alert("✅ Semua data jadwal dan mood berhasil disinkronkan!");
+        } catch (err) {
+          alert("❌ Gagal impor: " + err.message);
+        }
+      };
+      reader.readAsText(file);
+    }
+
+    function resetJSONDB() {
+      if (confirm("Reset data absen ke default?")) {
+        saveAbsencesToJSON(defaultAbsences);
+        refreshAbsences();
+      }
+    }
 
     // Inisialisasi awal
     initUserGate();
