@@ -4,45 +4,99 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Jadwal Waktu Gabutt</title>
+  <title>Jadwal Waktu Gabut</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap"
-    rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
   <style>
     body {
       font-family: 'Plus Jakarta Sans', sans-serif;
+      transition: background 1.5s ease-in-out;
     }
 
     .font-mono-time {
       font-family: 'JetBrains Mono', monospace;
     }
 
-    .glass {
-      background: rgba(23, 23, 23, 0.78);
+    /* Dynamic Sky Backgrounds */
+    .sky-dawn {
+      background: linear-gradient(180deg, #1c1130 0%, #441b44 35%, #7a283e 65%, #bf522b 90%, #f1974d 100%);
+    }
+
+    .sky-morning {
+      background: linear-gradient(180deg, #0e2946 0%, #154970 35%, #2275a5 70%, #54acc6 100%);
+    }
+
+    .sky-noon {
+      background: linear-gradient(180deg, #0d263e 0%, #134165 40%, #1d6796 80%, #368fb8 100%);
+    }
+
+    .sky-afternoon {
+      background: linear-gradient(180deg, #181d39 0%, #37254c 40%, #632f53 70%, #b24d3f 100%);
+    }
+
+    .sky-sunset {
+      background: linear-gradient(180deg, #100e23 0%, #2b1535 35%, #531a3b 65%, #973238 85%, #dc6736 100%);
+    }
+
+    .sky-dusk {
+      background: linear-gradient(180deg, #070612 0%, #120c23 40%, #211236 75%, #381944 100%);
+    }
+
+    .sky-night {
+      background: linear-gradient(180deg, #040308 0%, #090715 40%, #100c25 75%, #151030 100%);
+    }
+
+    /* Clean Glass UI */
+    .glass-clean {
+      background: rgba(14, 12, 22, 0.72);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+    }
+
+    .glass-panel {
+      background: rgba(18, 15, 28, 0.78);
       backdrop-filter: blur(16px);
       -webkit-backdrop-filter: blur(16px);
       border: 1px solid rgba(255, 255, 255, 0.08);
     }
 
-    .glass-card {
-      background: rgba(30, 30, 35, 0.65);
-      backdrop-filter: blur(12px);
-      border: 1px solid rgba(255, 255, 255, 0.07);
+    /* Celestial Bodies Lighting */
+    .sun-glow {
+      box-shadow: 0 0 50px 20px rgba(251, 191, 36, 0.6), 0 0 100px 50px rgba(245, 158, 11, 0.35);
+      animation: sun-pulse 4s infinite ease-in-out;
     }
 
-    @keyframes pulse-glow {
-      0%, 100% { opacity: 0.35; transform: scale(1); }
-      50% { opacity: 0.7; transform: scale(1.06); }
+    @keyframes sun-pulse {
+      0%, 100% { transform: scale(1); filter: drop-shadow(0 0 25px #fbbf24); }
+      50% { transform: scale(1.05); filter: drop-shadow(0 0 45px #f59e0b); }
     }
 
-    .glow-bg {
-      animation: pulse-glow 7s infinite ease-in-out;
+    .moon-glow {
+      box-shadow: 0 0 40px 15px rgba(224, 231, 255, 0.45), 0 0 80px 35px rgba(165, 180, 252, 0.25);
+      animation: moon-pulse 5s infinite ease-in-out;
+    }
+
+    @keyframes moon-pulse {
+      0%, 100% { transform: scale(1); filter: drop-shadow(0 0 20px #c7d2fe); }
+      50% { transform: scale(1.04); filter: drop-shadow(0 0 35px #e0e7ff); }
+    }
+
+    @keyframes star-twinkle {
+      0%, 100% { opacity: 0.2; transform: scale(0.8); }
+      50% { opacity: 0.9; transform: scale(1.2); }
+    }
+
+    .star {
+      position: absolute;
+      background: white;
+      border-radius: 9999px;
+      animation: star-twinkle var(--duration, 3s) infinite ease-in-out var(--delay, 0s);
     }
 
     @keyframes fade-in-up {
       from {
         opacity: 0;
-        transform: translateY(10px);
+        transform: translateY(12px);
       }
       to {
         opacity: 1;
@@ -55,13 +109,13 @@
     }
 
     @keyframes pop {
-      0% { transform: scale(0.92); }
-      60% { transform: scale(1.05); }
+      0% { transform: scale(0.93); }
+      60% { transform: scale(1.04); }
       100% { transform: scale(1); }
     }
 
     .pop {
-      animation: pop 0.28s ease-out both;
+      animation: pop 0.25s ease-out both;
     }
 
     @keyframes tick-blink {
@@ -73,7 +127,6 @@
       animation: tick-blink 1s infinite;
     }
 
-    /* Checklist checkmark ripple animation */
     @keyframes check-ripple {
       0% { transform: scale(0.8); opacity: 0.5; }
       50% { transform: scale(1.15); opacity: 1; }
@@ -81,127 +134,323 @@
     }
 
     .checked-bounce {
-      animation: check-ripple 0.32s cubic-bezier(0.34, 1.56, 0.64, 1);
+      animation: check-ripple 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
     }
 
-    /* Custom scrollbar */
+    .quote-fade-enter {
+      animation: fade-in-up 0.45s ease-out both;
+    }
+
     ::-webkit-scrollbar {
       width: 6px;
       height: 6px;
     }
     ::-webkit-scrollbar-track {
-      background: rgba(20, 20, 25, 0.5);
+      background: rgba(12, 10, 20, 0.6);
       border-radius: 4px;
     }
     ::-webkit-scrollbar-thumb {
-      background: rgba(147, 51, 234, 0.35);
+      background: rgba(244, 63, 94, 0.35);
       border-radius: 4px;
     }
     ::-webkit-scrollbar-thumb:hover {
-      background: rgba(147, 51, 234, 0.6);
+      background: rgba(168, 85, 247, 0.6);
     }
   </style>
 </head>
 
-<body class="bg-neutral-950 text-neutral-100 min-h-screen relative overflow-x-hidden selection:bg-purple-600 selection:text-white">
+<body id="skyBody" class="sky-night text-neutral-100 min-h-screen relative overflow-x-hidden selection:bg-rose-500 selection:text-white">
 
-  <!-- Ambient Glow Effects -->
-  <div class="fixed top-[-12%] left-[-10%] w-[520px] h-[520px] bg-purple-600/18 rounded-full blur-[130px] pointer-events-none glow-bg"></div>
-  <div class="fixed bottom-[-12%] right-[-10%] w-[520px] h-[520px] bg-indigo-600/18 rounded-full blur-[130px] pointer-events-none glow-bg"></div>
-  <div class="fixed top-[35%] right-[25%] w-[380px] h-[380px] bg-pink-600/10 rounded-full blur-[140px] pointer-events-none glow-bg"></div>
+  <!-- ======================================================== -->
+  <!-- DYNAMIC CELESTIAL ENVIRONMENT (Matahari, Bulan & Bintang) -->
+  <!-- ======================================================== -->
+  <div id="skyEnvironment" class="fixed inset-0 pointer-events-none overflow-hidden z-0 transition-opacity duration-1000">
+    <div id="starContainer" class="absolute inset-0 opacity-0 transition-opacity duration-1000"></div>
 
-  <div class="max-w-6xl mx-auto px-4 py-8 md:py-10 relative z-10">
+    <!-- Matahari (Sun) -->
+    <div id="sunObject" class="absolute w-24 h-24 md:w-32 md:h-32 rounded-full bg-gradient-to-tr from-amber-400 via-yellow-300 to-orange-200 sun-glow transition-all duration-1000 ease-out opacity-0 pointer-events-none">
+      <div class="w-full h-full rounded-full bg-yellow-200/50 blur-sm"></div>
+    </div>
 
-    <!-- Top Grid: Header with Red Box (Mood Tracker) & White Box (Live Digital Clock) -->
-    <header class="mb-10">
-      <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 items-stretch">
-        
-        <!-- [KOTAK MERAH]: Mood Tracker Hari Ini -->
-        <div class="lg:col-span-4 glass rounded-3xl p-5 border border-pink-500/20 shadow-2xl flex flex-col justify-between relative overflow-hidden group hover:border-pink-500/40 transition-all duration-300">
-          <div class="absolute -right-8 -top-8 w-24 h-24 bg-pink-500/10 rounded-full blur-2xl pointer-events-none"></div>
-          <div>
-            <div class="flex items-center justify-between mb-2">
-              <span class="inline-flex items-center gap-1.5 px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-pink-400 bg-pink-950/50 border border-pink-800/50 rounded-full">
-                <span class="w-1.5 h-1.5 rounded-full bg-pink-400 animate-ping"></span> Mood Hari Ini
-              </span>
-              <button onclick="openMoodHistoryModal()" class="text-xs text-neutral-400 hover:text-pink-300 transition flex items-center gap-1 font-medium">
-                <span>👥</span> Siapa yang klik?
-              </button>
-            </div>
-            <p class="text-xs text-neutral-400 mb-3">Pilih perasaan lu hari ini & tinggalkan jejak nama:</p>
+    <!-- Bulan (Moon) -->
+    <div id="moonObject" class="absolute w-20 h-20 md:w-28 md:h-28 rounded-full bg-gradient-to-tr from-slate-200 via-indigo-100 to-white moon-glow transition-all duration-1000 ease-out opacity-0 pointer-events-none">
+      <div class="absolute top-4 left-5 w-4 h-4 rounded-full bg-indigo-200/40"></div>
+      <div class="absolute bottom-5 right-6 w-5 h-5 rounded-full bg-indigo-200/35"></div>
+      <div class="absolute top-9 right-8 w-2.5 h-2.5 rounded-full bg-indigo-200/30"></div>
+    </div>
 
-            <!-- Mood Buttons Grid (Senang, Marah, Kesal, Sedih, Datar, Kecewa, Sepi, Takut, Putus Asa) -->
-            <div class="grid grid-cols-3 gap-2" id="moodButtonsGrid">
-              <!-- Rendered dynamically -->
-            </div>
+    <!-- Horizon ambient glow -->
+    <div id="horizonGlow" class="absolute bottom-0 inset-x-0 h-96 bg-gradient-to-t from-orange-500/10 to-transparent transition-all duration-1000"></div>
+  </div>
+
+  <!-- ======================================================== -->
+  <!-- SCREEN 1: HALAMAN ABSEN AWAL ("Siapa nih yang lagi Gabut?") -->
+  <!-- ======================================================== -->
+  <div id="attendanceGateScreen" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-2xl transition-all duration-500">
+    <div class="w-full max-w-md p-8 rounded-3xl bg-neutral-900/90 border border-rose-500/30 shadow-[0_0_50px_rgba(244,63,94,0.25)] text-center relative overflow-hidden fade-in-up">
+      <div class="absolute -top-16 -left-16 w-36 h-36 bg-emerald-500/25 rounded-full blur-3xl pointer-events-none"></div>
+      <div class="absolute -bottom-16 -right-16 w-36 h-36 bg-purple-600/25 rounded-full blur-3xl pointer-events-none"></div>
+
+      <div class="space-y-3 relative z-10">
+        <span class="inline-block px-3.5 py-1 text-[11px] font-bold uppercase tracking-wider text-rose-300 bg-rose-950/70 border border-rose-500/40 rounded-full">
+          👋 Absen Dulu Yuk
+        </span>
+        <h2 class="text-2xl md:text-3xl font-extrabold text-white tracking-tight">
+          Siapa nih yang lagi Gabut?
+        </h2>
+        <p class="text-xs md:text-sm text-neutral-300">
+          Tulis nama atau panggilan kamu sebelum masuk ke arena jadwal santai kita.
+        </p>
+
+        <!-- Form Nama: Kolom berlatar transparan cenderung warna merah -->
+        <form id="gateForm" class="pt-4 space-y-4">
+          <div class="relative">
+            <input type="text" id="gateNameInput" required placeholder="Ketik nama kamu di sini..."
+              class="w-full px-4 py-3.5 rounded-2xl bg-rose-950/35 border-2 border-rose-500/40 text-white placeholder-rose-300/60 text-base font-semibold focus:outline-none focus:border-rose-400 focus:bg-rose-900/45 focus:ring-4 focus:ring-rose-500/20 transition shadow-inner text-center">
           </div>
+          <button type="submit"
+            class="w-full py-3.5 px-6 rounded-2xl font-bold text-sm text-white bg-gradient-to-r from-rose-500 via-purple-600 to-emerald-500 hover:from-rose-400 hover:to-emerald-400 shadow-lg shadow-rose-950/50 transition duration-200 active:scale-[0.98] flex items-center justify-center gap-2">
+            <span>Masuk ke Jadwal Gabut</span>
+            <span class="text-base">🚀</span>
+          </button>
+        </form>
 
-          <div class="mt-3 pt-3 border-t border-neutral-800/80 flex items-center justify-between text-[11px] text-neutral-400">
-            <span id="activeUserMoodStatus">Status: <span class="text-neutral-300 font-semibold">Belum memilih</span></span>
-            <span id="totalMoodCountBadge" class="text-purple-400 font-mono font-semibold">0 Vote</span>
-          </div>
-        </div>
-
-        <!-- Center Title Banner -->
-        <div class="lg:col-span-4 flex flex-col items-center justify-center text-center space-y-3 py-3">
-          <span class="inline-block px-4 py-1 text-xs font-semibold uppercase tracking-wider text-purple-400 bg-purple-950/60 border border-purple-800/50 rounded-full shadow-inner">
-            Self-Care & Anti-Overthinking Hub
-          </span>
-          <h1 class="text-3xl md:text-4xl lg:text-5xl font-extrabold tracking-tight bg-gradient-to-r from-purple-400 via-pink-400 to-indigo-400 bg-clip-text text-transparent drop-shadow-sm">
-            Jadwal Waktu Gabut
-          </h1>
-          <p class="text-xs md:text-sm text-neutral-400 max-w-md italic font-medium leading-relaxed">
-            "Jadwal gabut buat orang stres yang gatau mau ngapain plus ga punya pasangan."
-          </p>
-        </div>
-
-        <!-- [KOTAK PUTIH]: Real Live Digital Clock (Jam : Menit : Detik) -->
-        <div class="lg:col-span-4 glass rounded-3xl p-5 border border-indigo-500/20 shadow-2xl flex flex-col justify-between relative overflow-hidden group hover:border-indigo-500/40 transition-all duration-300">
-          <div class="absolute -left-8 -bottom-8 w-24 h-24 bg-indigo-500/10 rounded-full blur-2xl pointer-events-none"></div>
-          <div class="flex items-center justify-between mb-2">
-            <span class="inline-flex items-center gap-1.5 px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-indigo-400 bg-indigo-950/50 border border-indigo-800/50 rounded-full">
-              <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> Waktu Nyata
-            </span>
-            <span id="liveClockTimeZone" class="text-xs text-neutral-400 font-mono">WIB (UTC+7)</span>
-          </div>
-
-          <!-- Digital Clock Display -->
-          <div class="my-auto py-2 text-center">
-            <div class="font-mono-time text-4xl md:text-5xl font-black text-transparent bg-gradient-to-r from-white via-neutral-100 to-indigo-200 bg-clip-text tracking-wider flex items-center justify-center gap-1">
-              <span id="clockHours" class="bg-neutral-900/90 px-2.5 py-1 rounded-xl border border-neutral-800 shadow-inner">00</span>
-              <span class="blink-colon text-indigo-400">:</span>
-              <span id="clockMinutes" class="bg-neutral-900/90 px-2.5 py-1 rounded-xl border border-neutral-800 shadow-inner">00</span>
-              <span class="blink-colon text-indigo-400">:</span>
-              <span id="clockSeconds" class="bg-neutral-900/90 px-2.5 py-1 rounded-xl border border-neutral-800 text-indigo-400 shadow-inner">00</span>
-            </div>
-            <p id="liveFullDate" class="text-xs md:text-sm text-neutral-400 mt-3 font-medium capitalize"></p>
-          </div>
-
-          <div class="pt-2 border-t border-neutral-800/80 flex items-center justify-between text-[11px] text-neutral-400">
-            <span>Zona Waktu Indonesia</span>
-            <span class="text-emerald-400 font-mono flex items-center gap-1">
-              <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span> Online Sync
-            </span>
-          </div>
-        </div>
-
+        <p class="text-[11px] text-neutral-400 pt-2">
+          Nama kamu akan otomatis dipakai saat vote mood & checklist kegiatan.
+        </p>
       </div>
-    </header>
+    </div>
+  </div>
 
-    <!-- Grid Container Main Content -->
+  <!-- ======================================================== -->
+  <!-- SCREEN 2: HALAMAN UTAMA (JADWAL WAKTU GABUT)             -->
+  <!-- ======================================================== -->
+  <div id="mainDashboard" class="max-w-6xl mx-auto px-4 py-6 md:py-8 relative z-10 opacity-0 pointer-events-none transition-opacity duration-500">
+
+    <!-- BARIS 1: JUDUL UTAMA PALING ATAS (MANDIRI, TANPA ADA YANG SEJAJAR DENGANNYA) -->
+    <div class="w-full text-center mb-8 space-y-3 pt-2">
+      <span class="inline-block px-4 py-1 text-xs font-bold uppercase tracking-wider text-emerald-300 bg-emerald-950/60 border border-emerald-700/50 rounded-full shadow-inner">
+        Self-Care & Anti-Overthinking Hub
+      </span>
+      <h1 class="text-4xl md:text-5xl lg:text-6xl font-black tracking-tight bg-gradient-to-r from-emerald-300 via-rose-300 to-purple-300 bg-clip-text text-transparent drop-shadow-md">
+        Jadwal Waktu Gabut
+      </h1>
+      <p class="text-xs md:text-sm text-neutral-300 max-w-lg mx-auto italic font-medium leading-relaxed">
+        "Jadwal gabut buat orang stres yang gatau mau ngapain plus ga punya pasangan."
+      </p>
+    </div>
+
+    <!-- BARIS 2: Status User, Indikator Waktu Langit & Hyperlink Media / Sosmed Dock -->
+    <div class="space-y-4 mb-8 pb-4 border-b border-neutral-800/80">
+      <div class="flex flex-wrap items-center justify-between gap-3">
+        <!-- Info User login -->
+        <div class="flex items-center gap-2.5">
+          <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
+          <span class="text-xs text-neutral-300">Login sebagai:</span>
+          <span id="currentUserNameBadge" class="text-xs font-bold text-rose-400 bg-rose-950/60 px-3 py-1 rounded-full border border-rose-800/50"></span>
+          <button onclick="reOpenGateModal()" title="Ganti Nama" class="text-[11px] text-neutral-400 hover:text-white underline ml-1 transition">Ganti</button>
+        </div>
+
+        <!-- Sky Phase Badge -->
+        <span id="skyPhaseBadge" class="inline-flex items-center gap-1.5 px-3 py-1 text-[11px] font-bold text-amber-300 bg-neutral-900/60 border border-neutral-800 rounded-full shadow-inner">
+          <span>☀️</span> <span id="skyPhaseText">Waktu Berjalan</span>
+        </span>
+      </div>
+
+      <!-- Quick Media & Social Links Dock -->
+      <div class="flex flex-wrap items-center justify-start sm:justify-end gap-3 sm:gap-3.5 pt-1 overflow-x-auto pb-1">
+        <!-- 1. WhatsApp (Ikon Pink + Kiky) -->
+        <a href="https://wa.me/qr/RTXI2XYEUCJ6C1" target="_blank" rel="noopener noreferrer"
+          class="flex flex-col items-center group transition transform hover:scale-105 active:scale-95 shrink-0" title="Chat Kiky di WhatsApp">
+          <div class="w-10 h-10 rounded-2xl bg-pink-500/20 group-hover:bg-pink-500/35 border border-pink-500/40 flex items-center justify-center shadow-lg transition">
+            <svg class="w-5 h-5 text-pink-400 group-hover:text-pink-300 transition" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M12.031 2C6.511 2 2.016 6.495 2.016 12.016c0 1.969.571 3.81 1.562 5.372L2 22l4.802-1.542A9.972 9.972 0 0 0 12.031 22C17.552 22 22.016 17.537 22.016 12.016 22.016 6.495 17.552 2 12.031 2zm5.789 14.156c-.244.685-1.42 1.341-1.956 1.385-.494.041-1.127.062-3.642-.98-3.216-1.332-5.267-4.606-5.428-4.821-.161-.215-1.306-1.737-1.306-3.313 0-1.576.825-2.35 1.117-2.673.292-.323.639-.404.852-.404.213 0 .426.002.612.012.197.01.46-.075.72.548.267.639.914 2.23.993 2.392.079.162.132.353.025.568-.107.215-.16.349-.317.536-.157.188-.33.418-.471.561-.161.161-.329.336-.142.658.188.322.833 1.371 1.785 2.219 1.226 1.091 2.26 1.43 2.582 1.591.322.161.511.134.7-.08.188-.215.805-.941 1.02-1.264.214-.323.428-.269.72-.161.293.107 1.854.874 2.174 1.034.32.161.534.241.613.376.08.134.08.779-.164 1.464z"/>
+            </svg>
+          </div>
+          <span class="text-[10px] font-bold text-pink-400 mt-1 tracking-wider uppercase group-hover:text-pink-300">Kiky</span>
+        </a>
+
+        <!-- 2. Discord (ms.kyyy) -->
+        <a href="https://discord.com/users/ms.kyyy" target="_blank" rel="noopener noreferrer"
+          class="flex flex-col items-center group transition transform hover:scale-105 active:scale-95 shrink-0" title="Hubungi Discord: ms.kyyy">
+          <div class="w-10 h-10 rounded-2xl bg-indigo-500/20 group-hover:bg-indigo-500/35 border border-indigo-500/40 flex items-center justify-center shadow-lg transition">
+            <svg class="w-5 h-5 text-indigo-400 group-hover:text-indigo-300 transition" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028c.462-.63.874-1.295 1.226-1.994.021-.041.001-.09-.041-.106a13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.929 1.793 8.18 1.793 12.061 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.894.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.028zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z"/>
+            </svg>
+          </div>
+          <span class="text-[10px] font-bold text-indigo-400 mt-1 tracking-wider group-hover:text-indigo-300">ms.kyyy</span>
+        </a>
+
+        <!-- 3. Spotify -->
+        <a href="https://open.spotify.com" target="_blank" rel="noopener noreferrer"
+          class="flex flex-col items-center group transition transform hover:scale-105 active:scale-95 shrink-0" title="Buka Spotify">
+          <div class="w-10 h-10 rounded-2xl bg-emerald-500/20 group-hover:bg-emerald-500/35 border border-emerald-500/40 flex items-center justify-center shadow-lg transition">
+            <svg class="w-5 h-5 text-emerald-400 group-hover:text-emerald-300 transition" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/>
+            </svg>
+          </div>
+          <span class="text-[10px] font-bold text-emerald-400 mt-1 tracking-wider uppercase group-hover:text-emerald-300">Spotify</span>
+        </a>
+
+        <!-- 4. YouTube -->
+        <a href="https://www.youtube.com" target="_blank" rel="noopener noreferrer"
+          class="flex flex-col items-center group transition transform hover:scale-105 active:scale-95 shrink-0" title="Buka YouTube">
+          <div class="w-10 h-10 rounded-2xl bg-red-500/20 group-hover:bg-red-500/35 border border-red-500/40 flex items-center justify-center shadow-lg transition">
+            <svg class="w-5 h-5 text-red-500 group-hover:text-red-400 transition" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+            </svg>
+          </div>
+          <span class="text-[10px] font-bold text-red-400 mt-1 tracking-wider uppercase group-hover:text-red-300">YouTube</span>
+        </a>
+
+        <!-- 5. Netflix -->
+        <a href="https://www.netflix.com" target="_blank" rel="noopener noreferrer"
+          class="flex flex-col items-center group transition transform hover:scale-105 active:scale-95 shrink-0" title="Buka Netflix">
+          <div class="w-10 h-10 rounded-2xl bg-rose-600/20 group-hover:bg-rose-600/35 border border-rose-600/40 flex items-center justify-center shadow-lg transition">
+            <svg class="w-5 h-5 text-rose-500 group-hover:text-rose-400 transition" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M4 2v20l5-3V2H4zm11 0l5 3v17l-5-3V2zm-2.5 3.5L7.5 22h3.2l5.8-16.5h-4z"/>
+            </svg>
+          </div>
+          <span class="text-[10px] font-bold text-rose-400 mt-1 tracking-wider uppercase group-hover:text-rose-300">Netflix</span>
+        </a>
+
+        <!-- 6. chordtela.com (Ikon Gitar) -->
+        <a href="https://www.chordtela.com" target="_blank" rel="noopener noreferrer"
+          class="flex flex-col items-center group transition transform hover:scale-105 active:scale-95 shrink-0" title="Buka Kunci Gitar chordtela.com">
+          <div class="w-10 h-10 rounded-2xl bg-amber-500/20 group-hover:bg-amber-500/35 border border-amber-500/40 flex items-center justify-center shadow-lg transition">
+            <svg class="w-5 h-5 text-amber-400 group-hover:text-amber-300 transition" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M20.71 4.04c-.39-.39-1.02-.39-1.41 0l-1.83 1.83-2.12-2.12c-.39-.39-1.02-.39-1.41 0-.39.39-.39 1.02 0 1.41l2.12 2.12-2.3 2.3c-.6-.24-1.28-.38-2-.38-1.57 0-3 1.03-3.6 2.5l-3.3 3.3c-.5-.3-1.1-.5-1.8-.5-1.9 0-3.5 1.6-3.5 3.5 0 .7.2 1.3.5 1.8l-1.9 1.9c-.39.39-.39 1.02 0 1.41.2.2.45.3.71.3s.51-.1.71-.29l1.9-1.9c.5.3 1.1.5 1.8.5 1.9 0 3.5-1.6 3.5-3.5 0-.7-.2-1.3-.5-1.8l3.3-3.3c1.47-.6 2.5-2.03 2.5-3.6 0-.72-.14-1.4-.38-2l2.3-2.3 2.12 2.12c.39.39 1.02.39 1.41 0 .39-.39.39-1.02 0-1.41l-2.12-2.12 1.83-1.83c.4-.39.4-1.02.01-1.41zM6.5 20c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2z"/>
+            </svg>
+          </div>
+          <span class="text-[10px] font-bold text-amber-400 mt-1 tracking-wider uppercase group-hover:text-amber-300">Chordtela</span>
+        </a>
+
+        <!-- 7. TikTok -->
+        <a href="https://www.tiktok.com" target="_blank" rel="noopener noreferrer"
+          class="flex flex-col items-center group transition transform hover:scale-105 active:scale-95 shrink-0" title="Buka TikTok">
+          <div class="w-10 h-10 rounded-2xl bg-cyan-500/20 group-hover:bg-cyan-500/35 border border-cyan-500/40 flex items-center justify-center shadow-lg transition">
+            <svg class="w-5 h-5 text-cyan-400 group-hover:text-cyan-300 transition" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64c.298-.002.595.042.88.13V9.4a6.33 6.33 0 0 0-1-.08A6.34 6.34 0 0 0 3 15.66a6.34 6.34 0 0 0 10.82 4.49 6.27 6.27 0 0 0 1.96-4.49V8.65a8.28 8.28 0 0 0 4.81 1.54V6.75a4.83 4.83 0 0 1-1-.06z"/>
+            </svg>
+          </div>
+          <span class="text-[10px] font-bold text-cyan-400 mt-1 tracking-wider uppercase group-hover:text-cyan-300">TikTok</span>
+        </a>
+
+        <!-- 8. Instagram -->
+        <a href="https://www.instagram.com" target="_blank" rel="noopener noreferrer"
+          class="flex flex-col items-center group transition transform hover:scale-105 active:scale-95 shrink-0" title="Buka Instagram">
+          <div class="w-10 h-10 rounded-2xl bg-fuchsia-500/20 group-hover:bg-fuchsia-500/35 border border-fuchsia-500/40 flex items-center justify-center shadow-lg transition">
+            <svg class="w-5 h-5 text-fuchsia-400 group-hover:text-fuchsia-300 transition" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+            </svg>
+          </div>
+          <span class="text-[10px] font-bold text-fuchsia-400 mt-1 tracking-wider uppercase group-hover:text-fuchsia-300">Instagram</span>
+        </a>
+
+        <!-- 9. Threads -->
+        <a href="https://www.threads.net" target="_blank" rel="noopener noreferrer"
+          class="flex flex-col items-center group transition transform hover:scale-105 active:scale-95 shrink-0" title="Buka Threads">
+          <div class="w-10 h-10 rounded-2xl bg-neutral-700/30 group-hover:bg-neutral-700/50 border border-neutral-600/50 flex items-center justify-center shadow-lg transition">
+            <svg class="w-5 h-5 text-neutral-200 group-hover:text-white transition" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M12.001 0C5.373 0 0 5.373 0 12s5.373 12 12 12c5.334 0 9.852-3.498 11.41-8.343a.75.75 0 0 0-1.433-.443C20.61 19.53 16.637 22.5 12 22.5 6.201 22.5 1.5 17.799 1.5 12S6.201 1.5 12 1.5c4.717 0 8.742 3.076 10.021 7.422.385 1.306.479 2.585.28 3.799-.247 1.503-.996 2.723-2.109 3.435-.989.633-2.228.844-3.49.593-1.636-.325-2.859-1.503-3.27-3.15-.316-1.265-.125-2.529.537-3.559.664-1.033 1.713-1.678 2.955-1.815 1.157-.128 2.22.148 2.996.776.24-.652.327-1.391.258-2.155C16.892 4.14 14.735 2.75 12.001 2.75c-5.1 0-9.25 4.15-9.25 9.25s4.15 9.25 9.25 9.25c2.476 0 4.739-.982 6.417-2.583a.75.75 0 0 0-1.034-1.084 7.72 7.72 0 0 1-5.383 2.167c-4.273 0-7.75-3.477-7.75-7.75s3.477-7.75 7.75-7.75c2.147 0 3.905 1.05 4.15 2.766.126.883-.075 1.792-.566 2.557a.75.75 0 0 0 .151.986c.277.208.673.161.88-.116.657-1.023.926-2.247.758-3.428C18.665 4.606 15.65 3 12 3 7.03 3 3 7.03 3 12s4.03 9 9 9c3.957 0 7.353-2.535 8.567-6.203.208-.63.298-1.272.268-1.905-.084-1.745-.968-3.235-2.425-4.089-1.294-.759-2.888-.988-4.49-.646-1.854.396-3.324 1.571-4.033 3.224-.712 1.66-.566 3.498.411 5.176.992 1.704 2.684 2.714 4.639 2.771.536.015 1.077-.042 1.608-.172a.75.75 0 1 0-.358-1.456 5.86 5.86 0 0 1-1.332.143c-1.493-.043-2.802-.824-3.593-2.182-.779-1.339-.894-2.812-.325-4.143.568-1.326 1.745-2.27 3.23-2.587 1.282-.274 2.557-.091 3.59.514.936.549 1.517 1.488 1.594 2.576.019.268-.016.541-.104.811z"/>
+            </svg>
+          </div>
+          <span class="text-[10px] font-bold text-neutral-300 mt-1 tracking-wider uppercase group-hover:text-white">Threads</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- BARIS 3: Dua Kolom Atas: Mood Tracker (Kiri) & Jam Kecil + Quotes (Kanan) -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10 items-stretch">
+      
+      <!-- [MOOD TRACKER HARI INI] (Tanpa Border) -->
+      <div class="glass-clean rounded-3xl p-5 shadow-2xl flex flex-col justify-between relative overflow-hidden group">
+        <div class="absolute -right-8 -top-8 w-24 h-24 bg-rose-500/10 rounded-full blur-2xl pointer-events-none"></div>
+        <div>
+          <div class="flex items-center justify-between mb-3">
+            <span class="inline-flex items-center gap-1.5 px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-rose-300 bg-rose-950/40 rounded-full">
+              <span class="w-1.5 h-1.5 rounded-full bg-rose-400 animate-ping"></span> Mood Hari Ini
+            </span>
+            <button onclick="openMoodHistoryModal()" class="text-xs text-neutral-300 hover:text-rose-300 transition flex items-center gap-1 font-medium">
+              <span>👥</span> Siapa yang klik?
+            </button>
+          </div>
+
+          <!-- Grid Tombol Mood (Teks ajakan telah dihilangkan) -->
+          <div class="grid grid-cols-3 gap-2.5 pt-1" id="moodButtonsGrid">
+            <!-- Rendered via JS -->
+          </div>
+        </div>
+
+        <div class="mt-4 pt-3 border-t border-neutral-800/60 flex items-center justify-between text-[11px] text-neutral-400">
+          <span id="activeUserMoodStatus">Status: <span class="text-neutral-300 font-semibold">Belum memilih</span></span>
+          <span id="totalMoodCountBadge" class="text-purple-300 font-mono font-semibold">0 Vote</span>
+        </div>
+      </div>
+
+      <!-- [POJOK KANAN ATAS]: Jam Digital Kecil Tanpa Border & Di Bawahnya Box Quotes 5 Menit -->
+      <div class="glass-clean rounded-3xl p-5 shadow-2xl flex flex-col justify-between relative overflow-hidden group">
+        <div class="absolute -left-8 -bottom-8 w-24 h-24 bg-emerald-500/10 rounded-full blur-2xl pointer-events-none"></div>
+        
+        <!-- Jam Real Live Dibuat Kecil Tanpa Border -->
+        <div class="flex items-center justify-between pb-3 border-b border-neutral-800/60">
+          <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-emerald-300 bg-emerald-950/50 rounded-full">
+            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span> Waktu Nyata
+          </span>
+          <div class="flex items-center gap-1.5 font-mono-time text-sm md:text-base font-bold text-white bg-neutral-900/60 px-3 py-1 rounded-xl shadow-inner">
+            <span id="clockHours">00</span>
+            <span class="blink-colon text-emerald-400">:</span>
+            <span id="clockMinutes">00</span>
+            <span class="blink-colon text-emerald-400">:</span>
+            <span id="clockSeconds" class="text-rose-400">00</span>
+            <span class="text-[10px] text-neutral-400 ml-1 font-sans">WIB</span>
+          </div>
+        </div>
+
+        <!-- Bagian Bawah Jam: Quotes Bahasa Indonesia (Berganti Setiap 5 Menit) -->
+        <div class="my-auto py-3 space-y-2 relative">
+          <div class="flex items-center justify-between">
+            <span id="quoteTopicBadge" class="inline-block px-2.5 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider text-purple-300 bg-purple-950/70 border border-purple-800/50">
+              Quotes Hidup
+            </span>
+            <span id="quoteTimerInfo" class="text-[10px] font-mono text-neutral-400 flex items-center gap-1" title="Quotes berganti otomatis setiap 5 menit">
+              <span>🔄 5 mnt</span>
+            </span>
+          </div>
+
+          <!-- Teks Kutipan -->
+          <div class="min-h-[72px] flex items-center">
+            <p id="quoteContentText" class="text-xs md:text-sm text-neutral-200 italic font-medium leading-relaxed quote-fade-enter">
+              "Hidup bukan tentang menunggu badai reda, melainkan belajar menari di tengah hujan lebat."
+            </p>
+          </div>
+        </div>
+
+        <!-- Bottom Footer Info Kutipan -->
+        <div class="pt-2 border-t border-neutral-800/60 flex items-center justify-between text-[10px] text-neutral-400">
+          <span id="liveFullDate" class="capitalize"></span>
+          <button onclick="rotateNextQuote(true)" class="hover:text-purple-300 flex items-center gap-1 transition" title="Ganti quotes secara manual">
+            <span>Next</span> <span>❯</span>
+          </button>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- BARIS 4: Konten Utama (Kalender, Agenda & Board Absen) -->
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
 
       <!-- Left Column: Kalender & Form Absen -->
       <section class="lg:col-span-5 space-y-6">
         <!-- Kalender -->
-        <div class="glass p-6 rounded-3xl shadow-xl border border-neutral-800/80">
+        <div class="glass-panel p-6 rounded-3xl shadow-xl">
           <div class="flex items-center justify-between mb-4">
             <h2 id="calendarMonthYear" class="font-bold text-lg text-white tracking-wide"></h2>
             <div class="flex space-x-2">
               <button onclick="changeMonth(-1)"
-                class="p-2 hover:bg-neutral-800 rounded-xl text-neutral-400 hover:text-white transition active:scale-95">◀</button>
+                class="p-2 hover:bg-neutral-800/80 rounded-xl text-neutral-300 hover:text-white transition active:scale-95">◀</button>
               <button onclick="changeMonth(1)"
-                class="p-2 hover:bg-neutral-800 rounded-xl text-neutral-400 hover:text-white transition active:scale-95">▶</button>
+                class="p-2 hover:bg-neutral-800/80 rounded-xl text-neutral-300 hover:text-white transition active:scale-95">▶</button>
             </div>
           </div>
 
@@ -211,16 +460,16 @@
           </div>
           <div id="calendarDays" class="grid grid-cols-7 gap-1.5 text-sm text-center"></div>
 
-          <div class="mt-4 pt-4 border-t border-neutral-800 flex items-center justify-between text-xs text-neutral-400">
+          <div class="mt-4 pt-4 border-t border-neutral-800/80 flex items-center justify-between text-xs text-neutral-400">
             <span>* Klik tanggal untuk agenda harian</span>
-            <button onclick="goToToday()" class="text-purple-400 hover:underline font-semibold flex items-center gap-1">
+            <button onclick="goToToday()" class="text-rose-400 hover:underline font-semibold flex items-center gap-1">
               <span>🎯</span> Hari Ini
             </button>
           </div>
         </div>
 
         <!-- Form Keterangan / Skip Jadwal -->
-        <div class="glass p-6 rounded-3xl shadow-xl border border-neutral-800/80 space-y-4">
+        <div class="glass-panel p-6 rounded-3xl shadow-xl space-y-4">
           <h3 class="font-bold text-md text-white flex items-center gap-2">
             <span>📝</span> Keterangan Absen Gabut
           </h3>
@@ -230,24 +479,24 @@
           <form id="absenceForm" class="space-y-3">
             <div>
               <label class="block text-xs font-medium text-neutral-300 mb-1">Nama</label>
-              <input type="text" id="absentName" required placeholder="Contoh: Kiky / Anon"
-                class="w-full px-3 py-2 bg-neutral-900 border border-neutral-700 rounded-xl text-sm text-white focus:outline-none focus:border-purple-500 transition">
+              <input type="text" id="absentName" required placeholder="Nama kamu..."
+                class="w-full px-3.5 py-2 bg-neutral-900/90 border border-neutral-700/80 rounded-xl text-sm text-white focus:outline-none focus:border-rose-500 transition">
             </div>
             <div>
               <label class="block text-xs font-medium text-neutral-300 mb-1">Tanggal Terkait</label>
               <input type="date" id="absentDate" required
-                class="w-full px-3 py-2 bg-neutral-900 border border-neutral-700 rounded-xl text-sm text-white focus:outline-none focus:border-purple-500 transition">
+                class="w-full px-3.5 py-2 bg-neutral-900/90 border border-neutral-700/80 rounded-xl text-sm text-white focus:outline-none focus:border-rose-500 transition">
             </div>
             <div>
               <label class="block text-xs font-medium text-neutral-300 mb-1">Alasan Skip</label>
               <textarea id="absentReason" required rows="2" placeholder="Capek, lembur, mendadak healing, dll..."
-                class="w-full px-3 py-2 bg-neutral-900 border border-neutral-700 rounded-xl text-sm text-white focus:outline-none focus:border-purple-500 transition"></textarea>
+                class="w-full px-3.5 py-2 bg-neutral-900/90 border border-neutral-700/80 rounded-xl text-sm text-white focus:outline-none focus:border-rose-500 transition"></textarea>
             </div>
             <button type="submit" id="absentSubmitBtn"
-              class="w-full py-2.5 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 font-semibold rounded-xl text-sm transition duration-200 shadow-md disabled:opacity-60 active:scale-[0.99]">
+              class="w-full py-2.5 bg-gradient-to-r from-rose-500 via-purple-600 to-emerald-600 hover:opacity-90 font-semibold rounded-xl text-sm transition duration-200 shadow-md disabled:opacity-60 active:scale-[0.99]">
               Kirim Keterangan Publik
             </button>
-            <p id="absentFormError" class="text-xs text-red-400 hidden"></p>
+            <p id="absentFormError" class="text-xs text-rose-400 hidden"></p>
           </form>
         </div>
       </section>
@@ -256,74 +505,62 @@
       <section class="lg:col-span-7 space-y-6">
 
         <!-- Kartu Agenda Hari Ini / Terpilih -->
-        <div class="glass p-6 rounded-3xl shadow-xl relative overflow-hidden border border-neutral-800/80">
+        <div class="glass-panel p-6 rounded-3xl shadow-xl relative overflow-hidden">
           <div class="flex flex-wrap items-center justify-between border-b border-neutral-800 pb-4 mb-4 gap-3">
             <div>
-              <span id="selectedDayName" class="text-xs uppercase font-bold tracking-widest text-purple-400"></span>
+              <span id="selectedDayName" class="text-xs uppercase font-bold tracking-widest text-emerald-400"></span>
               <h2 id="selectedDateDisplay" class="text-2xl font-black text-white"></h2>
             </div>
             <div class="flex items-center gap-2">
-              <span class="px-3 py-1 bg-neutral-900/90 border border-neutral-700 text-neutral-300 text-xs rounded-full font-mono flex items-center gap-1.5"
+              <span class="px-3 py-1 bg-neutral-900/90 border border-neutral-700/60 text-neutral-300 text-xs rounded-full font-mono flex items-center gap-1.5"
                 id="timeSlot">
-                <span class="w-1.5 h-1.5 rounded-full bg-purple-400"></span>
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
                 <span>Pukul 22.00 s.d Selesai</span>
               </span>
-              <button onclick="addNewCustomTaskPrompt()" title="Tambah Agenda Kustom" class="px-2.5 py-1 bg-purple-950/60 hover:bg-purple-900 text-purple-300 border border-purple-800/60 rounded-full text-xs font-semibold flex items-center gap-1 transition">
-                <span>+</span> Tambah
+              <button onclick="addNewCustomTaskPrompt()" title="Tambah Agenda Baru" class="px-3 py-1 bg-emerald-950/70 hover:bg-emerald-900 text-emerald-300 border border-emerald-700/60 rounded-full text-xs font-semibold flex items-center gap-1 transition active:scale-95">
+                <span>+</span> Tambah Kegiatan
               </button>
             </div>
           </div>
 
-          <!-- Petunjuk Visual untuk Kotak Kuning & Kotak Biru -->
-          <div class="mb-4 px-3.5 py-2 bg-neutral-900/50 rounded-2xl border border-neutral-800/80 flex flex-wrap items-center justify-between text-[11px] text-neutral-400 gap-2">
-            <span class="flex items-center gap-1.5">
-              <span class="w-2 h-2 rounded-full bg-amber-400"></span>
-              <span><strong>Kotak Kuning:</strong> Klik teks/waktu untuk mengedit langsung</span>
-            </span>
-            <span class="flex items-center gap-1.5">
-              <span class="w-2 h-2 rounded-full bg-blue-400"></span>
-              <span><strong>Kotak Biru:</strong> Klik tombol tag untuk centang selesai</span>
-            </span>
-          </div>
-
-          <!-- Container Task List -->
+          <!-- Container Task List (Teks panduan kuning/biru/tong sampah telah dihilangkan) -->
           <div id="scheduleDetails" class="space-y-3.5">
             <!-- Diisi lewat Javascript -->
           </div>
         </div>
 
         <!-- Board Semua Keterangan / Izin Publik -->
-        <div class="glass p-6 rounded-3xl shadow-xl space-y-4 border border-neutral-800/80">
+        <div class="glass-panel p-6 rounded-3xl shadow-xl space-y-4">
           <div class="flex flex-wrap items-center justify-between border-b border-neutral-800 pb-3 gap-2">
             <h3 class="font-bold text-md text-white flex items-center gap-2">
               <span>📢</span> Board Pengumuman & Alasan Skip
             </h3>
             <div class="flex items-center gap-2">
-              <span class="text-xs text-neutral-400 bg-neutral-800/80 px-2.5 py-1 rounded-full border border-neutral-700 font-mono flex items-center gap-1.5">
-                <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span> JSON DB
+              <span class="text-xs text-neutral-400 bg-neutral-800/80 px-2.5 py-1 rounded-full border border-neutral-700/80 font-mono flex items-center gap-1.5">
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span> Shared Sync
               </span>
             </div>
           </div>
 
           <div id="absenceList" class="space-y-3 max-h-[280px] overflow-y-auto pr-1">
-            <p class="text-xs text-neutral-500 italic">Memuat data JSON...</p>
+            <p class="text-xs text-neutral-500 italic">Memuat data...</p>
           </div>
 
-          <!-- Panel Kontrol Database JSON -->
+          <!-- Panel Kontrol Sinkronisasi JSON -->
           <div class="pt-3 border-t border-neutral-800 flex flex-wrap items-center justify-between gap-2 text-xs">
-            <span class="text-neutral-400 font-medium">🗄️ Database JSON Lokal</span>
+            <span class="text-neutral-400 font-medium">🗄️ Sinkronisasi Data Bersama</span>
             <div class="flex items-center gap-2">
               <button onclick="exportJSONDB()" title="Ekspor ke file JSON"
-                class="px-3 py-1.5 bg-neutral-800 hover:bg-neutral-700 text-purple-300 hover:text-purple-200 rounded-xl border border-purple-900/50 flex items-center gap-1.5 transition font-semibold active:scale-95">
-                <span>💾</span> Ekspor JSON
+                class="px-3 py-1.5 bg-neutral-800/90 hover:bg-neutral-700 text-purple-300 hover:text-purple-200 rounded-xl border border-purple-800/50 flex items-center gap-1.5 transition font-semibold active:scale-95">
+                <span>💾</span> Ekspor
               </button>
               <label title="Impor dari file JSON"
-                class="px-3 py-1.5 bg-neutral-800 hover:bg-neutral-700 text-indigo-300 hover:text-indigo-200 rounded-xl border border-indigo-900/50 flex items-center gap-1.5 cursor-pointer transition font-semibold active:scale-95">
-                <span>📥</span> Impor JSON
+                class="px-3 py-1.5 bg-neutral-800/90 hover:bg-neutral-700 text-indigo-300 hover:text-indigo-200 rounded-xl border border-indigo-800/50 flex items-center gap-1.5 cursor-pointer transition font-semibold active:scale-95">
+                <span>📥</span> Impor
                 <input type="file" id="jsonFileInput" accept=".json" onchange="importJSONDB(event)" class="hidden">
               </label>
               <button onclick="resetJSONDB()" title="Reset data ke default"
-                class="px-2.5 py-1.5 bg-neutral-800 hover:bg-red-950/50 text-neutral-400 hover:text-red-400 rounded-xl border border-neutral-700 hover:border-red-900/50 transition active:scale-95">
+                class="px-2.5 py-1.5 bg-neutral-800/90 hover:bg-rose-950/60 text-neutral-400 hover:text-rose-400 rounded-xl border border-neutral-700 hover:border-rose-800/60 transition active:scale-95">
                 🗑️
               </button>
             </div>
@@ -333,15 +570,52 @@
       </section>
     </div>
 
-    <!-- Footer -->
-    <footer class="text-center text-xs text-neutral-500 mt-12 space-y-1">
-      <p>Dibuat dengan sepenuh gabut. Real-time Clock, Mood Tracker Interaktif & Editable Schedule.</p>
+    <!-- Footer dengan Hyperlink Lengkap -->
+    <footer class="text-center text-xs text-neutral-400 mt-12 py-6 space-y-4 border-t border-neutral-800/60">
+      <div class="flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-neutral-300">
+        <a href="https://wa.me/qr/RTXI2XYEUCJ6C1" target="_blank" class="hover:text-pink-400 flex items-center gap-1.5 transition">
+          <span class="text-pink-400">💬</span> WhatsApp Kiky
+        </a>
+        <span>•</span>
+        <a href="https://discord.com/users/ms.kyyy" target="_blank" class="hover:text-indigo-400 flex items-center gap-1.5 transition">
+          <span class="text-indigo-400">🎮</span> Discord ms.kyyy
+        </a>
+        <span>•</span>
+        <a href="https://open.spotify.com" target="_blank" class="hover:text-emerald-400 flex items-center gap-1.5 transition">
+          <span class="text-emerald-400">🎵</span> Spotify
+        </a>
+        <span>•</span>
+        <a href="https://www.youtube.com" target="_blank" class="hover:text-red-400 flex items-center gap-1.5 transition">
+          <span class="text-red-400">▶</span> YouTube
+        </a>
+        <span>•</span>
+        <a href="https://www.netflix.com" target="_blank" class="hover:text-rose-400 flex items-center gap-1.5 transition">
+          <span class="text-rose-400">🎬</span> Netflix
+        </a>
+        <span>•</span>
+        <a href="https://www.chordtela.com" target="_blank" class="hover:text-amber-400 flex items-center gap-1.5 transition">
+          <span class="text-amber-400">🎸</span> Chordtela
+        </a>
+        <span>•</span>
+        <a href="https://www.tiktok.com" target="_blank" class="hover:text-cyan-400 flex items-center gap-1.5 transition">
+          <span class="text-cyan-400">📱</span> TikTok
+        </a>
+        <span>•</span>
+        <a href="https://www.instagram.com" target="_blank" class="hover:text-fuchsia-400 flex items-center gap-1.5 transition">
+          <span class="text-fuchsia-400">📸</span> Instagram
+        </a>
+        <span>•</span>
+        <a href="https://www.threads.net" target="_blank" class="hover:text-white flex items-center gap-1.5 transition">
+          <span class="text-neutral-300">🧵</span> Threads
+        </a>
+      </div>
+      <p class="text-[11px] text-neutral-500">Jadwal Waktu Gabut &copy; 2026. All Media & Social Hyperlinks Connected.</p>
     </footer>
   </div>
 
   <!-- MODAL: Detail Siapa Saja yang Klik Mood -->
-  <div id="moodModal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-50 hidden items-center justify-center p-4">
-    <div class="glass max-w-md w-full rounded-3xl p-6 border border-neutral-700 shadow-2xl relative space-y-4 fade-in-up">
+  <div id="moodModal" class="fixed inset-0 bg-black/85 backdrop-blur-md z-50 hidden items-center justify-center p-4">
+    <div class="glass-panel max-w-md w-full rounded-3xl p-6 border border-neutral-700/80 shadow-2xl relative space-y-4 fade-in-up">
       <div class="flex items-center justify-between border-b border-neutral-800 pb-3">
         <h3 class="font-bold text-base text-white flex items-center gap-2">
           <span>📊</span> Detail Suara Mood Hari Ini
@@ -350,39 +624,243 @@
       </div>
 
       <div id="moodBreakdownList" class="space-y-3 max-h-[350px] overflow-y-auto pr-1">
-        <!-- Rendered dynamically -->
+        <!-- Rendered via JS -->
       </div>
 
       <div class="pt-3 border-t border-neutral-800 flex justify-between items-center text-xs">
-        <button onclick="clearMoodHistoryToday()" class="text-red-400 hover:underline">Reset Suara Hari Ini</button>
+        <button onclick="clearMoodHistoryToday()" class="text-rose-400 hover:underline">Reset Suara Hari Ini</button>
         <button onclick="closeMoodHistoryModal()" class="px-4 py-2 bg-neutral-800 hover:bg-neutral-700 text-white rounded-xl transition font-semibold">Tutup</button>
       </div>
     </div>
   </div>
 
-  <!-- MODAL: Prompt Nama Saat Klik Mood Pertama Kali -->
-  <div id="moodNameModal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-50 hidden items-center justify-center p-4">
-    <div class="glass max-w-sm w-full rounded-3xl p-6 border border-pink-500/30 shadow-2xl relative space-y-4 fade-in-up">
-      <div class="text-center space-y-1">
-        <div id="modalMoodEmojiDisplay" class="text-4xl mb-1">😊</div>
-        <h3 class="font-bold text-lg text-white" id="modalMoodTitle">Pilih Mood</h3>
-        <p class="text-xs text-neutral-400">Tuliskan nama atau inisialmu agar tercatat di papan mood hari ini:</p>
-      </div>
-      <form id="moodVoteForm" class="space-y-3">
-        <input type="text" id="moodVoterNameInput" required placeholder="Contoh: Kiky, Sultan, Anonim..."
-          class="w-full px-3.5 py-2.5 bg-neutral-900 border border-neutral-700 rounded-xl text-sm text-white focus:outline-none focus:border-pink-500 transition">
-        <div class="flex gap-2">
-          <button type="button" onclick="closeMoodNameModal()" class="w-1/2 py-2.5 bg-neutral-800 hover:bg-neutral-700 text-neutral-300 text-xs font-semibold rounded-xl transition">Batal</button>
-          <button type="submit" class="w-1/2 py-2.5 bg-gradient-to-r from-pink-600 to-purple-600 hover:from-pink-500 hover:to-purple-500 text-white text-xs font-bold rounded-xl transition shadow-lg">Simpan Mood</button>
-        </div>
-      </form>
-    </div>
-  </div>
-
   <script>
-    // ==========================================
-    // 1. [KOTAK PUTIH]: REAL LIVE DIGITAL CLOCK
-    // ==========================================
+    // ========================================================
+    // SIKLUS MATAHARI & BULAN REAL LIVE TIME (BACKGROUND OTOMATIS)
+    // ========================================================
+    function generateStars() {
+      const container = document.getElementById("starContainer");
+      if (!container || container.children.length > 0) return;
+      for (let i = 0; i < 75; i++) {
+        const star = document.createElement("div");
+        star.className = "star";
+        const size = Math.random() * 2.5 + 1;
+        star.style.width = `${size}px`;
+        star.style.height = `${size}px`;
+        star.style.top = `${Math.random() * 85}%`;
+        star.style.left = `${Math.random() * 100}%`;
+        star.style.setProperty("--duration", `${Math.random() * 3 + 2}s`);
+        star.style.setProperty("--delay", `${Math.random() * 3}s`);
+        container.appendChild(star);
+      }
+    }
+    generateStars();
+
+    function updateSkyAndCelestialCycle() {
+      const now = new Date();
+      const hours = now.getHours();
+      const minutes = now.getMinutes();
+      const totalMinutes = hours * 60 + minutes;
+
+      const skyBody = document.getElementById("skyBody");
+      const sun = document.getElementById("sunObject");
+      const moon = document.getElementById("moonObject");
+      const stars = document.getElementById("starContainer");
+      const horizonGlow = document.getElementById("horizonGlow");
+      const phaseBadgeText = document.getElementById("skyPhaseText");
+
+      skyBody.className = "text-neutral-100 min-h-screen relative overflow-x-hidden selection:bg-rose-500 selection:text-white transition-all duration-1000";
+
+      // 1. FAJAR / SUBUH: 05.00 - 06.30 (Terbit)
+      if (totalMinutes >= 300 && totalMinutes < 390) {
+        skyBody.classList.add("sky-dawn");
+        const progress = (totalMinutes - 300) / 90;
+        sun.style.opacity = "0.9";
+        sun.style.left = `${10 + progress * 20}%`;
+        sun.style.top = `${70 - progress * 40}%`;
+        moon.style.opacity = "0";
+        stars.style.opacity = `${0.6 * (1 - progress)}`;
+        horizonGlow.style.background = "linear-gradient(to top, rgba(249, 115, 22, 0.35), transparent)";
+        if (phaseBadgeText) phaseBadgeText.textContent = "Fajar / Terbit";
+      }
+      // 2. PAGI: 06.30 - 11.30 (Matahari Naik Menuju Puncak)
+      else if (totalMinutes >= 390 && totalMinutes < 690) {
+        skyBody.classList.add("sky-morning");
+        const progress = (totalMinutes - 390) / 300;
+        sun.style.opacity = "1";
+        sun.style.left = `${30 + progress * 20}%`;
+        sun.style.top = `${30 - progress * 20}%`;
+        moon.style.opacity = "0";
+        stars.style.opacity = "0";
+        horizonGlow.style.background = "linear-gradient(to top, rgba(56, 189, 248, 0.2), transparent)";
+        if (phaseBadgeText) phaseBadgeText.textContent = "Pagi Cerah";
+      }
+      // 3. SIANG: 11.30 - 15.00 (Matahari di Puncak Langit)
+      else if (totalMinutes >= 690 && totalMinutes < 900) {
+        skyBody.classList.add("sky-noon");
+        const progress = (totalMinutes - 690) / 210;
+        sun.style.opacity = "1";
+        sun.style.left = `${50 + progress * 15}%`;
+        sun.style.top = `${10 + progress * 15}%`;
+        moon.style.opacity = "0";
+        stars.style.opacity = "0";
+        horizonGlow.style.background = "linear-gradient(to top, rgba(234, 179, 8, 0.15), transparent)";
+        if (phaseBadgeText) phaseBadgeText.textContent = "Siang Terang";
+      }
+      // 4. SORE: 15.00 - 17.30 (Matahari Menurun)
+      else if (totalMinutes >= 900 && totalMinutes < 1050) {
+        skyBody.classList.add("sky-afternoon");
+        const progress = (totalMinutes - 900) / 150;
+        sun.style.opacity = "0.95";
+        sun.style.left = `${65 + progress * 20}%`;
+        sun.style.top = `${25 + progress * 35}%`;
+        moon.style.opacity = "0";
+        stars.style.opacity = "0";
+        horizonGlow.style.background = "linear-gradient(to top, rgba(244, 63, 94, 0.25), transparent)";
+        if (phaseBadgeText) phaseBadgeText.textContent = "Sore Teduh";
+      }
+      // 5. SENJA / SUNSET: 17.30 - 18.45 (Matahari Terbenam)
+      else if (totalMinutes >= 1050 && totalMinutes < 1125) {
+        skyBody.classList.add("sky-sunset");
+        const progress = (totalMinutes - 1050) / 75;
+        sun.style.opacity = `${1 - progress * 0.8}`;
+        sun.style.left = `${85 + progress * 8}%`;
+        sun.style.top = `${60 + progress * 30}%`;
+        moon.style.opacity = `${progress * 0.7}`;
+        moon.style.left = "18%";
+        moon.style.top = "25%";
+        stars.style.opacity = `${progress * 0.6}`;
+        horizonGlow.style.background = "linear-gradient(to top, rgba(239, 68, 68, 0.4), transparent)";
+        if (phaseBadgeText) phaseBadgeText.textContent = "Senja Terbenam";
+      }
+      // 6. PETANG: 18.45 - 20.00 (Muncul Bulan)
+      else if (totalMinutes >= 1125 && totalMinutes < 1200) {
+        skyBody.classList.add("sky-dusk");
+        sun.style.opacity = "0";
+        moon.style.opacity = "0.9";
+        moon.style.left = "25%";
+        moon.style.top = "18%";
+        stars.style.opacity = "0.85";
+        horizonGlow.style.background = "linear-gradient(to top, rgba(168, 85, 247, 0.2), transparent)";
+        if (phaseBadgeText) phaseBadgeText.textContent = "Petang / Bulan";
+      }
+      // 7. MALAM: 20.00 - 05.00 (Langit Malam & Bintang)
+      else {
+        skyBody.classList.add("sky-night");
+        sun.style.opacity = "0";
+        moon.style.opacity = "1";
+        let nightProgress;
+        if (totalMinutes >= 1200) {
+          nightProgress = (totalMinutes - 1200) / 540;
+        } else {
+          nightProgress = (totalMinutes + 240) / 540;
+        }
+        moon.style.left = `${25 + nightProgress * 45}%`;
+        moon.style.top = `${16 + Math.sin(nightProgress * Math.PI) * -6}%`;
+        stars.style.opacity = "1";
+        horizonGlow.style.background = "linear-gradient(to top, rgba(99, 102, 241, 0.15), transparent)";
+        if (phaseBadgeText) phaseBadgeText.textContent = "Malam Bertabur Bintang";
+      }
+    }
+
+    updateSkyAndCelestialCycle();
+    setInterval(updateSkyAndCelestialCycle, 60000);
+
+    // ========================================================
+    // DATA 260 QUOTES (13 TOPIK X 20 KUTIPAN)
+    // ========================================================
+    const ALL_QUOTES = [{"topic": "Hidup", "text": "Hidup bukan tentang menunggu badai reda, melainkan belajar menari di tengah hujan lebat."}, {"topic": "Hidup", "text": "Batasan terbesar dalam hidupmu adalah keraguan yang kamu pelihara sendiri."}, {"topic": "Hidup", "text": "Waktu terus berjalan tanpa kompromi; jangan sia-siakan untuk hal yang tidak bermakna."}, {"topic": "Hidup", "text": "Ketenangan sejati bermula saat kamu berhenti menuntut dunia agar selalu adil."}, {"topic": "Hidup", "text": "Hari kemarin adalah sejarah, hari esok adalah misteri, dan hari ini adalah anugerah nyata."}, {"topic": "Hidup", "text": "Jangan habiskan sisa umurmu hanya untuk memenuhi ekspektasi orang lain."}, {"topic": "Hidup", "text": "Hidup yang bermakna bukan tentang berapa lama kamu bernapas, melainkan seberapa dalam kamu memberi arti."}, {"topic": "Hidup", "text": "Setiap luka membawa pelajaran berharga jika kamu bersedia menerimanya dengan lapang dada."}, {"topic": "Hidup", "text": "Masa depanmu ditentukan oleh apa yang kamu mulai hari ini, bukan esok lusa."}, {"topic": "Hidup", "text": "Keberanian sejati adalah melangkah maju meski kedua kakimu gemetar ketakutan."}, {"topic": "Hidup", "text": "Hargai hal-hal kecil di sekitarmu sebelum waktu mengubahnya menjadi kenangan mahal."}, {"topic": "Hidup", "text": "Kamu tidak bisa mengendalikan arah angin, tetapi kamu selalu bisa mengatur arah layarmu."}, {"topic": "Hidup", "text": "Hidup terlalu singkat untuk dihabiskan dengan menyimpan dendam masa lalu."}, {"topic": "Hidup", "text": "Ketika satu pintu tertutup rapat, carilah jendela yang terbuka untuk jalan keluar."}, {"topic": "Hidup", "text": "Kualitas hidupmu berbanding lurus dengan kualitas keputusan yang berani kamu ambil."}, {"topic": "Hidup", "text": "Terkadang kamu harus tersesat terlebih dahulu untuk menemukan jalan terbaikmu."}, {"topic": "Hidup", "text": "Jangan biarkan opini bising orang lain menenggelamkan bisikan lembut nuranimu."}, {"topic": "Hidup", "text": "Hidup adalah kanvas kosong; goreskan warna terbaikmu sebelum waktunya habis."}, {"topic": "Hidup", "text": "Kedewasaan dimulai ketika kamu berhenti menyalahkan keadaan atas jalan hidupmu."}, {"topic": "Hidup", "text": "Jadilah versi terbaik dari dirimu sendiri, bukan tiruan kelas dua dari orang lain."}, {"topic": "Uang", "text": "Uang adalah pelayan yang sangat setia, tetapi merupakan tuan yang sangat kejam."}, {"topic": "Uang", "text": "Kekayaan sejati tidak dinilai dari nominal tabungan, melainkan rasa syukur dalam hati."}, {"topic": "Uang", "text": "Jangan membeli barang yang tak berguna demi mengesankan orang yang tak peduli."}, {"topic": "Uang", "text": "Kebebasan finansial sejati adalah memiliki kendali penuh atas waktu hidupmu."}, {"topic": "Uang", "text": "Uang bisa membeli ranjang yang empuk, namun tidak pernah bisa membeli tidur yang nyenyak."}, {"topic": "Uang", "text": "Bukan seberapa banyak uang yang masuk, melainkan seberapa bijak kamu menahannya keluar."}, {"topic": "Uang", "text": "Investasi terbaik yang memberi bunga abadi adalah investasi pada leher ke atas."}, {"topic": "Uang", "text": "Uang hanya memperjelas karakter asli seseorang; yang tamak kian tamak, yang dermawan kian pemurah."}, {"topic": "Uang", "text": "Kebutuhan hidup itu murah, yang mahal adalah gaya hidup dan gengsi manusia."}, {"topic": "Uang", "text": "Carilah uang dengan cara halal agar berkahnya menenteramkan seluruh anggota keluarga."}, {"topic": "Uang", "text": "Jangan sampai mengejar uang membuatmu lupa pada hal-hal yang tak bisa dibeli dengan uang."}, {"topic": "Uang", "text": "Kekayaan yang datang dalam sekejap mata sering kali lenyap dalam sekejap napas."}, {"topic": "Uang", "text": "Uang di tangan orang bijak adalah solusi; di tangan orang bodoh adalah petaka."}, {"topic": "Uang", "text": "Mengatur keuangan bukan tentang menahan lapar, melainkan merancang kebebasan masa depan."}, {"topic": "Uang", "text": "Kemiskinan paling berbahaya bukanlah tidak beruang, melainkan hilangnya mimpi dan etika."}, {"topic": "Uang", "text": "Uang dapat membeli obat termahal, namun tak mampu membeli sebutir kesehatan yang hilang."}, {"topic": "Uang", "text": "Bekerjalah demi nilai dan manfaat, maka uang akan datang mengikutimu secara sukarela."}, {"topic": "Uang", "text": "Gaya hidup sederhana adalah tameng terkuat dari jeratan utang konsumtif."}, {"topic": "Uang", "text": "Uang adalah alat tukar, jangan sampai kamu menukar integritasmu demi mendapatkannya."}, {"topic": "Uang", "text": "Kaya bukan tentang memiliki segalanya, melainkan merasa cukup dengan apa yang ada di tangan."}, {"topic": "Cinta", "text": "Cinta sejati bukan saling menatap mata, melainkan menatap bersama ke satu arah."}, {"topic": "Cinta", "text": "Mencintai berarti memberi kebebasan bagi pasanganmu untuk bertumbuh apa adanya."}, {"topic": "Cinta", "text": "Cinta tanpa komitmen dan pengorbanan hanyalah letupan emosi sesaat."}, {"topic": "Cinta", "text": "Bentuk cinta tertinggi adalah menjaga kehormatan dan mendoakan kebaikan dalam diam."}, {"topic": "Cinta", "text": "Jangan mencari sosok yang sempurna, carilah yang siap berproses dan belajar bersamamu."}, {"topic": "Cinta", "text": "Cinta tidak buta; cinta melihat kekurangan dan tetap memilih bertahan dengan setia."}, {"topic": "Cinta", "text": "Kehangatan sebuah hubungan dijaga lewat komunikasi jujur dan saling memaafkan."}, {"topic": "Cinta", "text": "Mencintai diri sendiri adalah pondasi utama sebelum kamu mampu mencintai orang lain."}, {"topic": "Cinta", "text": "Cinta bukan tentang siapa yang datang pertama, melainkan siapa yang bertahan sampai akhir."}, {"topic": "Cinta", "text": "Kemesraan bisa pudar oleh usia, tetapi rasa hormat dan kasih sayang akan bertahan selamanya."}, {"topic": "Cinta", "text": "Cinta sejati tidak pernah mengekang kebebasan, ia justru menjadi tempat pulang paling aman."}, {"topic": "Cinta", "text": "Terkadang cinta berarti merelakan pergi demi melihatnya bahagia di jalan lain."}, {"topic": "Cinta", "text": "Tindakan kecil penuh ketulusan jauh lebih bermakna daripada untaian janji manis berbusa."}, {"topic": "Cinta", "text": "Hubungan yang sehat adalah tempat di mana kedua belah pihak merasa didengar dan dihargai."}, {"topic": "Cinta", "text": "Cinta tidak menuntut timbal balik sempurna, ia menemukan kebahagiaan dari ketulusan memberi."}, {"topic": "Cinta", "text": "Pertengkaran dalam cinta adalah bumbu, kedewasaan untuk saling memahami adalah intinya."}, {"topic": "Cinta", "text": "Jangan jatuh cinta hanya karena sepi; cintailah seseorang saat hatimu telah siap berbagi."}, {"topic": "Cinta", "text": "Cinta adalah keputusan harian untuk tetap memilih orang yang sama tanpa rasa jenuh."}, {"topic": "Cinta", "text": "Kepercayaan adalah oksigen bagi cinta; sekali tercemar, hubungan akan perlahan mati."}, {"topic": "Cinta", "text": "Cinta yang tulus adalah doa tak bersuara yang terus dipanjatkan demi keselamatan pasangannya."}, {"topic": "Teman", "text": "Teman sejati masuk ke dalam hidupmu saat seluruh dunia memilih untuk angkat kaki."}, {"topic": "Teman", "text": "Lebih baik satu sahabat yang setia daripada seribu kawan yang hanya hadir saat pesta."}, {"topic": "Teman", "text": "Persahabatan sejati tidak diuji saat tawa, melainkan saat air mata mulai berlinang."}, {"topic": "Teman", "text": "Teman yang baik adalah cermin jujur; ia menegur kesalahanmu tanpa merendahkan harga dirimu."}, {"topic": "Teman", "text": "Pilihlah lingkungan yang memicu potensimu berkembang, bukan yang membuatmu lelah berpura-pura."}, {"topic": "Teman", "text": "Jarak dan waktu tidak akan mampu mengikis ikatan persahabatan yang dilandasi ketulusan."}, {"topic": "Teman", "text": "Sahabat adalah keluarga yang kamu pilih sendiri berdasarkan kecocokan jiwa dan nilai hidup."}, {"topic": "Teman", "text": "Hati-hati dengan teman yang selalu memuji di depan namun mencibir di belakangmu."}, {"topic": "Teman", "text": "Teman yang berkualitas tidak akan merasa tersaingi ketika melihat pencapaian dan kemajuanmu."}, {"topic": "Teman", "text": "Persahabatan yang sehat memberi ruang untuk saling berbeda pendapat tanpa rasa benci."}, {"topic": "Teman", "text": "Jangan buang energimu untuk mempertahankan orang yang hanya datang saat sedang butuh."}, {"topic": "Teman", "text": "Teman sejati mengerti keheninganmu sama baiknya dengan mereka memahami kata-katamu."}, {"topic": "Teman", "text": "Kehilangan teman palsu bukanlah kerugian, melainkan pembersihan takdir dari hal beracun."}, {"topic": "Teman", "text": "Kawan tertawa mudah dicari di mana saja, kawan berjuang hanya ditemukan lewat seleksi waktu."}, {"topic": "Teman", "text": "Jadilah jenis teman yang kamu sendiri ingin temui di saat-saat terpuruk hidupmu."}, {"topic": "Teman", "text": "Persahabatan butuh pupuk saling percaya dan siraman rasa hormat agar tak layu."}, {"topic": "Teman", "text": "Teman yang baik akan mengingatkanmu pada kebaikan, bukan mengajakmu larut dalam keburukan."}, {"topic": "Teman", "text": "Jangan biarkan salah paham kecil memutus tali persaudaraan yang dirajut bertahun-tahun."}, {"topic": "Teman", "text": "Lingkaran pertemananmu menentukan cara pandangmu terhadap dunia; pilihlah dengan cermat."}, {"topic": "Teman", "text": "Sahabat sejati adalah mereka yang tahu segala kelemahanmu, namun tetap memilih tinggal di sisimu."}, {"topic": "Kerja", "text": "Bekerjalah dengan tekun dalam sunyi, biarkan hasil karyamu yang membuat kegaduhan."}, {"topic": "Kerja", "text": "Disiplin adalah jembatan kokoh yang menghubungkan antara cita-cita dan pencapaian nyata."}, {"topic": "Kerja", "text": "Bekerja bukan sekadar berburu rupiah, melainkan sarana menjaga martabat diri."}, {"topic": "Kerja", "text": "Rasa lelah bekerja akan hilang oleh istirahat, namun karya yang bermanfaat akan abadi."}, {"topic": "Kerja", "text": "Jangan menuntut imbalan besar sebelum kamu membuktikan kontribusi nyata yang bernilai."}, {"topic": "Kerja", "text": "Profesionalisme adalah menyelesaikan tugas dengan standar terbaik meski suasana hati sedang buruk."}, {"topic": "Kerja", "text": "Kerja cerdas memanfaatkan peluang, kerja keras memastikan peluang itu tidak terbuang sia-sia."}, {"topic": "Kerja", "text": "Tuntaskan apa yang sudah kamu mulai; reputasi dibangun dari integritas penyelesaian kerja."}, {"topic": "Kerja", "text": "Jangan takut pada pekerjaan sulit; di sanalah letak ruang belajar yang sesungguhnya."}, {"topic": "Kerja", "text": "Etos kerja yang tinggi adalah cerminan dari rasa hormatmu terhadap waktu dan komitmen."}, {"topic": "Kerja", "text": "Keahlian membuka pintu kesempatan, tetapi karakter dan sikap yang akan menjaganya tetap terbuka."}, {"topic": "Kerja", "text": "Bekerjalah seolah-olah kamu pemilik tempat itu, maka kamu akan belajar memimpin."}, {"topic": "Kerja", "text": "Keluhan tidak akan meringankan beban tugasmu; tindakan nyata yang menyelesaikannya."}, {"topic": "Kerja", "text": "Konsistensi harian selalu mengalahkan letupan motivasi sesaat dalam dunia kerja."}, {"topic": "Kerja", "text": "Keringat yang menetes dalam mencari nafkah halal bernilai ibadah di mata Sang Pencipta."}, {"topic": "Kerja", "text": "Jangan batasi dirimu hanya pada deskripsi kerja; perluas wawasan dan dampak kehadiranmu."}, {"topic": "Kerja", "text": "Karier cemerlang dibangun bata demi bata melalui kesabaran dan ketekunan menahun."}, {"topic": "Kerja", "text": "Belajarlah menyukai prosesnya, bukan sekadar terpaku pada gaji di akhir bulan."}, {"topic": "Kerja", "text": "Jadikan setiap kritik kerja sebagai bahan bakar untuk memoles kualitas dirimu berikutnya."}, {"topic": "Kerja", "text": "Bekerjalah dengan jujur; rezeki yang berkah jauh lebih menenangkan daripada hasil curang."}, {"topic": "Orang Tua", "text": "Keridaan Allah bergantung pada keridaan orang tua, dan murka-Nya ada pada murka mereka."}, {"topic": "Orang Tua", "text": "Orang tua adalah sosok yang rela menelan lelah demi melihat senyum bahagia di bibir anak-anaknya."}, {"topic": "Orang Tua", "text": "Waktumu bersama orang tua sangat terbatas; jangan biarkan kesibukan merebut sisa waktu itu."}, {"topic": "Orang Tua", "text": "Doa seorang ibu adalah tameng gaib terkuat yang menembus langit demi keselamatan anaknya."}, {"topic": "Orang Tua", "text": "Seiring bertambahnya usia, kamu akan paham beratnya beban pundak ayah yang tak pernah ia keluhkan."}, {"topic": "Orang Tua", "text": "Berbaktilah selagi ada kesempatan; penyesalan di depan nisan tak akan memutar balik waktu."}, {"topic": "Orang Tua", "text": "Orang tua memaafkan ribuan kesalahan kita, tetapi kita sering kali pelit memaafkan satu kelalaian mereka."}, {"topic": "Orang Tua", "text": "Bukan materi mewah yang paling mereka inginkan di hari tua, melainkan kabar dan kehadiranmu."}, {"topic": "Orang Tua", "text": "Kasih sayang orang tua laksana air mengalir; tanpa pamrih dan tak pernah menuntut balas."}, {"topic": "Orang Tua", "text": "Jangan pernah membantah mereka dengan nada tinggi, ingatlah siapa yang mengajarimu bicara."}, {"topic": "Orang Tua", "text": "Keberhasilan yang kamu capai hari ini adalah buah dari air mata dan sujud panjang orang tuamu."}, {"topic": "Orang Tua", "text": "Rawatlah orang tuamu saat mereka menua dengan kelembutan yang sama saat mereka merawat bayimu."}, {"topic": "Orang Tua", "text": "Orang tua tidak pernah pensiun mencemaskan kesejahteraan dan masa depan darah dagingnya."}, {"topic": "Orang Tua", "text": "Rumah terhangat di dunia adalah pelukan ibu, pelindung terkuat adalah keteguhan hati ayah."}, {"topic": "Orang Tua", "text": "Membahagiakan orang tua adalah pintu rezeki paling lebar yang sering kali terabaikan."}, {"topic": "Orang Tua", "text": "Jangan sampai teman dan pasanganmu mendapat waktu terbaikmu, sementara orang tuamu mendapat sisa lelahmu."}, {"topic": "Orang Tua", "text": "Ketika orang tua telah tiada, separuh dari keberkahan hidupmu seakan ikut terkubur bersama mereka."}, {"topic": "Orang Tua", "text": "Ucapkan terima kasih dan cinta kepada mereka sekarang, selagi telinga mereka masih bisa mendengar."}, {"topic": "Orang Tua", "text": "Jadikan kebaikan akhlakmu sebagai amal jariyah yang terus mengalirkan pahala bagi kedua orang tuamu."}, {"topic": "Orang Tua", "text": "Di balik setiap anak yang mandiri dan sukses, ada orang tua yang rela mengorbankan mimpinya sendiri."}, {"topic": "Islam", "text": "Dunia ini hanyalah jembatan penyeberangan sementara; negeri akhiratlah tujuan akhir yang kekal abadi."}, {"topic": "Islam", "text": "Kekuatan terbesar seorang hamba muslim terletak pada sujud panjang di keheningan sepertiga malam."}, {"topic": "Islam", "text": "Tawakal bukan berarti berpangku tangan, melainkan berserah penuh pasca mengerahkan seluruh ikhtiar terbaik."}, {"topic": "Islam", "text": "Hati yang selalu terpaut pada Allah tidak akan pernah hancur oleh kekecewaan terhadap makhluk."}, {"topic": "Islam", "text": "Islam adalah lentera kedamaian; pancarkan cahayanya melalui luhurnya akhlak dan tutur katamu."}, {"topic": "Islam", "text": "Perbaiki hubunganmu dengan Allah secara rahasia, maka Dia akan memperbaiki urusan duniamu secara terbuka."}, {"topic": "Islam", "text": "Setiap musibah yang menimpamu adalah sarana penggugur dosa dan pengangkat derajat keimanan."}, {"topic": "Islam", "text": "Jadikan salat sebagai kebutuhan utama penenang jiwa, bukan sekadar rutinitas penggugur kewajiban."}, {"topic": "Islam", "text": "Orang yang paling mulia di sisi Allah bukanlah yang paling berharta, melainkan yang paling bertakwa."}, {"topic": "Islam", "text": "Ikhlas adalah rahasia terindah; melakukan kebaikan tanpa mengharapkan ucapan terima kasih dari manusia."}, {"topic": "Islam", "text": "Dunia ini penjara bagi orang mukmin dan surga bagi orang kafir; bersabarlah dalam ketaatan."}, {"topic": "Islam", "text": "Jangan biarkan gemerlap dunia yang fana membutakan mata hatimu dari kampung akhirat."}, {"topic": "Islam", "text": "Istigfar adalah kunci pembuka pintu rezeki yang sempit dan penawar dari gundahnya hati."}, {"topic": "Islam", "text": "Kematian adalah kepastian mutlak yang datang tanpa permisi; siapkan bekal terbaik sebelum terlambat."}, {"topic": "Islam", "text": "Agama Islam dibangun atas dasar kemudahan dan kasih sayang, bukan paksaan dan kekerasan."}, {"topic": "Islam", "text": "Tanda kebaikan Islam seseorang adalah kemampuannya meninggalkan hal-hal yang tidak berguna."}, {"topic": "Islam", "text": "Kaya yang sesungguhnya dalam Islam adalah kaya hati yang senantiasa qanaah atas takdir Ilahi."}, {"topic": "Islam", "text": "Jaga lisanmu dari menyakiti orang lain; keselamatan seorang muslim ada pada penjagaan lidahnya."}, {"topic": "Islam", "text": "Rencana Allah selalu lebih indah daripada semua rangkaian impian terliar yang kita susun."}, {"topic": "Islam", "text": "Jadikan rida Allah sebagai satu-satunya standar utama dalam menentukan setiap langkah hidupmu."}, {"topic": "Al-Qur'an", "text": "Al-Qur'an adalah lentera penerang bagi jiwa yang tersesat di tengah pekatnya tipu daya dunia."}, {"topic": "Al-Qur'an", "text": "Bacalah Al-Qur'an, niscaya kamu akan merengkuh ketenangan yang tak bisa ditawarkan oleh isi semesta."}, {"topic": "Al-Qur'an", "text": "Setiap ayat di dalamnya adalah petunjuk jalan hidup, obat pelipur lara, dan rahmat bagi yang beriman."}, {"topic": "Al-Qur'an", "text": "Semakin akrab kamu berinteraksi dengan Al-Qur'an, semakin lapang dadamu memikul beratnya ujian hidup."}, {"topic": "Al-Qur'an", "text": "Al-Qur'an bukan sekadar bacaan di bibir, melainkan pedoman moral praktis yang harus dihidupkan."}, {"topic": "Al-Qur'an", "text": "Hati yang kering akan kembali subur dan hidup ketika disiram oleh lantunan ayat-ayat suci Al-Qur'an."}, {"topic": "Al-Qur'an", "text": "Al-Qur'an akan datang pada hari kiamat sebagai saksi pembela bagi orang-orang yang gemar membacanya."}, {"topic": "Al-Qur'an", "text": "Sebaik-baik manusia di antara kalian adalah yang mempelajari Al-Qur'an lalu mengajarkannya kepada sesama."}, {"topic": "Al-Qur'an", "text": "Jangan biarkan lembaran mushafmu berdebu di lemari, sementara hatimu gersang dari bimbingan wahyu."}, {"topic": "Al-Qur'an", "text": "Satu huruf yang dibaca dari Al-Qur'an bernilai sepuluh kebaikan; jangan remehkan tabungan pahala ini."}, {"topic": "Al-Qur'an", "text": "Ketika kamu merasa sendiri dan putus asa, bukalah Al-Qur'an; temukan pesan cinta Allah untukmu di sana."}, {"topic": "Al-Qur'an", "text": "Al-Qur'an adalah mukjizat abadi yang tak lekang oleh zaman dan tak lapuk oleh perubahan peradaban."}, {"topic": "Al-Qur'an", "text": "Tadaburi maknanya, bukan hanya mengejar khatam; pemahamanlah yang akan mengubah cara hidupmu."}, {"topic": "Al-Qur'an", "text": "Rumah yang dibacakan Al-Qur'an di dalamnya akan terasa luas, didatangi malaikat, dan dijauhi setan."}, {"topic": "Al-Qur'an", "text": "Al-Qur'an adalah penawar terbaik bagi segala penyakit hati, mulai dari dengki hingga keputusasaan."}, {"topic": "Al-Qur'an", "text": "Hafalan Al-Qur'an yang dijaga dalam dada akan memahkotai kedua orang tuamu dengan kemuliaan di akhirat."}, {"topic": "Al-Qur'an", "text": "Jadikan Al-Qur'an sebagai sahabat karibmu di dunia agar ia menjadi penerang kuburmu di alam barzakh."}, {"topic": "Al-Qur'an", "text": "Kebenaran Al-Qur'an bersifat mutlak; tiada keraguan sedikit pun bagi mereka yang berakal sehat."}, {"topic": "Al-Qur'an", "text": "Menangislah karena rasa takut dan harap saat meresapi ancaman dan kabar gembira dalam ayat-ayat-Nya."}, {"topic": "Al-Qur'an", "text": "Al-Qur'an menurunkan keberkahan pada waktu, rezeki, dan pikiran siapa saja yang memuliakannya."}, {"topic": "Hobi", "text": "Hobi adalah ruang bernapas bagi jiwa di tengah bising dan monotonnya rutinitas harian."}, {"topic": "Hobi", "text": "Luangkan waktu untuk hal yang kamu cintai demi menjaga kewarasan pikiran, bukan demi pengakuan pamer."}, {"topic": "Hobi", "text": "Kreativitas bertumbuh paling subur saat kamu berkarya murni karena rasa suka tanpa beban materi."}, {"topic": "Hobi", "text": "Hobi yang bermakna adalah kegiatan yang membuatmu lupa waktu dan merasa kembali utuh sebagai manusia."}, {"topic": "Hobi", "text": "Jangan biarkan hidupmu hanya habis untuk bekerja dan tidur; nyalakan semangatmu lewat hobi yang sehat."}, {"topic": "Hobi", "text": "Menekuni hobi adalah bentuk meditasi aktif untuk melepaskan penat dari tumpukan stres pekerjaan."}, {"topic": "Hobi", "text": "Hobi yang ditekuni secara konsisten bisa bermetamorfosis menjadi pintu rezeki yang tak terduga."}, {"topic": "Hobi", "text": "Dunia terasa lebih berwarna ketika kamu memiliki wadah untuk mengekspresikan imajinasimu secara bebas."}, {"topic": "Hobi", "text": "Hobi mempertemukanmu dengan komunitas baru yang memiliki frekuensi dan gairah yang serupa."}, {"topic": "Hobi", "text": "Waktu yang kamu nikmati untuk berkarya bukanlah waktu yang terbuang sia-sia."}, {"topic": "Hobi", "text": "Melalui hobi, kamu belajar bersabar menikmati proses panjang demi sebuah kepuasan batiniah."}, {"topic": "Hobi", "text": "Hobi mengajarkan kita arti kegembiraan murni yang lepas dari ikatan target dan tekanan target."}, {"topic": "Hobi", "text": "Temukan setidaknya satu hobi yang menyehatkan fisik, satu yang memicu kreativitas, dan satu yang menenangkan jiwa."}, {"topic": "Hobi", "text": "Hobi adalah tempat pelarian paling sehat saat dunia nyata terasa terlalu melelahkan untuk dihadapi."}, {"topic": "Hobi", "text": "Ketika hasrat bertemu dengan latihan rutin dalam sebuah hobi, mahakarya indah akan tercipta dengan sendirinya."}, {"topic": "Hobi", "text": "Hobi menjaga rasa ingin tahu anak-anak dalam dirimu agar tetap hidup dan menyala hingga tua."}, {"topic": "Hobi", "text": "Bukan tentang seberapa mahir hasil karyamu, melainkan seberapa bahagia hatimu saat mengerjakannya."}, {"topic": "Hobi", "text": "Jangan merasa bersalah menikmati hobimu; merawat kebahagiaan diri sendiri adalah sebuah keharusan."}, {"topic": "Hobi", "text": "Hobi memberikan warna pembeda dalam kepribadianmu di luar identitas profesi kerjamu."}, {"topic": "Hobi", "text": "Keluarlah sejenak dari layar gawaimu; sentuh kembali hal-hal nyata lewat hobi yang menggerakkan tubuh."}, {"topic": "Istirahat", "text": "Berhenti sejenak bukan berarti kamu kalah; istirahat adalah bagian mutlak dari proses melangkah jauh."}, {"topic": "Istirahat", "text": "Tubuh dan pikiranmu memiliki hak istirahat; jangan pernah paksa dirimu bekerja hingga remuk."}, {"topic": "Istirahat", "text": "Tidur pulas dan pikiran hening adalah obat alami terbaik dari racun stres yang menumpuk."}, {"topic": "Istirahat", "text": "Kamu tidak bisa menuang air dari cangkir yang kosong; rawat dirimu sebelum mengurus hal lain."}, {"topic": "Istirahat", "text": "Kadang hal paling produktif yang bisa kamu lakukan hari ini adalah tidur dan tidak memikirkan apa pun."}, {"topic": "Istirahat", "text": "Jeda bukanlah pemborosan waktu, melainkan proses mengisi ulang bahan bakar energi hidupmu."}, {"topic": "Istirahat", "text": "Kelelahan ekstrem adalah sinyal keras dari tubuhmu agar kamu segera melambatkan ritme langkah."}, {"topic": "Istirahat", "text": "Jangan tunggu jatuh sakit hanya untuk memberi izin pada tubuhmu menikmati hak istirahat."}, {"topic": "Istirahat", "text": "Istirahat terbaik bagi jiwa yang gelisah adalah melepaskan beban kontrol atas hal di luar kuasamu."}, {"topic": "Istirahat", "text": "Dunia tidak akan runtuh hanya karena kamu mengambil jeda sejenak untuk menarik napas dalam-dalam."}, {"topic": "Istirahat", "text": "Keseimbangan antara kerja keras dan istirahat berkualitas adalah rahasia dari ketahanan jangka panjang."}, {"topic": "Istirahat", "text": "Beri ruang pada pikiranmu untuk melamun tenang; dari keheningan itulah ide-ide brilian sering kali lahir."}, {"topic": "Istirahat", "text": "Tidur malam yang cukup adalah bentuk investasi terbaik untuk menjaga ketajaman konsentrasi esok hari."}, {"topic": "Istirahat", "text": "Menolak ajakan lembur yang berlebihan demi kesehatan fisik adalah bentuk keberanian mencintai diri."}, {"topic": "Istirahat", "text": "Istirahatkan matamu dari layar biru gawai dan istirahatkan hatimu dari ambisi yang berlebihan."}, {"topic": "Istirahat", "text": "Pikiran yang terus dipaksa berpikir tanpa henti akan tumpul laksana pisau yang tak pernah diasah."}, {"topic": "Istirahat", "text": "Tenangkan dirimu dalam keheningan; di sanalah suara nuranimu akan terdengar lebih jernih dan jujur."}, {"topic": "Istirahat", "text": "Istirahat yang sadar adalah pemulihan terencana, bukan sekadar pelarian malas dari kenyataan hidup."}, {"topic": "Istirahat", "text": "Nikmati hari liburmu tanpa rasa bersalah; kamu telah berjuang sangat keras sepanjang pekan kemarin."}, {"topic": "Istirahat", "text": "Belajarlah untuk beristirahat saat lelah menyerang, jangan pernah memilih untuk langsung menyerah kalah."}, {"topic": "Jodoh", "text": "Jodoh adalah cerminan dari proses pembenahan diri; perbaiki kualitasmu, maka yang datang akan sepadan."}, {"topic": "Jodoh", "text": "Jika ia memang ditakdirkan untukmu, sejauh apa pun terpisah, ia akan menemukan jalan pulang ke sisimu."}, {"topic": "Jodoh", "text": "Menunggu jodoh bukan dengan duduk berpangku tangan, melainkan dengan memantaskan diri di hadapan Tuhan."}, {"topic": "Jodoh", "text": "Jodoh terbaik bukan sekadar teman hidup di bumi, melainkan rekan seperjalanan yang menuntun menuju surga."}, {"topic": "Jodoh", "text": "Lepaskan orang yang salah agar semesta membuka ruang lebar bagi kehadiran sosok yang tepat."}, {"topic": "Jodoh", "text": "Jangan terburu-buru mengikat janji karena takut kesepian; salah memilih pasangan jauh lebih menyiksa."}, {"topic": "Jodoh", "text": "Jodoh datang di waktu yang paling tepat menurut ketetapan-Nya, bukan menurut desakan jadwal kita."}, {"topic": "Jodoh", "text": "Pertemuan dua hati yang ditakdirkan bersama akan selalu diiringi oleh rasa tenang dan kemudahan jalan."}, {"topic": "Jodoh", "text": "Cinta sejati dalam ikatan jodoh tidak menuntut kesempurnaan, melainkan kerelaan untuk saling melengkapi."}, {"topic": "Jodoh", "text": "Bukan tentang siapa yang datang paling cepat, melainkan siapa yang hadir dan berani berkomitmen selamanya."}, {"topic": "Jodoh", "text": "Jodohmu mungkin sedang dipersiapkan di belahan bumi lain; fokuslah memperbaiki kekurangan dirimu sekarang."}, {"topic": "Jodoh", "text": "Kriteria terpenting dari jodoh sejati adalah kesamaan nilai hidup dan akhlak yang mulia."}, {"topic": "Jodoh", "text": "Jangan memaksakan hati yang tidak tertuju padamu; tulang rusuk tidak akan pernah salah tertukar tempat."}, {"topic": "Jodoh", "text": "Pernikahan yang berkah bermula dari niat suci menjaga kehormatan, bukan sekadar pesta kemewahan duniawi."}, {"topic": "Jodoh", "text": "Jodoh yang baik adalah dia yang membuatmu semakin mencintai Tuhanmu dan menyayangi sesama."}, {"topic": "Jodoh", "text": "Terkadang penolakan yang kamu alami adalah cara halus takdir melindungimu dari orang yang keliru."}, {"topic": "Jodoh", "text": "Pertahankan standar nilaimu; orang yang tepat tidak akan pernah memintamu mengorbankan integritas diri."}, {"topic": "Jodoh", "text": "Jodoh adalah perpaduan antara doa yang tak putus dipanjatkan dan ikhtiar mencari yang bermartabat."}, {"topic": "Jodoh", "text": "Ketika waktu yang ditetapkan itu tiba, segala rintangan rumit akan terurai menjadi jalan pertemuan yang mudah."}, {"topic": "Jodoh", "text": "Cinta yang matang tahu kapan harus menunggu dengan sabar dan kapan harus melangkah maju menjemput kepastian."}, {"topic": "Kegagalan", "text": "Kegagalan adalah satu-satunya kesempatan berharga untuk memulai kembali dengan cara yang jauh lebih cerdas."}, {"topic": "Kegagalan", "text": "Kamu baru dinyatakan benar-benar gagal saat kamu mengambil keputusan untuk berhenti mencoba sama sekali."}, {"topic": "Kegagalan", "text": "Rasa perih akibat kegagalan jauh lebih terhormat daripada rasa sesal seumur hidup karena tak berani mencoba."}, {"topic": "Kegagalan", "text": "Batu sandungan yang membuatmu tersungkur hari ini adalah fondasi kekuatan mentalmu di masa depan."}, {"topic": "Kegagalan", "text": "Jangan pernah menilai seluruh nilai hidupmu hanya berdasarkan satu babak kegagalan yang pahit."}, {"topic": "Kegagalan", "text": "Kegagalan adalah guru yang sangat keras; ia memberi ujian terlebih dahulu sebelum memberikan pelajarannya."}, {"topic": "Kegagalan", "text": "Jalan menuju puncak kesuksesan selalu diaspal dengan rangkaian kegagalan yang berhasil dilewati."}, {"topic": "Kegagalan", "text": "Setiap kali kamu jatuh dan tersungkur, pastikan kamu bangkit dengan membawa sebongkah hikmah baru."}, {"topic": "Kegagalan", "text": "Kegagalan hanyalah tanda bahwa caramu harus diperbaiki, bukan tanda impianmu harus dimatikan."}, {"topic": "Kegagalan", "text": "Mereka yang tidak pernah berbuat salah adalah mereka yang tidak pernah berani mencoba hal baru apa pun."}, {"topic": "Kegagalan", "text": "Terima kegagalanmu dengan lapang dada, evaluasi secara dingin, lalu susun strategi baru yang lebih matang."}, {"topic": "Kegagalan", "text": "Rasa takut akan kegagalan adalah penjara tak kasat mata yang membunuh lebih banyak potensi daripada kegagalan itu sendiri."}, {"topic": "Kegagalan", "text": "Kegagalan tidak mendefinisikan siapa dirimu; responsmu terhadap kegagalan itulah yang menentukan kualitasmu."}, {"topic": "Kegagalan", "text": "Tersenyumlah pada kegagalanmu; ia adalah bukti nyata bahwa kamu telah berani turun ke arena pertarungan."}, {"topic": "Kegagalan", "text": "Kekalahan sementara bukanlah kehancuran mutlak, kecuali jika kamu sendiri yang menolak untuk berdiri lagi."}, {"topic": "Kegagalan", "text": "Patah hati karena rencana yang gagal sering kali merupakan berkah tersembunyi yang menyelamatkanmu dari bahaya."}, {"topic": "Kegagalan", "text": "Baja terkuat ditempa di dalam api yang paling panas; karakter tangguhmu dibentuk oleh ujian kegagalan."}, {"topic": "Kegagalan", "text": "Jangan sembunyikan kegagalanmu di bawah karpet; jadikan ia lencana kehormatan dari perjuangan kerasmu."}, {"topic": "Kegagalan", "text": "Satu pintu keberhasilan sering kali baru terbuka setelah sembilan puluh sembilan pintu kegagalan kamu ketuk."}, {"topic": "Kegagalan", "text": "Menangislah sejenak jika terasa sesak di dada, lalu hapus air matamu dan tatap kembali medan tempurmu."}, {"topic": "Kesuksesan", "text": "Kesuksesan sejati adalah ketika keberadaanmu mampu menghadirkan manfaat nyata bagi banyak orang di sekitarmu."}, {"topic": "Kesuksesan", "text": "Puncak kesuksesan tidak diraih dengan satu lompatan kilat, melainkan lewat ribuan langkah kecil yang konsisten."}, {"topic": "Kesuksesan", "text": "Tetaplah membumi saat berada di puncak kejayaan; tanah yang tinggi tidak pernah menahan air hujan."}, {"topic": "Kesuksesan", "text": "Ukuran hakiki dari suksesmu adalah seberapa tenang hatimu saat memejamkan mata di malam hari."}, {"topic": "Kesuksesan", "text": "Kesuksesan tanpa diimbangi rasa syukur yang tulus hanya akan melahirkan kesombongan dan kehampaan jiwa."}, {"topic": "Kesuksesan", "text": "Sukses bukan tentang mengalahkan orang lain dalam perlombaan, melainkan menaklukkan ego buruk dalam dirimu."}, {"topic": "Kesuksesan", "text": "Hargai setiap tetes keringat dalam proses berjuang; hasil akhir hanyalah akibat wajar dari dedikasi panjang."}, {"topic": "Kesuksesan", "text": "Orang sukses berani melakukan hal-hal sulit yang dihindari oleh orang-orang pemalas."}, {"topic": "Kesuksesan", "text": "Jadikan kesuksesanmu sebagai jembatan untuk mengangkat orang lain, bukan tangga untuk menginjak martabat sesama."}, {"topic": "Kesuksesan", "text": "Kunci pembuka kesuksesan adalah memulai sebelum kamu merasa siap dan bertahan lebih lama dari yang lain."}, {"topic": "Kesuksesan", "text": "Kesuksesan bukanlah tujuan akhir yang statis, melainkan perjalanan belajar dan bertumbuh tanpa batas waktu."}, {"topic": "Kesuksesan", "text": "Definisikan sendiri arti sukses menurut nuranimu, jangan biarkan standar masyarakat yang mendiktenya."}, {"topic": "Kesuksesan", "text": "Di balik setiap kisah sukses yang tampak instan, selalu ada bertahun-tahun kerja keras yang luput dari sorotan kamera."}, {"topic": "Kesuksesan", "text": "Pertahankan rasa lapar akan ilmu dan kerendahan hati untuk terus belajar, bahkan saat kamu telah berada di atas."}, {"topic": "Kesuksesan", "text": "Sukses materi tanpa integritas moral hanyalah bentuk kemiskinan batin yang dibungkus oleh kemewahan palsu."}, {"topic": "Kesuksesan", "text": "Keberhasilan terbesarmu adalah saat kamu mampu bangkit tegak kembali setelah dihancurkan oleh keadaan."}, {"topic": "Kesuksesan", "text": "Berbagilah lebih banyak ketika kamu menerima lebih banyak; di sanalah letak kelipatan berkah kesuksesan."}, {"topic": "Kesuksesan", "text": "Fokuslah menjadi pribadi yang bernilai dan berbobot, maka kesuksesan akan datang mengejarmu dengan sendirinya."}, {"topic": "Kesuksesan", "text": "Jangan biarkan pujian dunia atas suksesmu membuatmu lengah dan lupa pada siapa yang memberi pertolongan."}, {"topic": "Kesuksesan", "text": "Sukses paripurna adalah selamat di persinggahan dunia yang fana dan berbahagia di negeri akhirat yang abadi."}];
+
+    let currentQuoteIndex = 0;
+
+    function renderCurrentQuote() {
+      const q = ALL_QUOTES[currentQuoteIndex];
+      const badge = document.getElementById("quoteTopicBadge");
+      const text = document.getElementById("quoteContentText");
+
+      if (badge && text) {
+        text.classList.remove("quote-fade-enter");
+        void text.offsetWidth;
+        text.classList.add("quote-fade-enter");
+
+        badge.textContent = `Quotes ${q.topic}`;
+        text.textContent = `“${q.text}”`;
+      }
+    }
+
+    function rotateNextQuote(isManual = false) {
+      currentQuoteIndex = (currentQuoteIndex + 1) % ALL_QUOTES.length;
+      renderCurrentQuote();
+    }
+
+    setInterval(() => {
+      rotateNextQuote(false);
+    }, 5 * 60 * 1000);
+
+    // ========================================================
+    // SINKRONISASI BERSAMA (CROSS-TAB, MULTI-USER CLOUD SYNC)
+    // ========================================================
+    const SYNC_CHANNEL = new BroadcastChannel("gabut_sync_channel");
+    SYNC_CHANNEL.onmessage = (event) => {
+      if (event.data && event.data.type === "DATA_UPDATED") {
+        renderSchedule();
+        renderMoodButtons();
+        refreshAbsences();
+      }
+    };
+
+    function notifyDataUpdated() {
+      SYNC_CHANNEL.postMessage({ type: "DATA_UPDATED", timestamp: Date.now() });
+    }
+
+    // ========================================================
+    // 1. GATE ABSEN AWAL ("Siapa nih yang lagi Gabut?")
+    // ========================================================
+    let currentUser = localStorage.getItem("gabut_user_name") || "";
+
+    function initUserGate() {
+      const gateScreen = document.getElementById("attendanceGateScreen");
+      const mainDashboard = document.getElementById("mainDashboard");
+      const nameBadge = document.getElementById("currentUserNameBadge");
+      const absentNameInput = document.getElementById("absentName");
+
+      if (currentUser && currentUser.trim() !== "") {
+        gateScreen.classList.add("hidden");
+        mainDashboard.classList.remove("opacity-0", "pointer-events-none");
+        nameBadge.textContent = currentUser;
+        if (absentNameInput) absentNameInput.value = currentUser;
+      } else {
+        gateScreen.classList.remove("hidden");
+        mainDashboard.classList.add("opacity-0", "pointer-events-none");
+        setTimeout(() => {
+          const input = document.getElementById("gateNameInput");
+          if (input) input.focus();
+        }, 150);
+      }
+    }
+
+    document.getElementById("gateForm").addEventListener("submit", (e) => {
+      e.preventDefault();
+      const val = document.getElementById("gateNameInput").value.trim();
+      if (!val) return;
+
+      currentUser = val;
+      localStorage.setItem("gabut_user_name", currentUser);
+      initUserGate();
+      renderMoodButtons();
+    });
+
+    function reOpenGateModal() {
+      const gateScreen = document.getElementById("attendanceGateScreen");
+      const input = document.getElementById("gateNameInput");
+      input.value = currentUser;
+      gateScreen.classList.remove("hidden");
+      input.focus();
+    }
+
+    // ========================================================
+    // 2. REAL LIVE DIGITAL CLOCK (Kecil di pojok kanan atas)
+    // ========================================================
     function updateLiveClock() {
       const now = new Date();
       const hours = String(now.getHours()).padStart(2, "0");
@@ -404,23 +882,22 @@
     setInterval(updateLiveClock, 1000);
     updateLiveClock();
 
-    // ==========================================
-    // 2. [KOTAK MERAH]: MOOD TRACKER INTERAKTIF
-    // ==========================================
+    // ========================================================
+    // 3. MOOD TRACKER INTERAKTIF (Tanpa Border, Auto Nama Awal)
+    // ========================================================
     const MOOD_LIST = [
-      { id: "senang", label: "Senang", emoji: "😊", color: "hover:border-emerald-500 hover:bg-emerald-950/30" },
-      { id: "marah", label: "Marah", emoji: "😡", color: "hover:border-red-500 hover:bg-red-950/30" },
-      { id: "kesal", label: "Kesal", emoji: "😤", color: "hover:border-orange-500 hover:bg-orange-950/30" },
-      { id: "sedih", label: "Sedih", emoji: "😢", color: "hover:border-blue-500 hover:bg-blue-950/30" },
-      { id: "datar", label: "Datar", emoji: "😐", color: "hover:border-gray-500 hover:bg-gray-900/40" },
-      { id: "kecewa", label: "Kecewa", emoji: "😞", color: "hover:border-amber-500 hover:bg-amber-950/30" },
-      { id: "sepi", label: "Sepi", emoji: "🥺", color: "hover:border-indigo-500 hover:bg-indigo-950/30" },
-      { id: "takut", label: "Takut", emoji: "😨", color: "hover:border-violet-500 hover:bg-violet-950/30" },
-      { id: "putus-asa", label: "Putus Asa", emoji: "😩", color: "hover:border-rose-600 hover:bg-rose-950/30" }
+      { id: "senang", label: "Senang", emoji: "😊", bgHover: "hover:bg-emerald-950/40 hover:text-emerald-300" },
+      { id: "marah", label: "Marah", emoji: "😡", bgHover: "hover:bg-rose-950/40 hover:text-rose-300" },
+      { id: "kesal", label: "Kesal", emoji: "😤", bgHover: "hover:bg-orange-950/40 hover:text-orange-300" },
+      { id: "sedih", label: "Sedih", emoji: "😢", bgHover: "hover:bg-blue-950/40 hover:text-blue-300" },
+      { id: "datar", label: "Datar", emoji: "😐", bgHover: "hover:bg-neutral-800/60 hover:text-neutral-200" },
+      { id: "kecewa", label: "Kecewa", emoji: "😞", bgHover: "hover:bg-amber-950/40 hover:text-amber-300" },
+      { id: "sepi", label: "Sepi", emoji: "🥺", bgHover: "hover:bg-indigo-950/40 hover:text-indigo-300" },
+      { id: "takut", label: "Takut", emoji: "😨", bgHover: "hover:bg-purple-950/40 hover:text-purple-300" },
+      { id: "putus-asa", label: "Putus Asa", emoji: "😩", bgHover: "hover:bg-red-950/40 hover:text-red-300" }
     ];
 
-    const MOOD_DB_KEY = "gabut_mood_votes_v1";
-    let pendingMoodSelection = null;
+    const MOOD_DB_KEY = "gabut_mood_votes_v3";
 
     function getTodayKey() {
       const now = new Date();
@@ -438,6 +915,7 @@
 
     function saveMoodData(data) {
       localStorage.setItem(MOOD_DB_KEY, JSON.stringify(data));
+      notifyDataUpdated();
     }
 
     function renderMoodButtons() {
@@ -450,15 +928,14 @@
       let totalClicks = todayVotes.length;
       document.getElementById("totalMoodCountBadge").textContent = `${totalClicks} Vote`;
 
-      const userSavedName = localStorage.getItem("gabut_user_name") || "";
-      const userTodayVote = todayVotes.find(v => v.name.toLowerCase() === userSavedName.toLowerCase());
+      const userTodayVote = todayVotes.find(v => v.name.toLowerCase() === currentUser.toLowerCase());
 
       const statusEl = document.getElementById("activeUserMoodStatus");
       if (userTodayVote) {
         const m = MOOD_LIST.find(item => item.id === userTodayVote.moodId);
-        statusEl.innerHTML = `Mood kamu: <span class="text-pink-400 font-bold">${m ? m.emoji : ""} ${m ? m.label : ""}</span>`;
+        statusEl.innerHTML = `Mood kamu: <span class="text-rose-400 font-bold">${m ? m.emoji : ""} ${m ? m.label : ""}</span>`;
       } else {
-        statusEl.innerHTML = `Status: <span class="text-neutral-400 font-semibold">Belum vote</span>`;
+        statusEl.innerHTML = `Status: <span class="text-neutral-400 font-semibold">Belum memilih</span>`;
       }
 
       MOOD_LIST.forEach(mood => {
@@ -466,19 +943,19 @@
         const btn = document.createElement("button");
         const isUserChoice = userTodayVote && userTodayVote.moodId === mood.id;
 
-        btn.className = `p-2 rounded-xl border flex flex-col items-center justify-center gap-1 transition-all duration-200 text-xs active:scale-95 group relative overflow-hidden ${
+        btn.className = `p-2.5 rounded-2xl flex flex-col items-center justify-center gap-1 transition-all duration-200 text-xs active:scale-95 group relative overflow-hidden ${
           isUserChoice 
-            ? "bg-pink-950/60 border-pink-500 text-white shadow-lg ring-1 ring-pink-400" 
-            : "bg-neutral-900/80 border-neutral-800 text-neutral-300 hover:border-neutral-600"
-        } ${mood.color}`;
+            ? "bg-rose-500/25 text-white shadow-lg shadow-rose-950/40 ring-2 ring-rose-400/80 font-bold" 
+            : "bg-neutral-900/60 text-neutral-300 hover:bg-neutral-800/80"
+        } ${mood.bgHover}`;
 
-        btn.onclick = () => selectMood(mood.id);
+        btn.onclick = () => submitMoodVote(mood.id);
 
         btn.innerHTML = `
-          <span class="text-xl group-hover:scale-125 transition duration-200">${mood.emoji}</span>
+          <span class="text-2xl group-hover:scale-125 transition duration-200">${mood.emoji}</span>
           <span class="font-medium text-[11px] truncate w-full text-center">${mood.label}</span>
           <span class="inline-flex items-center px-1.5 py-0.5 rounded-full text-[10px] font-mono ${
-            count > 0 ? "bg-purple-900/70 text-purple-200 border border-purple-700/50" : "text-neutral-500"
+            count > 0 ? "bg-rose-900/60 text-rose-200" : "text-neutral-500"
           }">
             ${count}
           </span>
@@ -487,54 +964,31 @@
       });
     }
 
-    function selectMood(moodId) {
-      pendingMoodSelection = moodId;
-      const targetMood = MOOD_LIST.find(m => m.id === moodId);
-      const savedName = localStorage.getItem("gabut_user_name") || "";
-
-      document.getElementById("modalMoodEmojiDisplay").textContent = targetMood.emoji;
-      document.getElementById("modalMoodTitle").textContent = `Mood: ${targetMood.label}`;
-      document.getElementById("moodVoterNameInput").value = savedName;
-
-      document.getElementById("moodNameModal").classList.remove("hidden");
-      document.getElementById("moodNameModal").classList.add("flex");
-      document.getElementById("moodVoterNameInput").focus();
-    }
-
-    function closeMoodNameModal() {
-      document.getElementById("moodNameModal").classList.add("hidden");
-      document.getElementById("moodNameModal").classList.remove("flex");
-      pendingMoodSelection = null;
-    }
-
-    document.getElementById("moodVoteForm").addEventListener("submit", (e) => {
-      e.preventDefault();
-      const name = document.getElementById("moodVoterNameInput").value.trim();
-      if (!name || !pendingMoodSelection) return;
-
-      localStorage.setItem("gabut_user_name", name);
+    function submitMoodVote(moodId) {
+      if (!currentUser || currentUser.trim() === "") {
+        reOpenGateModal();
+        return;
+      }
 
       const data = getMoodData();
       const today = getTodayKey();
       if (!data[today]) data[today] = [];
 
-      // Update jika nama sudah pernah vote hari ini, atau tambahkan vote baru
-      const existingIdx = data[today].findIndex(v => v.name.toLowerCase() === name.toLowerCase());
+      const existingIdx = data[today].findIndex(v => v.name.toLowerCase() === currentUser.toLowerCase());
       if (existingIdx >= 0) {
-        data[today][existingIdx].moodId = pendingMoodSelection;
+        data[today][existingIdx].moodId = moodId;
         data[today][existingIdx].timestamp = new Date().toISOString();
       } else {
         data[today].push({
-          name: name,
-          moodId: pendingMoodSelection,
+          name: currentUser,
+          moodId: moodId,
           timestamp: new Date().toISOString()
         });
       }
 
       saveMoodData(data);
-      closeMoodNameModal();
       renderMoodButtons();
-    });
+    }
 
     function openMoodHistoryModal() {
       const data = getMoodData();
@@ -550,14 +1004,14 @@
           const voters = todayVotes.filter(v => v.moodId === mood.id);
           if (voters.length > 0) {
             const block = document.createElement("div");
-            block.className = "p-3 bg-neutral-900/70 border border-neutral-800 rounded-2xl space-y-1.5";
-            const voterNames = voters.map(v => `<span class="px-2 py-0.5 bg-neutral-800 border border-neutral-700 text-purple-300 rounded-md font-medium">${escapeHtml(v.name)}</span>`).join(" ");
+            block.className = "p-3 bg-neutral-900/70 rounded-2xl space-y-1.5";
+            const voterNames = voters.map(v => `<span class="px-2 py-0.5 bg-neutral-800 text-rose-300 rounded-lg font-medium text-xs">${escapeHtml(v.name)}</span>`).join(" ");
             block.innerHTML = `
               <div class="flex items-center justify-between">
                 <span class="font-bold text-sm text-white flex items-center gap-1.5">
                   <span>${mood.emoji}</span> <span>${mood.label}</span>
                 </span>
-                <span class="px-2 py-0.5 text-xs bg-purple-950 border border-purple-800 text-purple-300 rounded-full font-mono">${voters.length} orang</span>
+                <span class="px-2 py-0.5 text-xs bg-rose-950 text-rose-300 rounded-full font-mono">${voters.length} orang</span>
               </div>
               <div class="text-xs text-neutral-300 flex flex-wrap gap-1 pt-1">${voterNames}</div>
             `;
@@ -586,10 +1040,10 @@
       }
     }
 
-    // ==========================================================
-    // 3 & 4. [KOTAK KUNING] & [KOTAK BIRU]: EDITABLE & CHECKLIST
-    // ==========================================================
-    const routineSchedule = {
+    // ========================================================
+    // 4. JADWAL GABUT: EDITABLE, CENTANG PUBLIK & BISA DIHAPUS
+    // ========================================================
+    const baseRoutineSchedule = {
       1: {
         day: "Senin",
         time: "Pukul 22.00 s.d Selesai",
@@ -653,25 +1107,26 @@
     const monthNames = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
     const dayNames = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
 
-    const CUSTOM_TASKS_KEY = "gabut_custom_tasks_v2";
-    const COMPLETED_TASKS_KEY = "gabut_completed_tasks_v2";
+    const TASKS_STORE_KEY = "gabut_tasks_v3";
+    const COMPLETED_MAP_KEY = "gabut_completed_map_v3";
 
-    function getCustomTasks() {
+    function getTasksStore() {
       try {
-        const raw = localStorage.getItem(CUSTOM_TASKS_KEY);
+        const raw = localStorage.getItem(TASKS_STORE_KEY);
         return raw ? JSON.parse(raw) : {};
       } catch (e) {
         return {};
       }
     }
 
-    function saveCustomTasks(data) {
-      localStorage.setItem(CUSTOM_TASKS_KEY, JSON.stringify(data));
+    function saveTasksStore(data) {
+      localStorage.setItem(TASKS_STORE_KEY, JSON.stringify(data));
+      notifyDataUpdated();
     }
 
     function getCompletedMap() {
       try {
-        const raw = localStorage.getItem(COMPLETED_TASKS_KEY);
+        const raw = localStorage.getItem(COMPLETED_MAP_KEY);
         return raw ? JSON.parse(raw) : {};
       } catch (e) {
         return {};
@@ -679,7 +1134,8 @@
     }
 
     function saveCompletedMap(map) {
-      localStorage.setItem(COMPLETED_TASKS_KEY, JSON.stringify(map));
+      localStorage.setItem(COMPLETED_MAP_KEY, JSON.stringify(map));
+      notifyDataUpdated();
     }
 
     function getDateISO(date) {
@@ -706,15 +1162,15 @@
       for (let day = 1; day <= totalDays; day++) {
         const btn = document.createElement("button");
         btn.innerText = day;
-        btn.className = "py-2.5 rounded-xl font-medium transition hover:bg-neutral-800 text-neutral-300 active:scale-95";
+        btn.className = "py-2.5 rounded-xl font-medium transition hover:bg-neutral-800/80 text-neutral-300 active:scale-95";
 
         const isToday = (day === new Date().getDate() && month === new Date().getMonth() && year === new Date().getFullYear());
         const isSelected = (day === selectedDate.getDate() && month === selectedDate.getMonth() && year === selectedDate.getFullYear());
 
         if (isSelected) {
-          btn.className += " bg-purple-600 text-white font-bold ring-2 ring-purple-400 pop shadow-lg shadow-purple-900/30";
+          btn.className += " bg-rose-600 text-white font-bold ring-2 ring-rose-400 pop shadow-lg shadow-rose-900/40";
         } else if (isToday) {
-          btn.className += " border border-purple-500 text-purple-400 font-semibold";
+          btn.className += " border border-emerald-500 text-emerald-400 font-semibold";
         }
 
         btn.onclick = () => {
@@ -739,9 +1195,20 @@
       renderSchedule();
     }
 
+    function getTasksForDate(dateKey, dayIndex) {
+      const store = getTasksStore();
+      if (store[dateKey]) {
+        return store[dateKey];
+      }
+      const defaultTasks = (baseRoutineSchedule[dayIndex] && baseRoutineSchedule[dayIndex].tasks) 
+        ? JSON.parse(JSON.stringify(baseRoutineSchedule[dayIndex].tasks)) 
+        : [];
+      return defaultTasks;
+    }
+
     function renderSchedule() {
       const dayIndex = selectedDate.getDay();
-      const dayData = routineSchedule[dayIndex];
+      const dayData = baseRoutineSchedule[dayIndex];
       const dateKey = getDateISO(selectedDate);
 
       document.getElementById("selectedDayName").innerText = dayNames[dayIndex].toUpperCase();
@@ -751,28 +1218,35 @@
       const scheduleDetails = document.getElementById("scheduleDetails");
       scheduleDetails.innerHTML = "";
 
-      // Gabungkan jadwal master default dan jadwal kustom user jika ada
-      const customStore = getCustomTasks();
-      const customDayTasks = customStore[dateKey] || [];
-      const allTasks = [...dayData.tasks, ...customDayTasks];
-
+      const currentTasks = getTasksForDate(dateKey, dayIndex);
       const completedMap = getCompletedMap();
       const dateCompleted = completedMap[dateKey] || {};
 
-      allTasks.forEach((t, idx) => {
-        const taskId = t.id || `custom_${idx}`;
-        const isDone = !!dateCompleted[taskId];
-        const card = document.createElement("div");
+      if (currentTasks.length === 0) {
+        scheduleDetails.innerHTML = `
+          <div class="text-center py-10 text-neutral-400 space-y-2">
+            <span class="text-3xl">☕</span>
+            <p class="text-sm">Tidak ada kegiatan di tanggal ini (semua dihapus / kosong).</p>
+            <button onclick="addNewCustomTaskPrompt()" class="text-xs text-emerald-400 hover:underline">+ Tambah kegiatan sekarang</button>
+          </div>
+        `;
+        return;
+      }
 
-        // Kotak kuning diimplementasikan sebagai area teks/waktu yang editable dengan border aksen kuning lembut
-        // Kotak biru diimplementasikan sebagai tombol checklist interaktif dengan aksen biru estetik
-        card.className = `p-4 glass-card rounded-2xl border transition duration-300 flex items-center justify-between gap-4 fade-in-up group ${
-          isDone ? "border-emerald-900/50 bg-neutral-900/40 opacity-70" : "border-neutral-800 hover:border-neutral-700"
+      currentTasks.forEach((t, idx) => {
+        const taskId = t.id || `task_${idx}`;
+        const completionInfo = dateCompleted[taskId];
+        const isDone = !!completionInfo;
+        const doneBy = typeof completionInfo === 'object' ? completionInfo.by : (completionInfo ? "Seseorang" : "");
+
+        const card = document.createElement("div");
+        card.className = `p-4 rounded-2xl transition duration-300 flex items-center justify-between gap-3 fade-in-up group bg-neutral-900/60 ${
+          isDone ? "border border-emerald-500/30 bg-emerald-950/15 opacity-80" : "border border-neutral-800 hover:border-neutral-700"
         }`;
-        card.style.animationDelay = `${idx * 60}ms`;
+        card.style.animationDelay = `${idx * 50}ms`;
 
         card.innerHTML = `
-          <div class="flex items-center gap-3.5 grow min-w-0">
+          <div class="flex items-center gap-3 grow min-w-0">
             <!-- Checklist Circle Icon -->
             <button onclick="toggleTaskCompletion('${dateKey}', '${taskId}')" title="Klik untuk menandai selesai"
               class="w-7 h-7 rounded-xl flex items-center justify-center transition shrink-0 border ${
@@ -783,18 +1257,18 @@
               <span class="text-sm font-bold">✓</span>
             </button>
 
-            <!-- [KOTAK KUNING]: Kolom Judul & Jam yang bisa diubah oleh User -->
+            <!-- Kolom Judul & Jam yang bisa diisi & diubah user -->
             <div class="space-y-1 grow min-w-0">
               <div class="flex items-center gap-2">
-                <span id="title_${taskId}" class="font-bold text-white text-base truncate cursor-pointer hover:text-amber-300 transition ${isDone ? 'line-through text-neutral-500' : ''}" 
-                  onclick="editTaskInline('${dateKey}', '${taskId}', 'title')" title="Klik untuk mengedit judul agenda">
+                <span id="title_${taskId}" class="font-bold text-white text-base truncate cursor-pointer hover:text-amber-300 transition ${isDone ? 'line-through text-neutral-400' : ''}" 
+                  onclick="editTaskInline('${dateKey}', '${taskId}', 'title')" title="Klik untuk mengedit judul kegiatan">
                   ${escapeHtml(t.title)}
                 </span>
                 <button onclick="editTaskInline('${dateKey}', '${taskId}', 'title')" class="text-neutral-500 hover:text-amber-300 text-xs transition opacity-0 group-hover:opacity-100" title="Edit Judul">✏️</button>
               </div>
 
-              <!-- Bagian Subteks / Waktu (KOTAK KUNING) -->
-              <div class="flex items-center gap-1.5">
+              <!-- Bagian Subteks / Jam -->
+              <div class="flex flex-wrap items-center gap-2">
                 <div onclick="editTaskInline('${dateKey}', '${taskId}', 'subtext')" 
                   title="Klik untuk mengubah jam atau catatan"
                   class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-lg border border-amber-500/40 bg-amber-950/20 hover:bg-amber-950/40 hover:border-amber-400 text-amber-300 text-xs font-mono transition cursor-pointer group/yellow shadow-sm">
@@ -803,99 +1277,127 @@
                     ${escapeHtml(t.subtext || dayData.time)}
                   </span>
                 </div>
+
+                ${isDone && doneBy ? `<span class="text-[10px] text-emerald-400 bg-emerald-950/60 px-2 py-0.5 rounded-md">Dicentang oleh: <strong>${escapeHtml(doneBy)}</strong></span>` : ''}
               </div>
             </div>
           </div>
 
-          <!-- [KOTAK BIRU]: Tombol Tag Interaktif & Centang -->
+          <!-- Bagian Kanan: Checklist Tag & Tombol Hapus Kegiatan -->
           <div class="flex items-center gap-2 shrink-0">
+            <!-- Checklist Button -->
             <button onclick="toggleTaskCompletion('${dateKey}', '${taskId}')" 
-              title="Klik kotak biru ini untuk centang selesai"
-              class="px-3.5 py-1.5 text-xs font-bold rounded-xl border transition-all duration-200 flex items-center gap-2 active:scale-95 shadow-md ${
+              title="Klik untuk centang selesai"
+              class="px-3 py-1.5 text-xs font-bold rounded-xl border transition-all duration-200 flex items-center gap-2 active:scale-95 shadow-md ${
                 isDone 
                   ? "bg-emerald-950/80 text-emerald-300 border-emerald-500 ring-1 ring-emerald-400/50" 
-                  : "bg-blue-950/70 hover:bg-blue-900/80 text-blue-300 hover:text-white border-blue-600/60 hover:border-blue-400 ring-1 ring-blue-500/20 hover:shadow-blue-950/60"
+                  : "bg-blue-950/70 hover:bg-blue-900/80 text-blue-300 hover:text-white border-blue-600/60 hover:border-blue-400 ring-1 ring-blue-500/20"
               }">
               <span class="w-4 h-4 rounded-lg flex items-center justify-center border ${
                 isDone ? "bg-emerald-400 text-black border-transparent" : "border-blue-400/60 text-transparent"
               }">
                 ✓
               </span>
-              <span class="tracking-wide">${escapeHtml(t.tag)}</span>
-              ${isDone ? '<span class="text-[10px] uppercase font-mono px-1 py-0.2 bg-emerald-900/80 rounded">Selesai</span>' : ''}
+              <span class="tracking-wide">${escapeHtml(t.tag || 'Agenda')}</span>
+              ${isDone ? '<span class="text-[10px] uppercase font-mono px-1 py-0.2 bg-emerald-900 rounded">Done</span>' : ''}
+            </button>
+
+            <!-- Tombol Hapus Kegiatan -->
+            <button onclick="deleteTaskEntry('${dateKey}', '${taskId}')" 
+              title="Hapus kegiatan ini" 
+              class="p-2 rounded-xl text-neutral-500 hover:text-rose-400 hover:bg-rose-950/40 transition active:scale-90 opacity-70 group-hover:opacity-100">
+              🗑️
             </button>
           </div>
         `;
         scheduleDetails.appendChild(card);
       });
 
-      // Sinkronkan input tanggal form absen
       document.getElementById("absentDate").value = dateKey;
     }
 
     function toggleTaskCompletion(dateKey, taskId) {
+      if (!currentUser) {
+        reOpenGateModal();
+        return;
+      }
       const map = getCompletedMap();
       if (!map[dateKey]) map[dateKey] = {};
 
-      map[dateKey][taskId] = !map[dateKey][taskId];
+      if (map[dateKey][taskId]) {
+        delete map[dateKey][taskId];
+      } else {
+        map[dateKey][taskId] = {
+          completed: true,
+          by: currentUser,
+          at: new Date().toISOString()
+        };
+      }
+
       saveCompletedMap(map);
       renderSchedule();
     }
 
     function editTaskInline(dateKey, taskId, field) {
-      const targetElement = document.getElementById(`${field}_${taskId}`);
-      const currentText = targetElement ? targetElement.innerText.trim() : "";
-      const promptLabel = field === 'title' ? 'Ubah Judul Agenda:' : 'Ubah Waktu / Keterangan Jadwal:';
-      
-      const newText = prompt(promptLabel, currentText);
-      if (newText === null || newText.trim() === "") return;
+      const dayIndex = selectedDate.getDay();
+      let currentTasks = getTasksForDate(dateKey, dayIndex);
 
-      // Cek apakah taskId berasal dari master atau kustom
-      const customStore = getCustomTasks();
-      if (!customStore[dateKey]) customStore[dateKey] = [];
+      const targetTask = currentTasks.find(t => t.id === taskId);
+      const currentVal = targetTask ? targetTask[field] : "";
+      const label = field === 'title' ? 'Ubah Judul Kegiatan:' : 'Ubah Waktu / Keterangan Jadwal:';
 
-      let customIndex = customStore[dateKey].findIndex(t => t.id === taskId);
-      if (customIndex >= 0) {
-        customStore[dateKey][customIndex][field] = newText.trim();
-      } else {
-        // Jika task bawaan dimodifikasi, kita override dan simpan ke store kustom untuk tanggal ini
-        const dayIndex = selectedDate.getDay();
-        const baseTask = routineSchedule[dayIndex].tasks.find(t => t.id === taskId);
-        const clonedTask = {
-          id: taskId,
-          title: baseTask ? baseTask.title : currentText,
-          subtext: baseTask ? (baseTask.subtext || routineSchedule[dayIndex].time) : currentText,
-          tag: baseTask ? baseTask.tag : "Gabut"
-        };
-        clonedTask[field] = newText.trim();
+      const newVal = prompt(label, currentVal);
+      if (newVal === null || newVal.trim() === "") return;
 
-        // Gantikan referensi di render
-        customStore[dateKey].push(clonedTask);
+      targetTask[field] = newVal.trim();
+
+      const store = getTasksStore();
+      store[dateKey] = currentTasks;
+      saveTasksStore(store);
+      renderSchedule();
+    }
+
+    function deleteTaskEntry(dateKey, taskId) {
+      if (!confirm("Yakin ingin menghapus kegiatan ini dari jadwal?")) return;
+
+      const dayIndex = selectedDate.getDay();
+      let currentTasks = getTasksForDate(dateKey, dayIndex);
+      currentTasks = currentTasks.filter(t => t.id !== taskId);
+
+      const store = getTasksStore();
+      store[dateKey] = currentTasks;
+      saveTasksStore(store);
+
+      const compMap = getCompletedMap();
+      if (compMap[dateKey] && compMap[dateKey][taskId]) {
+        delete compMap[dateKey][taskId];
+        saveCompletedMap(compMap);
       }
 
-      saveCustomTasks(customStore);
       renderSchedule();
     }
 
     function addNewCustomTaskPrompt() {
-      const title = prompt("Nama agenda baru:");
+      const title = prompt("Nama agenda / kegiatan baru:");
       if (!title || !title.trim()) return;
 
       const subtext = prompt("Waktu / Jam pelaksanaan:", "Pukul 21.00 s.d Selesai") || "Pukul Sesuka Hati";
-      const tag = prompt("Kategori / Label (Kotak Biru):", "Chill") || "Gabut";
+      const tag = prompt("Label / Kategori:", "Chill") || "Gabut";
 
       const dateKey = getDateISO(selectedDate);
-      const customStore = getCustomTasks();
-      if (!customStore[dateKey]) customStore[dateKey] = [];
+      const dayIndex = selectedDate.getDay();
+      let currentTasks = getTasksForDate(dateKey, dayIndex);
 
-      customStore[dateKey].push({
-        id: `custom_${Date.now()}`,
+      currentTasks.push({
+        id: `kegiatan_${Date.now()}`,
         title: title.trim(),
         subtext: subtext.trim(),
         tag: tag.trim()
       });
 
-      saveCustomTasks(customStore);
+      const store = getTasksStore();
+      store[dateKey] = currentTasks;
+      saveTasksStore(store);
       renderSchedule();
     }
 
@@ -905,16 +1407,16 @@
       return div.innerHTML;
     }
 
-    // ==========================================
-    // 5. DATABASE JSON ABSEN (LOCALSTORAGE)
-    // ==========================================
-    const DB_KEY = "gabut_absences_db";
+    // ========================================================
+    // 5. DATABASE JSON ABSENAN SKIP
+    // ========================================================
+    const ABSENCE_KEY = "gabut_absences_v3";
     const defaultAbsences = [
       {
         id: "1",
         name: "Kiky",
         date: "2026-09-22",
-        reason: "Capek banget abis ngoding seharian, pengen rebahan dulu.",
+        reason: "Capek banget abis praktek seharian, pengen rebahan dulu.",
         createdAt: new Date().toISOString()
       },
       {
@@ -928,7 +1430,7 @@
 
     function getAbsencesFromJSON() {
       try {
-        const raw = localStorage.getItem(DB_KEY);
+        const raw = localStorage.getItem(ABSENCE_KEY);
         if (!raw) {
           saveAbsencesToJSON(defaultAbsences);
           return defaultAbsences;
@@ -941,17 +1443,24 @@
     }
 
     function saveAbsencesToJSON(list) {
-      localStorage.setItem(DB_KEY, JSON.stringify(list, null, 2));
+      localStorage.setItem(ABSENCE_KEY, JSON.stringify(list, null, 2));
+      notifyDataUpdated();
     }
 
     function exportJSONDB() {
-      const data = getAbsencesFromJSON();
-      const jsonStr = JSON.stringify(data, null, 2);
+      const allData = {
+        absences: getAbsencesFromJSON(),
+        moodVotes: getMoodData(),
+        tasks: getTasksStore(),
+        completed: getCompletedMap(),
+        exportedAt: new Date().toISOString()
+      };
+      const jsonStr = JSON.stringify(allData, null, 2);
       const blob = new Blob([jsonStr], { type: "application/json" });
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = `absences_backup_${new Date().toISOString().slice(0, 10)}.json`;
+      a.download = `jadwal_gabut_backup_${new Date().toISOString().slice(0, 10)}.json`;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
@@ -965,15 +1474,18 @@
       const reader = new FileReader();
       reader.onload = (e) => {
         try {
-          const importedData = JSON.parse(e.target.result);
-          if (!Array.isArray(importedData)) {
-            throw new Error("Format file JSON harus array data.");
-          }
-          saveAbsencesToJSON(importedData);
+          const imported = JSON.parse(e.target.result);
+          if (imported.absences) saveAbsencesToJSON(imported.absences);
+          if (imported.moodVotes) saveMoodData(imported.moodVotes);
+          if (imported.tasks) saveTasksStore(imported.tasks);
+          if (imported.completed) saveCompletedMap(imported.completed);
+
+          renderSchedule();
+          renderMoodButtons();
           refreshAbsences();
-          alert("✅ Database JSON berhasil di-impor!");
+          alert("✅ Semua data jadwal, mood, dan absen berhasil disinkronkan!");
         } catch (err) {
-          alert("❌ Gagal impor: " + err.message);
+          alert("❌ Gagal impor file: " + err.message);
         } finally {
           event.target.value = "";
         }
@@ -982,7 +1494,7 @@
     }
 
     function resetJSONDB() {
-      if (confirm("Reset database JSON ke data default?")) {
+      if (confirm("Reset data absen ke default?")) {
         saveAbsencesToJSON(defaultAbsences);
         refreshAbsences();
       }
@@ -993,13 +1505,13 @@
       container.innerHTML = "";
 
       if (!list || list.length === 0) {
-        container.innerHTML = `<p class="text-xs text-neutral-500 italic">Belum ada data izin di database JSON.</p>`;
+        container.innerHTML = `<p class="text-xs text-neutral-500 italic">Belum ada data izin yang dikirim.</p>`;
         return;
       }
 
       list.forEach((item, idx) => {
         const itemEl = document.createElement("div");
-        itemEl.className = "p-3 bg-neutral-900/60 border border-neutral-800 rounded-2xl text-xs space-y-1 fade-in-up flex items-start justify-between gap-2";
+        itemEl.className = "p-3 bg-neutral-900/60 rounded-2xl text-xs space-y-1 fade-in-up flex items-start justify-between gap-2 border border-neutral-800/80";
         itemEl.style.animationDelay = `${idx * 40}ms`;
         const submitted = item.createdAt
           ? new Date(item.createdAt).toLocaleString("id-ID", { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" })
@@ -1007,12 +1519,12 @@
         itemEl.innerHTML = `
           <div class="space-y-1 grow">
             <div class="flex items-center justify-between font-semibold">
-              <span class="text-purple-400 font-bold">${escapeHtml(item.name)}</span>
+              <span class="text-rose-400 font-bold">${escapeHtml(item.name)}</span>
               <span class="text-neutral-500 font-mono">${escapeHtml(item.date)}${submitted ? ` · ${submitted}` : ""}</span>
             </div>
             <p class="text-neutral-300">"${escapeHtml(item.reason)}"</p>
           </div>
-          <button onclick="deleteAbsenceEntry('${escapeHtml(item.id)}')" title="Hapus entri ini" class="text-neutral-600 hover:text-red-400 p-1 transition shrink-0">
+          <button onclick="deleteAbsenceEntry('${escapeHtml(item.id)}')" title="Hapus entri ini" class="text-neutral-500 hover:text-rose-400 p-1 transition shrink-0">
             ✕
           </button>
         `;
@@ -1031,7 +1543,7 @@
         const list = getAbsencesFromJSON();
         renderAbsenceItems(list);
       } catch (err) {
-        console.error("Gagal refresh data JSON:", err);
+        console.error("Gagal refresh data:", err);
       }
     }
 
@@ -1052,7 +1564,7 @@
       }
 
       submitBtn.disabled = true;
-      submitBtn.innerText = "Menyimpan ke JSON...";
+      submitBtn.innerText = "Mengirim...";
 
       try {
         const currentList = getAbsencesFromJSON();
@@ -1077,71 +1589,14 @@
         submitBtn.innerText = "Kirim Keterangan Publik";
       }
     });
-<!-- Input di Kolom Kegiatan -->
-<div class="form-group">
-  <label for="fotoKegiatan">Foto Kegiatan:</label>
-  <input 
-    type="file" 
-    id="fotoKegiatan" 
-    accept="image/*" 
-    capture="environment" 
-  />
-</div>
 
-<hr />
-
-<!-- Area Tampilan: Bagian Pengumuman -->
-<div class="section-pengumuman">
-  <h3>Pengumuman</h3>
-  <div id="previewPengumumanContainer">
-    <p>Belum ada foto kegiatan.</p>
-  </div>
-</div>
-
-<hr />
-
-<!-- Area Tampilan: Alasan Skip -->
-<div class="section-alasan-skip">
-  <h3>Alasan Skip</h3>
-  <div id="previewSkipContainer">
-    <p>Belum ada foto kegiatan.</p>
-  </div>
-</div>
-
-const inputFoto = document.getElementById("fotoKegiatan");
-const previewPengumuman = document.getElementById("previewPengumumanContainer");
-const previewSkip = document.getElementById("previewSkipContainer");
-
-inputFoto.addEventListener("change", function () {
-  const file = this.files[0];
-
-  if (file) {
-    const reader = new FileReader();
-
-    reader.onload = function (e) {
-      const imgMarkup = `
-        <img 
-          src="${e.target.result}" 
-          alt="Foto Kegiatan" 
-          style="max-width: 100%; height: auto; border-radius: 8px; margin-top: 8px;" 
-        />
-      `;
-
-      // Render foto ke kedua bagian
-      previewPengumuman.innerHTML = imgMarkup;
-      previewSkip.innerHTML = imgMarkup;
-    };
-
-    reader.readAsDataURL(file);
-  }
-});
-
-    
     // Inisialisasi awal
+    initUserGate();
     renderCalendar();
     renderSchedule();
     renderMoodButtons();
     refreshAbsences();
+    renderCurrentQuote();
   </script>
 </body>
 
