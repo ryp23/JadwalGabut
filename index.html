@@ -158,9 +158,7 @@
 
 <body id="skyBody" class="sky-night text-neutral-100 min-h-screen relative overflow-x-hidden selection:bg-rose-500 selection:text-white">
 
-  <!-- ======================================================== -->
   <!-- DYNAMIC CELESTIAL ENVIRONMENT -->
-  <!-- ======================================================== -->
   <div id="skyEnvironment" class="fixed inset-0 pointer-events-none overflow-hidden z-0 transition-opacity duration-1000">
     <div id="starContainer" class="absolute inset-0 opacity-0 transition-opacity duration-1000"></div>
 
@@ -408,38 +406,52 @@
           <div id="calendarDays" class="grid grid-cols-7 gap-1.5 text-sm text-center"></div>
 
           <div class="mt-4 pt-4 border-t border-neutral-800/80 flex items-center justify-between text-xs text-neutral-400">
-            <span>* Klik tanggal untuk agenda harian</span>
+            <span class="flex items-center gap-1.5">
+              <span class="w-2 h-2 rounded-full bg-amber-400"></span>
+              <span>Ada absen skip</span>
+            </span>
             <button onclick="goToToday()" class="text-rose-400 hover:underline font-semibold flex items-center gap-1">
               <span>🎯</span> Hari Ini
             </button>
           </div>
         </div>
 
-        <!-- Form Keterangan / Skip Jadwal -->
+        <!-- Form Keterangan / Skip Jadwal (Tersinkron Otomatis dengan Tanggal Terpilih) -->
         <div class="glass-panel p-6 rounded-3xl shadow-xl space-y-4">
-          <h3 class="font-bold text-md text-white flex items-center gap-2">
-            <span>📝</span> Keterangan Absen Gabut
-          </h3>
-          <p class="text-xs text-neutral-400 leading-relaxed">
-            Gak bisa ikut agenda? Isi form ini, semua pengunjung bakal tahu lu lagi skip jadwal.
-          </p>
+          <div class="flex items-center justify-between">
+            <h3 class="font-bold text-md text-white flex items-center gap-2">
+              <span>📝</span> Izin Skip Agenda
+            </h3>
+            <span id="formTargetDateBadge" class="text-[11px] font-mono font-bold text-amber-300 bg-amber-950/60 px-2.5 py-0.5 rounded-lg border border-amber-800/50"></span>
+          </div>
+
+          <!-- Quick Tags Pilihan Alasan Cepat -->
+          <div>
+            <span class="block text-[11px] font-medium text-neutral-400 mb-1.5">Template Cepat:</span>
+            <div class="flex flex-wrap gap-1.5">
+              <button type="button" onclick="applyQuickReason('💤 Istirahat / Lelah')" class="px-2.5 py-1 rounded-lg bg-neutral-800/90 hover:bg-neutral-700 text-neutral-300 text-[11px] transition">💤 Istirahat</button>
+              <button type="button" onclick="applyQuickReason('🏥 Shift Kerja / Pasien')" class="px-2.5 py-1 rounded-lg bg-neutral-800/90 hover:bg-neutral-700 text-neutral-300 text-[11px] transition">🏥 Shift Kerja</button>
+              <button type="button" onclick="applyQuickReason('🌧️ Cuaca Hujan / Mager')" class="px-2.5 py-1 rounded-lg bg-neutral-800/90 hover:bg-neutral-700 text-neutral-300 text-[11px] transition">🌧️ Hujan / Mager</button>
+              <button type="button" onclick="applyQuickReason('🚗 Ada Acara Luar / Boren')" class="px-2.5 py-1 rounded-lg bg-neutral-800/90 hover:bg-neutral-700 text-neutral-300 text-[11px] transition">🚗 Acara Luar</button>
+            </div>
+          </div>
+
           <form id="absenceForm" class="space-y-3">
             <div>
-              <label class="block text-xs font-medium text-neutral-300 mb-1">Nama</label>
+              <label class="block text-xs font-medium text-neutral-300 mb-1">Nama Pemohon</label>
               <input type="text" id="absentName" required placeholder="Nama kamu..."
                 class="w-full px-3.5 py-2 bg-neutral-900/90 border border-neutral-700/80 rounded-xl text-sm text-white focus:outline-none focus:border-neutral-500 transition">
             </div>
             <div>
-              <label class="block text-xs font-medium text-neutral-300 mb-1">Tanggal Terkait</label>
+              <label class="block text-xs font-medium text-neutral-300 mb-1">Tanggal Absen Terkait</label>
               <input type="date" id="absentDate" required
                 class="w-full px-3.5 py-2 bg-neutral-900/90 border border-neutral-700/80 rounded-xl text-sm text-white focus:outline-none focus:border-neutral-500 transition">
             </div>
             <div>
-              <label class="block text-xs font-medium text-neutral-300 mb-1">Alasan Skip</label>
-              <textarea id="absentReason" required rows="2" placeholder="Capek, lembur, mendadak healing, dll..."
+              <label class="block text-xs font-medium text-neutral-300 mb-1">Keterangan / Alasan</label>
+              <textarea id="absentReason" required rows="2" placeholder="Tulis alasan skip agenda..."
                 class="w-full px-3.5 py-2 bg-neutral-900/90 border border-neutral-700/80 rounded-xl text-sm text-white focus:outline-none focus:border-neutral-500 transition"></textarea>
             </div>
-            <!-- Tombol Warna Abu-abu -->
             <button type="submit" id="absentSubmitBtn"
               class="w-full py-2.5 bg-neutral-700 hover:bg-neutral-600 active:bg-neutral-800 text-neutral-100 font-semibold rounded-xl text-sm transition duration-200 shadow-md border border-neutral-600 disabled:opacity-60 active:scale-[0.99]">
               Kirim Keterangan Publik
@@ -449,9 +461,19 @@
         </div>
       </section>
 
-      <!-- Detail Jadwal Terpilih & Board Absen -->
+      <!-- Detail Jadwal Terpilih & Board Absen Tersimpan -->
       <section class="lg:col-span-7 space-y-6">
         <div class="glass-panel p-6 rounded-3xl shadow-xl relative overflow-hidden">
+          
+          <!-- Banner Notifikasi Jika User Sedang Skip Pada Hari Terpilih -->
+          <div id="userAbsentNoticeBanner" class="hidden mb-4 p-3 bg-amber-950/40 border border-amber-500/50 rounded-2xl flex items-center justify-between text-xs text-amber-200 fade-in-up">
+            <div class="flex items-center gap-2">
+              <span class="text-base">⚠️</span>
+              <span>Kamu tercatat <strong>izin/skip</strong> pada tanggal ini.</span>
+            </div>
+            <span class="text-[10px] font-mono text-amber-300 uppercase tracking-wide">Status: Skip</span>
+          </div>
+
           <div class="flex flex-wrap items-center justify-between border-b border-neutral-800 pb-4 mb-4 gap-3">
             <div>
               <span id="selectedDayName" class="text-xs uppercase font-bold tracking-widest text-emerald-400"></span>
@@ -472,16 +494,19 @@
           <div id="scheduleDetails" class="space-y-3.5"></div>
         </div>
 
-        <!-- Board Semua Keterangan / Izin Publik -->
+        <!-- Board Keterangan Absen Tersimpan per Tanggal Terpilih -->
         <div class="glass-panel p-6 rounded-3xl shadow-xl space-y-4">
           <div class="flex flex-wrap items-center justify-between border-b border-neutral-800 pb-3 gap-2">
-            <h3 class="font-bold text-md text-white flex items-center gap-2">
-              <span>📢</span> Board Pengumuman & Alasan Skip
-            </h3>
+            <div>
+              <h3 class="font-bold text-md text-white flex items-center gap-2">
+                <span>📢</span> Absen Skip: <span id="absenceBoardScopeDate" class="text-rose-400"></span>
+              </h3>
+              <p class="text-[11px] text-neutral-400">Daftar pengunjung yang izin tidak ikut agenda pada tanggal terpilih.</p>
+            </div>
             <div class="flex items-center gap-2">
-              <span class="text-xs text-neutral-400 bg-neutral-800/80 px-2.5 py-1 rounded-full border border-neutral-700/80 font-mono flex items-center gap-1.5">
-                <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span> P2P Live Network
-              </span>
+              <button id="toggleAbsenceScopeBtn" onclick="toggleAbsenceFilterScope()" class="text-xs text-neutral-300 hover:text-white bg-neutral-800 hover:bg-neutral-700 px-3 py-1 rounded-xl border border-neutral-700 transition">
+                Tampilkan Semua Tanggal
+              </button>
             </div>
           </div>
 
@@ -489,8 +514,12 @@
             <p class="text-xs text-neutral-500 italic">Memuat data...</p>
           </div>
 
+          <!-- Quick Report & Data Sync -->
           <div class="pt-3 border-t border-neutral-800 flex flex-wrap items-center justify-between gap-2 text-xs">
-            <span class="text-neutral-400 font-medium">🗄️ Sinkronisasi File Cadangan</span>
+            <button onclick="copyDailyAttendanceSummary()" class="text-emerald-400 hover:text-emerald-300 font-semibold flex items-center gap-1.5 transition">
+              <span>📋</span> Salin Ringkasan Tanggal Ini
+            </button>
+
             <div class="flex items-center gap-2">
               <button onclick="exportJSONDB()" title="Ekspor ke file JSON"
                 class="px-3 py-1.5 bg-neutral-800/90 hover:bg-neutral-700 text-purple-300 hover:text-purple-200 rounded-xl border border-purple-800/50 flex items-center gap-1.5 transition font-semibold active:scale-95">
@@ -514,41 +543,23 @@
     <!-- Footer -->
     <footer class="text-center text-xs text-neutral-400 mt-12 py-6 space-y-4 border-t border-neutral-800/60">
       <div class="flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-neutral-300">
-        <a href="https://wa.me/qr/RTXI2XYEUCJ6C1" target="_blank" class="hover:text-pink-400 flex items-center gap-1.5 transition">
-          <span class="text-pink-400">💬</span> WhatsApp Kiky
-        </a>
+        <a href="https://wa.me/qr/RTXI2XYEUCJ6C1" target="_blank" class="hover:text-pink-400 flex items-center gap-1.5 transition"><span class="text-pink-400">💬</span> WhatsApp Kiky</a>
         <span>•</span>
-        <a href="https://discord.com/users/ms.kyyy" target="_blank" class="hover:text-indigo-400 flex items-center gap-1.5 transition">
-          <span class="text-indigo-400">🎮</span> Discord ms.kyyy
-        </a>
+        <a href="https://discord.com/users/ms.kyyy" target="_blank" class="hover:text-indigo-400 flex items-center gap-1.5 transition"><span class="text-indigo-400">🎮</span> Discord ms.kyyy</a>
         <span>•</span>
-        <a href="https://open.spotify.com" target="_blank" class="hover:text-emerald-400 flex items-center gap-1.5 transition">
-          <span class="text-emerald-400">🎵</span> Spotify
-        </a>
+        <a href="https://open.spotify.com" target="_blank" class="hover:text-emerald-400 flex items-center gap-1.5 transition"><span class="text-emerald-400">🎵</span> Spotify</a>
         <span>•</span>
-        <a href="https://www.youtube.com" target="_blank" class="hover:text-red-400 flex items-center gap-1.5 transition">
-          <span class="text-red-400">▶</span> YouTube
-        </a>
+        <a href="https://www.youtube.com" target="_blank" class="hover:text-red-400 flex items-center gap-1.5 transition"><span class="text-red-400">▶</span> YouTube</a>
         <span>•</span>
-        <a href="https://www.netflix.com" target="_blank" class="hover:text-rose-400 flex items-center gap-1.5 transition">
-          <span class="text-rose-400">🎬</span> Netflix
-        </a>
+        <a href="https://www.netflix.com" target="_blank" class="hover:text-rose-400 flex items-center gap-1.5 transition"><span class="text-rose-400">🎬</span> Netflix</a>
         <span>•</span>
-        <a href="https://www.chordtela.com" target="_blank" class="hover:text-amber-400 flex items-center gap-1.5 transition">
-          <span class="text-amber-400">🎸</span> Chordtela
-        </a>
+        <a href="https://www.chordtela.com" target="_blank" class="hover:text-amber-400 flex items-center gap-1.5 transition"><span class="text-amber-400">🎸</span> Chordtela</a>
         <span>•</span>
-        <a href="https://www.tiktok.com" target="_blank" class="hover:text-cyan-400 flex items-center gap-1.5 transition">
-          <span class="text-cyan-400">📱</span> TikTok
-        </a>
+        <a href="https://www.tiktok.com" target="_blank" class="hover:text-cyan-400 flex items-center gap-1.5 transition"><span class="text-cyan-400">📱</span> TikTok</a>
         <span>•</span>
-        <a href="https://www.instagram.com" target="_blank" class="hover:text-fuchsia-400 flex items-center gap-1.5 transition">
-          <span class="text-fuchsia-400">📸</span> Instagram
-        </a>
+        <a href="https://www.instagram.com" target="_blank" class="hover:text-fuchsia-400 flex items-center gap-1.5 transition"><span class="text-fuchsia-400">📸</span> Instagram</a>
         <span>•</span>
-        <a href="https://www.threads.net" target="_blank" class="hover:text-white flex items-center gap-1.5 transition">
-          <span class="text-neutral-300">🧵</span> Threads
-        </a>
+        <a href="https://www.threads.net" target="_blank" class="hover:text-white flex items-center gap-1.5 transition"><span class="text-neutral-300">🧵</span> Threads</a>
       </div>
       <p class="text-[11px] text-neutral-500">Jadwal Waktu Gabut &copy; 2026. All Media & Social Hyperlinks Connected.</p>
     </footer>
@@ -563,9 +574,7 @@
         </h3>
         <button onclick="closeMoodHistoryModal()" class="text-neutral-400 hover:text-white p-1 text-lg leading-none transition">✕</button>
       </div>
-
       <div id="moodBreakdownList" class="space-y-3 max-h-[350px] overflow-y-auto pr-1"></div>
-
       <div class="pt-3 border-t border-neutral-800 flex justify-between items-center text-xs">
         <button onclick="clearMoodHistoryToday()" class="text-rose-400 hover:underline">Reset Suara Hari Ini</button>
         <button onclick="closeMoodHistoryModal()" class="px-4 py-2 bg-neutral-800 hover:bg-neutral-700 text-white rounded-xl transition font-semibold">Tutup</button>
@@ -589,7 +598,6 @@
       }
       return id;
     }
-
     const currentDeviceId = getOrCreateDeviceId();
 
     // ========================================================
@@ -705,7 +713,7 @@
     setInterval(updateSkyAndCelestialCycle, 60000);
 
     // ========================================================
-    // QUOTES SINKRON GLOBAL (TIAP 10 DETIK SAMA UNTUK SEMUA USER)
+    // QUOTES SINKRON GLOBAL (TIAP 10 DETIK)
     // ========================================================
     const ALL_QUOTES = [
       { topic: "Hidup", text: "Hidup bukan tentang menunggu badai reda, melainkan belajar menari di tengah hujan lebat." },
@@ -722,10 +730,8 @@
     let lastRenderedIndex = -1;
 
     function renderSynchronizedQuote() {
-      // Sinkronisasi epoch per 10 detik: semua orang di dunia melihat quote yang sama
       const globalTimeStep = Math.floor(Date.now() / 10000);
       const quoteIndex = (globalTimeStep + manualQuoteOffset) % ALL_QUOTES.length;
-
       if (quoteIndex === lastRenderedIndex) return;
       lastRenderedIndex = quoteIndex;
 
@@ -745,8 +751,6 @@
       if (isManual) manualQuoteOffset++;
       renderSynchronizedQuote();
     }
-
-    // Periksa perpindahan detik quote
     setInterval(renderSynchronizedQuote, 1000);
 
     function updateLiveClock() {
@@ -767,7 +771,7 @@
     updateLiveClock();
 
     // ========================================================
-    // 1. GATE ABSEN AWAL & NAMA PENGGUNA
+    // 1. GATE ABSEN AWAL & IDENTITAS USER
     // ========================================================
     let currentUser = localStorage.getItem("gabut_user_name") || "";
 
@@ -799,13 +803,11 @@
 
       currentUser = val;
       localStorage.setItem("gabut_user_name", currentUser);
-
-      // Sinkronkan nama baru ke entri mood yang terikat pada deviceId ini
       updateVoterNameInMoods(currentUser);
-
       initUserGate();
       renderMoodButtons();
       renderSchedule();
+      renderFilteredAbsences();
     });
 
     function reOpenGateModal() {
@@ -817,7 +819,7 @@
     }
 
     // ========================================================
-    // 2. NETWORK P2P REALTIME LENGKAP
+    // 2. NETWORK P2P REALTIME SYNC (PEERJS)
     // ========================================================
     const MOOD_DB_KEY = "gabut_mood_votes_v3";
     const TASKS_STORE_KEY = "gabut_tasks_v3";
@@ -832,7 +834,7 @@
     let liveTasksStore = safeParseJSON(localStorage.getItem(TASKS_STORE_KEY), {});
     let liveCompletedMap = safeParseJSON(localStorage.getItem(COMPLETED_MAP_KEY), {});
     let liveAbsences = safeParseJSON(localStorage.getItem(ABSENCE_KEY), [
-      { id: "1", name: "Kiky", date: "2026-09-22", reason: "Capek banget abis aktivitas seharian, pengen rebahan dulu.", createdAt: new Date().toISOString() }
+      { id: "1", name: "Kiky", date: "2026-09-24", reason: "Praktek klinik seharian, butuh recovery tidur malam.", createdAt: new Date().toISOString() }
     ]);
 
     const ROOM_HUB_ID = "ruang-gabut-kiky-2026";
@@ -851,13 +853,8 @@
       const randomId = "gabut_" + Math.random().toString(36).substring(2, 9);
       myPeer = new Peer(randomId);
 
-      myPeer.on("open", () => {
-        connectToHost();
-      });
-
-      myPeer.on("error", (err) => {
-        console.warn("P2P Notice:", err);
-      });
+      myPeer.on("open", () => connectToHost());
+      myPeer.on("error", (err) => console.warn("P2P Notice:", err));
 
       myPeer.on("connection", (conn) => {
         setupConnectionEvents(conn);
@@ -906,7 +903,6 @@
       peerConnections.push(conn);
       conn.on("data", (msg) => {
         if (!msg) return;
-
         if (msg.type === "MOOD_SYNC") {
           liveMoodData = Object.assign({}, liveMoodData, msg.data);
           localStorage.setItem(MOOD_DB_KEY, JSON.stringify(liveMoodData));
@@ -922,7 +918,9 @@
         } else if (msg.type === "ABSENCE_SYNC") {
           liveAbsences = msg.data;
           localStorage.setItem(ABSENCE_KEY, JSON.stringify(liveAbsences));
-          renderAbsenceItems(liveAbsences);
+          renderCalendar();
+          renderFilteredAbsences();
+          updateUserAbsentNotice();
         } else if (msg.type === "ALL_SYNC") {
           liveMoodData = Object.assign({}, liveMoodData, msg.data.mood || {});
           liveTasksStore = Object.assign({}, liveTasksStore, msg.data.tasks || {});
@@ -935,8 +933,10 @@
           localStorage.setItem(COMPLETED_MAP_KEY, JSON.stringify(liveCompletedMap));
           localStorage.setItem(ABSENCE_KEY, JSON.stringify(liveAbsences));
           renderMoodButtons();
+          renderCalendar();
           renderSchedule();
-          renderAbsenceItems(liveAbsences);
+          renderFilteredAbsences();
+          updateUserAbsentNotice();
         }
       });
     }
@@ -963,7 +963,6 @@
       return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
     }
 
-    // Jika ganti nama, perbarui nama vote lama tanpa menambah vote baru
     function updateVoterNameInMoods(newName) {
       let changed = false;
       Object.keys(liveMoodData).forEach(dateKey => {
@@ -992,7 +991,6 @@
       let totalClicks = todayVotes.length;
       document.getElementById("totalMoodCountBadge").textContent = `${totalClicks} Vote`;
 
-      // Cek pilihan berdasarkan deviceId (bukan nama string)
       const userTodayVote = todayVotes.find(v => v.deviceId === currentDeviceId);
 
       const statusEl = document.getElementById("activeUserMoodStatus");
@@ -1022,9 +1020,7 @@
           `;
         } else {
           votersHtml = `
-            <div class="w-full mt-1.5 text-[9px] text-neutral-500 italic text-center">
-              Belum ada vote
-            </div>
+            <div class="w-full mt-1.5 text-[9px] text-neutral-500 italic text-center">Belum ada vote</div>
           `;
         }
 
@@ -1064,12 +1060,11 @@
       const today = getTodayKey();
       if (!liveMoodData[today]) liveMoodData[today] = [];
 
-      // Validasi mutlak berdasarkan deviceId unik
       const existingIdx = liveMoodData[today].findIndex(v => v.deviceId === currentDeviceId);
 
       if (existingIdx >= 0) {
         liveMoodData[today][existingIdx].moodId = moodId;
-        liveMoodData[today][existingIdx].name = currentUser; // Selaraskan nama terkini
+        liveMoodData[today][existingIdx].name = currentUser;
         liveMoodData[today][existingIdx].timestamp = new Date().toISOString();
       } else {
         liveMoodData[today].push({
@@ -1169,11 +1164,15 @@
 
       for (let day = 1; day <= totalDays; day++) {
         const btn = document.createElement("button");
-        btn.innerText = day;
-        btn.className = "py-2.5 rounded-xl font-medium transition hover:bg-neutral-800/80 text-neutral-300 active:scale-95";
+        btn.className = "py-2.5 rounded-xl font-medium transition hover:bg-neutral-800/80 text-neutral-300 active:scale-95 relative flex flex-col items-center justify-center";
+
+        const thisDayISO = `${year}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+        const hasAbsence = liveAbsences.some(a => a.date === thisDayISO);
 
         const isToday = (day === new Date().getDate() && month === new Date().getMonth() && year === new Date().getFullYear());
         const isSelected = (day === selectedDate.getDate() && month === selectedDate.getMonth() && year === selectedDate.getFullYear());
+
+        btn.innerHTML = `<span>${day}</span>${hasAbsence ? '<span class="w-1.5 h-1.5 rounded-full bg-amber-400 absolute bottom-1"></span>' : ''}`;
 
         if (isSelected) {
           btn.className += " bg-rose-600 text-white font-bold ring-2 ring-rose-400 pop shadow-lg shadow-rose-900/40";
@@ -1185,6 +1184,8 @@
           selectedDate = new Date(year, month, day);
           renderCalendar();
           renderSchedule();
+          renderFilteredAbsences();
+          updateUserAbsentNotice();
         };
         daysContainer.appendChild(btn);
       }
@@ -1199,12 +1200,26 @@
       selectedDate = new Date();
       renderCalendar();
       renderSchedule();
+      renderFilteredAbsences();
+      updateUserAbsentNotice();
     }
 
     function getTasksForDate(dateKey, dayIndex) {
       if (liveTasksStore[dateKey]) return liveTasksStore[dateKey];
       return (baseRoutineSchedule[dayIndex] && baseRoutineSchedule[dayIndex].tasks) 
         ? JSON.parse(JSON.stringify(baseRoutineSchedule[dayIndex].tasks)) : [];
+    }
+
+    function updateUserAbsentNotice() {
+      const dateKey = getDateISO(selectedDate);
+      const noticeBanner = document.getElementById("userAbsentNoticeBanner");
+      const isUserAbsentToday = liveAbsences.some(a => a.date === dateKey && (a.deviceId === currentDeviceId || (currentUser && a.name.toLowerCase() === currentUser.toLowerCase())));
+      
+      if (isUserAbsentToday) {
+        noticeBanner.classList.remove("hidden");
+      } else {
+        noticeBanner.classList.add("hidden");
+      }
     }
 
     function renderSchedule() {
@@ -1215,6 +1230,10 @@
       document.getElementById("selectedDayName").innerText = dayNames[dayIndex].toUpperCase();
       document.getElementById("selectedDateDisplay").innerText = `${selectedDate.getDate()} ${monthNames[selectedDate.getMonth()]} ${selectedDate.getFullYear()}`;
       document.getElementById("timeSlot").innerHTML = `<span>⏰</span><span>${escapeHtml(dayData.time)}</span>`;
+
+      // Perbarui label form absen agar menunjuk ke tanggal aktif
+      document.getElementById("formTargetDateBadge").innerText = dateKey;
+      document.getElementById("absentDate").value = dateKey;
 
       const scheduleDetails = document.getElementById("scheduleDetails");
       scheduleDetails.innerHTML = "";
@@ -1328,12 +1347,10 @@
               </button>
             </div>
           </div>
-
           ${doneByChips}
         `;
         scheduleDetails.appendChild(card);
       });
-      document.getElementById("absentDate").value = dateKey;
     }
 
     function toggleTaskCompletion(dateKey, taskId) {
@@ -1425,17 +1442,49 @@
     }
 
     // ========================================================
-    // 5. DATABASE ABSENAN SKIP
+    // 5. DATABASE ABSEN SKIP TERSIMPAN PER TANGGAL
     // ========================================================
-    function renderAbsenceItems(list) {
+    let showAllAbsencesScope = false;
+
+    function toggleAbsenceFilterScope() {
+      showAllAbsencesScope = !showAllAbsencesScope;
+      const btn = document.getElementById("toggleAbsenceScopeBtn");
+      btn.innerText = showAllAbsencesScope ? "Filter Tanggal Ini Saja" : "Tampilkan Semua Tanggal";
+      renderFilteredAbsences();
+    }
+
+    function applyQuickReason(text) {
+      const reasonEl = document.getElementById("absentReason");
+      reasonEl.value = text;
+      reasonEl.focus();
+    }
+
+    function renderFilteredAbsences() {
       const container = document.getElementById("absenceList");
+      const scopeDateDisplay = document.getElementById("absenceBoardScopeDate");
       if (!container) return;
+
+      const dateKey = getDateISO(selectedDate);
+      scopeDateDisplay.innerText = showAllAbsencesScope 
+        ? "Semua Riwayat" 
+        : `${selectedDate.getDate()} ${monthNames[selectedDate.getMonth()]} ${selectedDate.getFullYear()}`;
+
+      const listToDisplay = showAllAbsencesScope 
+        ? liveAbsences 
+        : liveAbsences.filter(item => item.date === dateKey);
+
       container.innerHTML = "";
-      if (!list || list.length === 0) {
-        container.innerHTML = `<p class="text-xs text-neutral-500 italic">Belum ada data izin yang dikirim.</p>`;
+
+      if (!listToDisplay || listToDisplay.length === 0) {
+        container.innerHTML = `
+          <div class="text-center py-8 text-neutral-500 text-xs italic">
+            <span>☕ Tidak ada yang izin/skip pada tanggal ini. Semua diprediksi hadir!</span>
+          </div>
+        `;
         return;
       }
-      list.forEach((item, idx) => {
+
+      listToDisplay.forEach((item, idx) => {
         const itemEl = document.createElement("div");
         itemEl.className = "p-3 bg-neutral-900/60 rounded-2xl text-xs space-y-1 fade-in-up flex items-start justify-between gap-2 border border-neutral-800/80";
         itemEl.style.animationDelay = `${idx * 40}ms`;
@@ -1446,9 +1495,9 @@
               <span class="text-rose-400 font-bold">${escapeHtml(item.name)}</span>
               <span class="text-neutral-500 font-mono">${escapeHtml(item.date)}${submitted ? ` · ${submitted}` : ""}</span>
             </div>
-            <p class="text-neutral-300">"${escapeHtml(item.reason)}"</p>
+            <p class="text-neutral-300 font-medium">"${escapeHtml(item.reason)}"</p>
           </div>
-          <button onclick="deleteAbsenceEntry('${escapeHtml(item.id)}')" class="text-neutral-500 hover:text-rose-400 p-1 transition shrink-0">✕</button>
+          <button onclick="deleteAbsenceEntry('${escapeHtml(item.id)}')" class="text-neutral-500 hover:text-rose-400 p-1 transition shrink-0" title="Hapus keterangan">✕</button>
         `;
         container.appendChild(itemEl);
       });
@@ -1457,7 +1506,9 @@
     function deleteAbsenceEntry(id) {
       liveAbsences = liveAbsences.filter(item => String(item.id) !== String(id));
       localStorage.setItem(ABSENCE_KEY, JSON.stringify(liveAbsences));
-      renderAbsenceItems(liveAbsences);
+      renderCalendar();
+      renderFilteredAbsences();
+      updateUserAbsentNotice();
       broadcastState("ABSENCE_SYNC", liveAbsences);
     }
 
@@ -1478,12 +1529,25 @@
       }
 
       submitBtn.disabled = true;
-      submitBtn.innerText = "Mengirim...";
+      submitBtn.innerText = "Menyimpan Keterangan...";
+
       try {
-        liveAbsences.unshift({ id: Date.now().toString(), name, date, reason, createdAt: new Date().toISOString() });
+        const newAbsence = {
+          id: Date.now().toString(),
+          deviceId: currentDeviceId,
+          name,
+          date,
+          reason,
+          createdAt: new Date().toISOString()
+        };
+
+        liveAbsences.unshift(newAbsence);
         localStorage.setItem(ABSENCE_KEY, JSON.stringify(liveAbsences));
+
         document.getElementById("absentReason").value = "";
-        renderAbsenceItems(liveAbsences);
+        renderCalendar();
+        renderFilteredAbsences();
+        updateUserAbsentNotice();
         broadcastState("ABSENCE_SYNC", liveAbsences);
       } catch (err) {
         errorEl.innerText = "Gagal menyimpan: " + err.message;
@@ -1494,49 +1558,17 @@
       }
     });
 
-    function exportJSONDB() {
-      const allData = {
-        absences: liveAbsences,
-        moodVotes: liveMoodData,
-        tasks: liveTasksStore,
-        completed: liveCompletedMap,
-        exportedAt: new Date().toISOString()
-      };
-      const blob = new Blob([JSON.stringify(allData, null, 2)], { type: "application/json" });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = `jadwal_gabut_backup_${new Date().toISOString().slice(0, 10)}.json`;
-      a.click();
-      URL.revokeObjectURL(url);
-    }
-
-    function importJSONDB(event) {
-      const file = event.target.files[0];
-      if (!file) return;
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        try {
-          const imported = JSON.parse(e.target.result);
-          if (imported.absences) {
-            liveAbsences = imported.absences;
-            localStorage.setItem(ABSENCE_KEY, JSON.stringify(liveAbsences));
-          }
-          if (imported.moodVotes) {
-            liveMoodData = imported.moodVotes;
-            localStorage.setItem(MOOD_DB_KEY, JSON.stringify(liveMoodData));
-          }
-          if (imported.tasks) {
-            liveTasksStore = imported.tasks;
-            localStorage.setItem(TASKS_STORE_KEY, JSON.stringify(liveTasksStore));
-          }
+    // Salin Ringkasan Harian (Format Pesan Komunitas)
+    function copyDailyAttendanceSummary() {
           if (imported.completed) {
             liveCompletedMap = imported.completed;
             localStorage.setItem(COMPLETED_MAP_KEY, JSON.stringify(liveCompletedMap));
           }
+          renderCalendar();
           renderSchedule();
           renderMoodButtons();
-          renderAbsenceItems(liveAbsences);
+          renderFilteredAbsences();
+          updateUserAbsentNotice();
           broadcastState("ALL_SYNC", {
             mood: liveMoodData,
             tasks: liveTasksStore,
@@ -1554,10 +1586,12 @@
     function resetJSONDB() {
       if (confirm("Reset data absen ke default?")) {
         liveAbsences = [
-          { id: "1", name: "Kiky", date: "2026-09-22", reason: "Capek banget abis aktivitas seharian, pengen rebahan dulu.", createdAt: new Date().toISOString() }
+          { id: "1", name: "Kiky", date: "2026-09-24", reason: "Praktek klinik seharian, butuh recovery tidur malam.", createdAt: new Date().toISOString() }
         ];
         localStorage.setItem(ABSENCE_KEY, JSON.stringify(liveAbsences));
-        renderAbsenceItems(liveAbsences);
+        renderCalendar();
+        renderFilteredAbsences();
+        updateUserAbsentNotice();
         broadcastState("ABSENCE_SYNC", liveAbsences);
       }
     }
@@ -1567,7 +1601,8 @@
     renderCalendar();
     renderSchedule();
     renderMoodButtons();
-    renderAbsenceItems(liveAbsences);
+    renderFilteredAbsences();
+    updateUserAbsentNotice();
     renderSynchronizedQuote();
   </script>
 </body>
