@@ -1560,6 +1560,71 @@
 
     // Salin Ringkasan Harian (Format Pesan Komunitas)
     function copyDailyAttendanceSummary() {
+      const dateKey = getDateISO(selectedDate);
+      const dayIndex = selectedDate.getDay();
+      const currentTasks = getTasksForDate(dateKey, dayIndex);
+      const dateCompleted = liveCompletedMap[dateKey] || {};
+      const dayAbsences = liveAbsences.filter(a => a.date === dateKey);
+
+      let report = `📌 *LAPORAN AGENDA GABUT (${selectedDate.getDate()} ${monthNames[selectedDate.getMonth()]} ${selectedDate.getFullYear()})*\n\n`;
+      report += `🎯 *Status Agenda:*\n`;
+      currentTasks.forEach((t, i) => {
+        const rawDone = dateCompleted[t.id || `task_${i}`] || [];
+        const doneList = Array.isArray(rawDone) ? rawDone : [rawDone.by || "Seseorang"];
+        const doneStr = doneList.length > 0 ? `✅ Selesai (${doneList.join(", ")})` : `⏳ Belum selesai`;
+        report += `${i + 1}. ${t.title} [${t.subtext || '22.00 WIB'}] -> ${doneStr}\n`;
+      });
+
+      report += `\n📢 *Daftar Izin Skip (${dayAbsences.length} orang):*\n`;
+      if (dayAbsences.length === 0) {
+        report += `- Nihil (Semua hadir)\n`;
+      } else {
+        dayAbsences.forEach((a, i) => {
+          report += `- ${a.name}: "${a.reason}"\n`;
+        });
+      }
+
+      navigator.clipboard.writeText(report).then(() => {
+        alert("✅ Ringkasan presensi harian berhasil disalin ke clipboard! Siap dipaste ke WhatsApp/Discord.");
+      });
+    }
+
+    function exportJSONDB() {
+      const allData = {
+        absences: liveAbsences,
+        moodVotes: liveMoodData,
+        tasks: liveTasksStore,
+        completed: liveCompletedMap,
+        exportedAt: new Date().toISOString()
+      };
+      const blob = new Blob([JSON.stringify(allData, null, 2)], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `jadwal_gabut_backup_${new Date().toISOString().slice(0, 10)}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    function importJSONDB(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        try {
+          const imported = JSON.parse(e.target.result);
+          if (imported.absences) {
+            liveAbsences = imported.absences;
+            localStorage.setItem(ABSENCE_KEY, JSON.stringify(liveAbsences));
+          }
+          if (imported.moodVotes) {
+            liveMoodData = imported.moodVotes;
+            localStorage.setItem(MOOD_DB_KEY, JSON.stringify(liveMoodData));
+          }
+          if (imported.tasks) {
+            liveTasksStore = imported.tasks;
+            localStorage.setItem(TASKS_STORE_KEY, JSON.stringify(liveTasksStore));
+          }
           if (imported.completed) {
             liveCompletedMap = imported.completed;
             localStorage.setItem(COMPLETED_MAP_KEY, JSON.stringify(liveCompletedMap));
