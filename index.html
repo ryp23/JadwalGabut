@@ -115,23 +115,23 @@
       animation: pop 0.25s ease-out both;
     }
 
+    .blink-colon {
+      animation: tick-blink 1s infinite;
+    }
+
     @keyframes tick-blink {
       0%, 100% { opacity: 1; }
       50% { opacity: 0.25; }
     }
 
-    .blink-colon {
-      animation: tick-blink 1s infinite;
+    .checked-bounce {
+      animation: check-ripple 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
     }
 
     @keyframes check-ripple {
       0% { transform: scale(0.8); opacity: 0.5; }
       50% { transform: scale(1.15); opacity: 1; }
       100% { transform: scale(1); opacity: 1; }
-    }
-
-    .checked-bounce {
-      animation: check-ripple 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
     }
 
     .quote-fade-enter {
@@ -176,7 +176,7 @@
   </div>
 
   <!-- SCREEN 1: HALAMAN ABSEN AWAL -->
-  <div id="attendanceGateScreen" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-2xl transition-all duration-500">
+  <div id="attendanceGateScreen" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-2xl transition-all duration-300">
     <div class="w-full max-w-md p-8 rounded-3xl bg-neutral-900/90 border border-rose-500/30 shadow-[0_0_50px_rgba(244,63,94,0.25)] text-center relative overflow-hidden fade-in-up">
       <div class="absolute -top-16 -left-16 w-36 h-36 bg-emerald-500/25 rounded-full blur-3xl pointer-events-none"></div>
       <div class="absolute -bottom-16 -right-16 w-36 h-36 bg-purple-600/25 rounded-full blur-3xl pointer-events-none"></div>
@@ -197,8 +197,8 @@
             <input type="text" id="gateNameInput" required placeholder="Ketik nama kamu di sini..."
               class="w-full px-4 py-3.5 rounded-2xl bg-rose-950/35 border-2 border-rose-500/40 text-white placeholder-rose-300/60 text-base font-semibold focus:outline-none focus:border-rose-400 focus:bg-rose-900/45 focus:ring-4 focus:ring-rose-500/20 transition shadow-inner text-center">
           </div>
-          <button type="submit"
-            class="w-full py-3.5 px-6 rounded-2xl font-bold text-sm text-white bg-gradient-to-r from-rose-500 via-purple-600 to-emerald-500 hover:from-rose-400 hover:to-emerald-400 shadow-lg shadow-rose-950/50 transition duration-200 active:scale-[0.98] flex items-center justify-center gap-2">
+          <button type="submit" id="gateSubmitBtn"
+            class="w-full py-3.5 px-6 rounded-2xl font-bold text-sm text-white bg-gradient-to-r from-rose-500 via-purple-600 to-emerald-500 hover:from-rose-400 hover:to-emerald-400 shadow-lg shadow-rose-950/50 transition duration-200 active:scale-[0.98] flex items-center justify-center gap-2 cursor-pointer">
             <span>Masuk ke Jadwal Gabut</span>
             <span class="text-base">🚀</span>
           </button>
@@ -416,7 +416,7 @@
           </div>
         </div>
 
-        <!-- Form Keterangan / Skip Jadwal (Tersinkron Otomatis dengan Tanggal Terpilih) -->
+        <!-- Form Izin Skip Agenda -->
         <div class="glass-panel p-6 rounded-3xl shadow-xl space-y-4">
           <div class="flex items-center justify-between">
             <h3 class="font-bold text-md text-white flex items-center gap-2">
@@ -425,7 +425,7 @@
             <span id="formTargetDateBadge" class="text-[11px] font-mono font-bold text-amber-300 bg-amber-950/60 px-2.5 py-0.5 rounded-lg border border-amber-800/50"></span>
           </div>
 
-          <!-- Quick Tags Pilihan Alasan Cepat -->
+          <!-- Template Cepat Alasan -->
           <div>
             <span class="block text-[11px] font-medium text-neutral-400 mb-1.5">Template Cepat:</span>
             <div class="flex flex-wrap gap-1.5">
@@ -584,7 +584,7 @@
 
   <script>
     // ========================================================
-    // UUID / DEVICE ID GENERATOR UNTUK VOTER
+    // UUID / DEVICE ID GENERATOR
     // ========================================================
     function getOrCreateDeviceId() {
       let id = localStorage.getItem("gabut_device_id");
@@ -599,6 +599,104 @@
       return id;
     }
     const currentDeviceId = getOrCreateDeviceId();
+
+    // ========================================================
+    // STORAGE KEYS & SAFE PARSING
+    // ========================================================
+    const MOOD_DB_KEY = "gabut_mood_votes_v3";
+    const TASKS_STORE_KEY = "gabut_tasks_v3";
+    const COMPLETED_MAP_KEY = "gabut_completed_map_v3";
+    const ABSENCE_KEY = "gabut_absences_v3";
+
+    function safeParseJSON(raw, fallback) {
+      try { return raw ? JSON.parse(raw) : fallback; } catch (e) { return fallback; }
+    }
+
+    let liveMoodData = safeParseJSON(localStorage.getItem(MOOD_DB_KEY), {});
+    let liveTasksStore = safeParseJSON(localStorage.getItem(TASKS_STORE_KEY), {});
+    let liveCompletedMap = safeParseJSON(localStorage.getItem(COMPLETED_MAP_KEY), {});
+    let liveAbsences = safeParseJSON(localStorage.getItem(ABSENCE_KEY), [
+      { id: "1", name: "Kiky", date: "2026-09-24", reason: "Praktek klinik seharian, butuh recovery tidur malam.", createdAt: new Date().toISOString() }
+    ]);
+
+    // ========================================================
+    // 1. GATE ABSEN AWAL (DIPERBAIKI SECARA DEFENSIVE)
+    // ========================================================
+    let currentUser = localStorage.getItem("gabut_user_name") || "";
+
+    function initUserGate() {
+      const gateScreen = document.getElementById("attendanceGateScreen");
+      const mainDashboard = document.getElementById("mainDashboard");
+      const nameBadge = document.getElementById("currentUserNameBadge");
+      const absentNameInput = document.getElementById("absentName");
+
+      if (currentUser && currentUser.trim() !== "") {
+        if (gateScreen) {
+          gateScreen.classList.add("hidden");
+          gateScreen.style.display = "none";
+        }
+        if (mainDashboard) {
+          mainDashboard.classList.remove("opacity-0", "pointer-events-none");
+        }
+        if (nameBadge) nameBadge.textContent = currentUser;
+        if (absentNameInput) absentNameInput.value = currentUser;
+      } else {
+        if (gateScreen) {
+          gateScreen.classList.remove("hidden");
+          gateScreen.style.display = "flex";
+        }
+        if (mainDashboard) {
+          mainDashboard.classList.add("opacity-0", "pointer-events-none");
+        }
+        setTimeout(() => {
+          const input = document.getElementById("gateNameInput");
+          if (input) input.focus();
+        }, 150);
+      }
+    }
+
+    // Event Listener Form Gate Masuk
+    const gateFormEl = document.getElementById("gateForm");
+    if (gateFormEl) {
+      gateFormEl.addEventListener("submit", (e) => {
+        e.preventDefault();
+        const inputEl = document.getElementById("gateNameInput");
+        const val = inputEl ? inputEl.value.trim() : "";
+        if (!val) return;
+
+        currentUser = val;
+        localStorage.setItem("gabut_user_name", currentUser);
+
+        // Tutup modal secara langsung
+        const gateScreen = document.getElementById("attendanceGateScreen");
+        const mainDashboard = document.getElementById("mainDashboard");
+        if (gateScreen) {
+          gateScreen.classList.add("hidden");
+          gateScreen.style.display = "none";
+        }
+        if (mainDashboard) {
+          mainDashboard.classList.remove("opacity-0", "pointer-events-none");
+        }
+
+        try { updateVoterNameInMoods(currentUser); } catch (err) { console.warn(err); }
+        try { initUserGate(); } catch (err) { console.warn(err); }
+        try { renderMoodButtons(); } catch (err) { console.warn(err); }
+        try { renderSchedule(); } catch (err) { console.warn(err); }
+        try { renderFilteredAbsences(); } catch (err) { console.warn(err); }
+        try { updateUserAbsentNotice(); } catch (err) { console.warn(err); }
+      });
+    }
+
+    function reOpenGateModal() {
+      const gateScreen = document.getElementById("attendanceGateScreen");
+      const input = document.getElementById("gateNameInput");
+      if (input) input.value = currentUser;
+      if (gateScreen) {
+        gateScreen.classList.remove("hidden");
+        gateScreen.style.display = "flex";
+      }
+      if (input) input.focus();
+    }
 
     // ========================================================
     // SIKLUS MATAHARI & BULAN REAL LIVE TIME
@@ -634,78 +732,95 @@
       const horizonGlow = document.getElementById("horizonGlow");
       const phaseBadgeText = document.getElementById("skyPhaseText");
 
+      if (!skyBody) return;
       skyBody.className = "text-neutral-100 min-h-screen relative overflow-x-hidden selection:bg-rose-500 selection:text-white transition-all duration-1000";
 
       if (totalMinutes >= 300 && totalMinutes < 390) {
         skyBody.classList.add("sky-dawn");
         const progress = (totalMinutes - 300) / 90;
-        sun.style.opacity = "0.9";
-        sun.style.left = `${10 + progress * 20}%`;
-        sun.style.top = `${70 - progress * 40}%`;
-        moon.style.opacity = "0";
-        stars.style.opacity = `${0.6 * (1 - progress)}`;
-        horizonGlow.style.background = "linear-gradient(to top, rgba(249, 115, 22, 0.35), transparent)";
+        if (sun) {
+          sun.style.opacity = "0.9";
+          sun.style.left = `${10 + progress * 20}%`;
+          sun.style.top = `${70 - progress * 40}%`;
+        }
+        if (moon) moon.style.opacity = "0";
+        if (stars) stars.style.opacity = `${0.6 * (1 - progress)}`;
+        if (horizonGlow) horizonGlow.style.background = "linear-gradient(to top, rgba(249, 115, 22, 0.35), transparent)";
         if (phaseBadgeText) phaseBadgeText.textContent = "Fajar / Terbit";
       } else if (totalMinutes >= 390 && totalMinutes < 690) {
         skyBody.classList.add("sky-morning");
         const progress = (totalMinutes - 390) / 300;
-        sun.style.opacity = "1";
-        sun.style.left = `${30 + progress * 20}%`;
-        sun.style.top = `${30 - progress * 20}%`;
-        moon.style.opacity = "0";
-        stars.style.opacity = "0";
-        horizonGlow.style.background = "linear-gradient(to top, rgba(56, 189, 248, 0.2), transparent)";
+        if (sun) {
+          sun.style.opacity = "1";
+          sun.style.left = `${30 + progress * 20}%`;
+          sun.style.top = `${30 - progress * 20}%`;
+        }
+        if (moon) moon.style.opacity = "0";
+        if (stars) stars.style.opacity = "0";
+        if (horizonGlow) horizonGlow.style.background = "linear-gradient(to top, rgba(56, 189, 248, 0.2), transparent)";
         if (phaseBadgeText) phaseBadgeText.textContent = "Pagi Cerah";
       } else if (totalMinutes >= 690 && totalMinutes < 900) {
         skyBody.classList.add("sky-noon");
         const progress = (totalMinutes - 690) / 210;
-        sun.style.opacity = "1";
-        sun.style.left = `${50 + progress * 15}%`;
-        sun.style.top = `${10 + progress * 15}%`;
-        moon.style.opacity = "0";
-        stars.style.opacity = "0";
-        horizonGlow.style.background = "linear-gradient(to top, rgba(234, 179, 8, 0.15), transparent)";
+        if (sun) {
+          sun.style.opacity = "1";
+          sun.style.left = `${50 + progress * 15}%`;
+          sun.style.top = `${10 + progress * 15}%`;
+        }
+        if (moon) moon.style.opacity = "0";
+        if (stars) stars.style.opacity = "0";
+        if (horizonGlow) horizonGlow.style.background = "linear-gradient(to top, rgba(234, 179, 8, 0.15), transparent)";
         if (phaseBadgeText) phaseBadgeText.textContent = "Siang Terang";
       } else if (totalMinutes >= 900 && totalMinutes < 1050) {
         skyBody.classList.add("sky-afternoon");
         const progress = (totalMinutes - 900) / 150;
-        sun.style.opacity = "0.95";
-        sun.style.left = `${65 + progress * 20}%`;
-        sun.style.top = `${25 + progress * 35}%`;
-        moon.style.opacity = "0";
-        stars.style.opacity = "0";
-        horizonGlow.style.background = "linear-gradient(to top, rgba(244, 63, 94, 0.25), transparent)";
+        if (sun) {
+          sun.style.opacity = "0.95";
+          sun.style.left = `${65 + progress * 20}%`;
+          sun.style.top = `${25 + progress * 35}%`;
+        }
+        if (moon) moon.style.opacity = "0";
+        if (stars) stars.style.opacity = "0";
+        if (horizonGlow) horizonGlow.style.background = "linear-gradient(to top, rgba(244, 63, 94, 0.25), transparent)";
         if (phaseBadgeText) phaseBadgeText.textContent = "Sore Teduh";
       } else if (totalMinutes >= 1050 && totalMinutes < 1125) {
         skyBody.classList.add("sky-sunset");
         const progress = (totalMinutes - 1050) / 75;
-        sun.style.opacity = `${1 - progress * 0.8}`;
-        sun.style.left = `${85 + progress * 8}%`;
-        sun.style.top = `${60 + progress * 30}%`;
-        moon.style.opacity = `${progress * 0.7}`;
-        moon.style.left = "18%";
-        moon.style.top = "25%";
-        stars.style.opacity = `${progress * 0.6}`;
-        horizonGlow.style.background = "linear-gradient(to top, rgba(239, 68, 68, 0.4), transparent)";
+        if (sun) {
+          sun.style.opacity = `${1 - progress * 0.8}`;
+          sun.style.left = `${85 + progress * 8}%`;
+          sun.style.top = `${60 + progress * 30}%`;
+        }
+        if (moon) {
+          moon.style.opacity = `${progress * 0.7}`;
+          moon.style.left = "18%";
+          moon.style.top = "25%";
+        }
+        if (stars) stars.style.opacity = `${progress * 0.6}`;
+        if (horizonGlow) horizonGlow.style.background = "linear-gradient(to top, rgba(239, 68, 68, 0.4), transparent)";
         if (phaseBadgeText) phaseBadgeText.textContent = "Senja Terbenam";
       } else if (totalMinutes >= 1125 && totalMinutes < 1200) {
         skyBody.classList.add("sky-dusk");
-        sun.style.opacity = "0";
-        moon.style.opacity = "0.9";
-        moon.style.left = "25%";
-        moon.style.top = "18%";
-        stars.style.opacity = "0.85";
-        horizonGlow.style.background = "linear-gradient(to top, rgba(168, 85, 247, 0.2), transparent)";
+        if (sun) sun.style.opacity = "0";
+        if (moon) {
+          moon.style.opacity = "0.9";
+          moon.style.left = "25%";
+          moon.style.top = "18%";
+        }
+        if (stars) stars.style.opacity = "0.85";
+        if (horizonGlow) horizonGlow.style.background = "linear-gradient(to top, rgba(168, 85, 247, 0.2), transparent)";
         if (phaseBadgeText) phaseBadgeText.textContent = "Petang / Bulan";
       } else {
         skyBody.classList.add("sky-night");
-        sun.style.opacity = "0";
-        moon.style.opacity = "1";
+        if (sun) sun.style.opacity = "0";
+        if (moon) moon.style.opacity = "1";
         let nightProgress = (totalMinutes >= 1200) ? (totalMinutes - 1200) / 540 : (totalMinutes + 240) / 540;
-        moon.style.left = `${25 + nightProgress * 45}%`;
-        moon.style.top = `${16 + Math.sin(nightProgress * Math.PI) * -6}%`;
-        stars.style.opacity = "1";
-        horizonGlow.style.background = "linear-gradient(to top, rgba(99, 102, 241, 0.15), transparent)";
+        if (moon) {
+          moon.style.left = `${25 + nightProgress * 45}%`;
+          moon.style.top = `${16 + Math.sin(nightProgress * Math.PI) * -6}%`;
+        }
+        if (stars) stars.style.opacity = "1";
+        if (horizonGlow) horizonGlow.style.background = "linear-gradient(to top, rgba(99, 102, 241, 0.15), transparent)";
         if (phaseBadgeText) phaseBadgeText.textContent = "Malam Bertabur Bintang";
       }
     }
@@ -755,127 +870,59 @@
 
     function updateLiveClock() {
       const now = new Date();
-      document.getElementById("clockHours").textContent = String(now.getHours()).padStart(2, "0");
-      document.getElementById("clockMinutes").textContent = String(now.getMinutes()).padStart(2, "0");
-      document.getElementById("clockSeconds").textContent = String(now.getSeconds()).padStart(2, "0");
+      const h = document.getElementById("clockHours");
+      const m = document.getElementById("clockMinutes");
+      const s = document.getElementById("clockSeconds");
+      const d = document.getElementById("liveFullDate");
 
-      const dateStr = now.toLocaleDateString("id-ID", {
-        weekday: "long",
-        day: "numeric",
-        month: "long",
-        year: "numeric"
-      });
-      document.getElementById("liveFullDate").textContent = `📅 ${dateStr}`;
+      if (h) h.textContent = String(now.getHours()).padStart(2, "0");
+      if (m) m.textContent = String(now.getMinutes()).padStart(2, "0");
+      if (s) s.textContent = String(now.getSeconds()).padStart(2, "0");
+
+      if (d) {
+        const dateStr = now.toLocaleDateString("id-ID", {
+          weekday: "long",
+          day: "numeric",
+          month: "long",
+          year: "numeric"
+        });
+        d.textContent = `📅 ${dateStr}`;
+      }
     }
     setInterval(updateLiveClock, 1000);
     updateLiveClock();
 
     // ========================================================
-    // 1. GATE ABSEN AWAL & IDENTITAS USER
+    // PEERJS NETWORK P2P (SAFE WRAPPER)
     // ========================================================
-    let currentUser = localStorage.getItem("gabut_user_name") || "";
-
-    function initUserGate() {
-      const gateScreen = document.getElementById("attendanceGateScreen");
-      const mainDashboard = document.getElementById("mainDashboard");
-      const nameBadge = document.getElementById("currentUserNameBadge");
-      const absentNameInput = document.getElementById("absentName");
-
-      if (currentUser && currentUser.trim() !== "") {
-        gateScreen.classList.add("hidden");
-        mainDashboard.classList.remove("opacity-0", "pointer-events-none");
-        nameBadge.textContent = currentUser;
-        if (absentNameInput) absentNameInput.value = currentUser;
-      } else {
-        gateScreen.classList.remove("hidden");
-        mainDashboard.classList.add("opacity-0", "pointer-events-none");
-        setTimeout(() => {
-          const input = document.getElementById("gateNameInput");
-          if (input) input.focus();
-        }, 150);
-      }
-    }
-
-    document.getElementById("gateForm").addEventListener("submit", (e) => {
-      e.preventDefault();
-      const val = document.getElementById("gateNameInput").value.trim();
-      if (!val) return;
-
-      currentUser = val;
-      localStorage.setItem("gabut_user_name", currentUser);
-      updateVoterNameInMoods(currentUser);
-      initUserGate();
-      renderMoodButtons();
-      renderSchedule();
-      renderFilteredAbsences();
-    });
-
-    function reOpenGateModal() {
-      const gateScreen = document.getElementById("attendanceGateScreen");
-      const input = document.getElementById("gateNameInput");
-      input.value = currentUser;
-      gateScreen.classList.remove("hidden");
-      input.focus();
-    }
-
-    // ========================================================
-    // 2. NETWORK P2P REALTIME SYNC (PEERJS)
-    // ========================================================
-    const MOOD_DB_KEY = "gabut_mood_votes_v3";
-    const TASKS_STORE_KEY = "gabut_tasks_v3";
-    const COMPLETED_MAP_KEY = "gabut_completed_map_v3";
-    const ABSENCE_KEY = "gabut_absences_v3";
-
-    function safeParseJSON(raw, fallback) {
-      try { return raw ? JSON.parse(raw) : fallback; } catch (e) { return fallback; }
-    }
-
-    let liveMoodData = safeParseJSON(localStorage.getItem(MOOD_DB_KEY), {});
-    let liveTasksStore = safeParseJSON(localStorage.getItem(TASKS_STORE_KEY), {});
-    let liveCompletedMap = safeParseJSON(localStorage.getItem(COMPLETED_MAP_KEY), {});
-    let liveAbsences = safeParseJSON(localStorage.getItem(ABSENCE_KEY), [
-      { id: "1", name: "Kiky", date: "2026-09-24", reason: "Praktek klinik seharian, butuh recovery tidur malam.", createdAt: new Date().toISOString() }
-    ]);
-
     const ROOM_HUB_ID = "ruang-gabut-kiky-2026";
     let myPeer = null;
     let peerConnections = [];
 
     function broadcastState(type, payload) {
+      if (!peerConnections || !Array.isArray(peerConnections)) return;
       peerConnections.forEach(conn => {
-        if (conn && conn.open) {
-          conn.send({ type, data: payload });
+        try {
+          if (conn && conn.open) conn.send({ type, data: payload });
+        } catch (e) {
+          console.warn("Broadcast err:", e);
         }
       });
     }
 
     function initP2PNetwork() {
-      const randomId = "gabut_" + Math.random().toString(36).substring(2, 9);
-      myPeer = new Peer(randomId);
+      if (typeof Peer === "undefined") {
+        console.warn("PeerJS library tidak termuat, beralih ke mode offline storage.");
+        return;
+      }
+      try {
+        const randomId = "gabut_" + Math.random().toString(36).substring(2, 9);
+        myPeer = new Peer(randomId);
 
-      myPeer.on("open", () => connectToHost());
-      myPeer.on("error", (err) => console.warn("P2P Notice:", err));
+        myPeer.on("open", () => connectToHost());
+        myPeer.on("error", (err) => console.warn("P2P Notice:", err));
 
-      myPeer.on("connection", (conn) => {
-        setupConnectionEvents(conn);
-        conn.on("open", () => {
-          conn.send({
-            type: "ALL_SYNC",
-            data: {
-              mood: liveMoodData,
-              tasks: liveTasksStore,
-              completed: liveCompletedMap,
-              absences: liveAbsences
-            }
-          });
-        });
-      });
-    }
-
-    function connectToHost() {
-      const hostPeer = new Peer(ROOM_HUB_ID);
-      hostPeer.on("open", () => {
-        hostPeer.on("connection", (conn) => {
+        myPeer.on("connection", (conn) => {
           setupConnectionEvents(conn);
           conn.on("open", () => {
             conn.send({
@@ -889,14 +936,41 @@
             });
           });
         });
-      });
+      } catch (err) {
+        console.warn("Inisialisasi P2P dilewati:", err);
+      }
+    }
 
-      hostPeer.on("error", (err) => {
-        if (err.type === "unavailable-id") {
-          const clientConn = myPeer.connect(ROOM_HUB_ID);
-          setupConnectionEvents(clientConn);
-        }
-      });
+    function connectToHost() {
+      if (typeof Peer === "undefined") return;
+      try {
+        const hostPeer = new Peer(ROOM_HUB_ID);
+        hostPeer.on("open", () => {
+          hostPeer.on("connection", (conn) => {
+            setupConnectionEvents(conn);
+            conn.on("open", () => {
+              conn.send({
+                type: "ALL_SYNC",
+                data: {
+                  mood: liveMoodData,
+                  tasks: liveTasksStore,
+                  completed: liveCompletedMap,
+                  absences: liveAbsences
+                }
+              });
+            });
+          });
+        });
+
+        hostPeer.on("error", (err) => {
+          if (err.type === "unavailable-id" && myPeer) {
+            const clientConn = myPeer.connect(ROOM_HUB_ID);
+            setupConnectionEvents(clientConn);
+          }
+        });
+      } catch (e) {
+        console.warn(e);
+      }
     }
 
     function setupConnectionEvents(conn) {
@@ -941,10 +1015,8 @@
       });
     }
 
-    initP2PNetwork();
-
     // ========================================================
-    // 3. MOOD TRACKER BERBASIS DEVICE_ID
+    // 3. MOOD TRACKER ENGINE
     // ========================================================
     const MOOD_LIST = [
       { id: "senang", label: "Senang", emoji: "😊", bgHover: "hover:bg-emerald-950/40 hover:text-emerald-300" },
@@ -989,16 +1061,19 @@
       container.innerHTML = "";
 
       let totalClicks = todayVotes.length;
-      document.getElementById("totalMoodCountBadge").textContent = `${totalClicks} Vote`;
+      const badgeEl = document.getElementById("totalMoodCountBadge");
+      if (badgeEl) badgeEl.textContent = `${totalClicks} Vote`;
 
       const userTodayVote = todayVotes.find(v => v.deviceId === currentDeviceId);
 
       const statusEl = document.getElementById("activeUserMoodStatus");
-      if (userTodayVote) {
-        const m = MOOD_LIST.find(item => item.id === userTodayVote.moodId);
-        statusEl.innerHTML = `Mood kamu: <span class="text-rose-400 font-bold">${m ? m.emoji : ""} ${m ? m.label : ""}</span>`;
-      } else {
-        statusEl.innerHTML = `Status: <span class="text-neutral-400 font-semibold">Belum memilih</span>`;
+      if (statusEl) {
+        if (userTodayVote) {
+          const m = MOOD_LIST.find(item => item.id === userTodayVote.moodId);
+          statusEl.innerHTML = `Mood kamu: <span class="text-rose-400 font-bold">${m ? m.emoji : ""} ${m ? m.label : ""}</span>`;
+        } else {
+          statusEl.innerHTML = `Status: <span class="text-neutral-400 font-semibold">Belum memilih</span>`;
+        }
       }
 
       MOOD_LIST.forEach(mood => {
@@ -1084,6 +1159,7 @@
       const today = getTodayKey();
       const todayVotes = liveMoodData[today] || [];
       const listEl = document.getElementById("moodBreakdownList");
+      if (!listEl) return;
       listEl.innerHTML = "";
 
       if (todayVotes.length === 0) {
@@ -1109,13 +1185,19 @@
         });
       }
 
-      document.getElementById("moodModal").classList.remove("hidden");
-      document.getElementById("moodModal").classList.add("flex");
+      const modal = document.getElementById("moodModal");
+      if (modal) {
+        modal.classList.remove("hidden");
+        modal.classList.add("flex");
+      }
     }
 
     function closeMoodHistoryModal() {
-      document.getElementById("moodModal").classList.add("hidden");
-      document.getElementById("moodModal").classList.remove("flex");
+      const modal = document.getElementById("moodModal");
+      if (modal) {
+        modal.classList.add("hidden");
+        modal.classList.remove("flex");
+      }
     }
 
     function clearMoodHistoryToday() {
@@ -1130,7 +1212,7 @@
     }
 
     // ========================================================
-    // 4. JADWAL GABUT & REALTIME MULTI-USER KEGIATAN
+    // 4. JADWAL GABUT & REALTIME KEGIATAN
     // ========================================================
     const baseRoutineSchedule = {
       1: { day: "Senin", time: "Pukul 22.00 s.d Selesai", tasks: [{ id: "m1", title: "Nonton Netflix", subtext: "Pukul 22.00 s.d Selesai", tag: "Hiburan" }, { id: "m2", title: "Latihan Gitar", subtext: "Pukul 22.00 s.d Selesai", tag: "Skill" }] },
@@ -1154,10 +1236,13 @@
     function renderCalendar() {
       const year = currentDate.getFullYear();
       const month = currentDate.getMonth();
-      document.getElementById("calendarMonthYear").innerText = `${monthNames[month]} ${year}`;
+      const titleEl = document.getElementById("calendarMonthYear");
+      if (titleEl) titleEl.innerText = `${monthNames[month]} ${year}`;
+
       const firstDayIndex = new Date(year, month, 1).getDay();
       const totalDays = new Date(year, month + 1, 0).getDate();
       const daysContainer = document.getElementById("calendarDays");
+      if (!daysContainer) return;
       daysContainer.innerHTML = "";
 
       for (let i = 0; i < firstDayIndex; i++) daysContainer.appendChild(document.createElement("div"));
@@ -1195,6 +1280,7 @@
       currentDate.setMonth(currentDate.getMonth() + offset);
       renderCalendar();
     }
+
     function goToToday() {
       currentDate = new Date();
       selectedDate = new Date();
@@ -1213,7 +1299,8 @@
     function updateUserAbsentNotice() {
       const dateKey = getDateISO(selectedDate);
       const noticeBanner = document.getElementById("userAbsentNoticeBanner");
-      const isUserAbsentToday = liveAbsences.some(a => a.date === dateKey && (a.deviceId === currentDeviceId || (currentUser && a.name.toLowerCase() === currentUser.toLowerCase())));
+      if (!noticeBanner) return;
+      const isUserAbsentToday = liveAbsences.some(a => a.date === dateKey && (a.deviceId === currentDeviceId || (currentUser && a.name && a.name.toLowerCase() === currentUser.toLowerCase())));
       
       if (isUserAbsentToday) {
         noticeBanner.classList.remove("hidden");
@@ -1227,15 +1314,20 @@
       const dayData = baseRoutineSchedule[dayIndex];
       const dateKey = getDateISO(selectedDate);
 
-      document.getElementById("selectedDayName").innerText = dayNames[dayIndex].toUpperCase();
-      document.getElementById("selectedDateDisplay").innerText = `${selectedDate.getDate()} ${monthNames[selectedDate.getMonth()]} ${selectedDate.getFullYear()}`;
-      document.getElementById("timeSlot").innerHTML = `<span>⏰</span><span>${escapeHtml(dayData.time)}</span>`;
+      const dayNameEl = document.getElementById("selectedDayName");
+      const dateDisplayEl = document.getElementById("selectedDateDisplay");
+      const timeSlotEl = document.getElementById("timeSlot");
+      const targetBadgeEl = document.getElementById("formTargetDateBadge");
+      const absentDateInput = document.getElementById("absentDate");
 
-      // Perbarui label form absen agar menunjuk ke tanggal aktif
-      document.getElementById("formTargetDateBadge").innerText = dateKey;
-      document.getElementById("absentDate").value = dateKey;
+      if (dayNameEl) dayNameEl.innerText = dayNames[dayIndex].toUpperCase();
+      if (dateDisplayEl) dateDisplayEl.innerText = `${selectedDate.getDate()} ${monthNames[selectedDate.getMonth()]} ${selectedDate.getFullYear()}`;
+      if (timeSlotEl) timeSlotEl.innerHTML = `<span>⏰</span><span>${escapeHtml(dayData.time)}</span>`;
+      if (targetBadgeEl) targetBadgeEl.innerText = dateKey;
+      if (absentDateInput) absentDateInput.value = dateKey;
 
       const scheduleDetails = document.getElementById("scheduleDetails");
+      if (!scheduleDetails) return;
       scheduleDetails.innerHTML = "";
 
       const currentTasks = getTasksForDate(dateKey, dayIndex);
@@ -1265,7 +1357,7 @@
           completionList = [rawDone];
         }
 
-        const isUserDone = currentUser ? completionList.some(name => name.toLowerCase() === currentUser.toLowerCase()) : false;
+        const isUserDone = currentUser ? completionList.some(name => name && name.toLowerCase() === currentUser.toLowerCase()) : false;
         const totalDoneCount = completionList.length;
 
         let doneByChips = "";
@@ -1367,7 +1459,7 @@
         else list = [];
       }
 
-      const existingIndex = list.findIndex(n => n.toLowerCase() === currentUser.toLowerCase());
+      const existingIndex = list.findIndex(n => n && n.toLowerCase() === currentUser.toLowerCase());
       if (existingIndex >= 0) {
         list.splice(existingIndex, 1);
       } else {
@@ -1449,14 +1541,16 @@
     function toggleAbsenceFilterScope() {
       showAllAbsencesScope = !showAllAbsencesScope;
       const btn = document.getElementById("toggleAbsenceScopeBtn");
-      btn.innerText = showAllAbsencesScope ? "Filter Tanggal Ini Saja" : "Tampilkan Semua Tanggal";
+      if (btn) btn.innerText = showAllAbsencesScope ? "Filter Tanggal Ini Saja" : "Tampilkan Semua Tanggal";
       renderFilteredAbsences();
     }
 
     function applyQuickReason(text) {
       const reasonEl = document.getElementById("absentReason");
-      reasonEl.value = text;
-      reasonEl.focus();
+      if (reasonEl) {
+        reasonEl.value = text;
+        reasonEl.focus();
+      }
     }
 
     function renderFilteredAbsences() {
@@ -1465,9 +1559,11 @@
       if (!container) return;
 
       const dateKey = getDateISO(selectedDate);
-      scopeDateDisplay.innerText = showAllAbsencesScope 
-        ? "Semua Riwayat" 
-        : `${selectedDate.getDate()} ${monthNames[selectedDate.getMonth()]} ${selectedDate.getFullYear()}`;
+      if (scopeDateDisplay) {
+        scopeDateDisplay.innerText = showAllAbsencesScope 
+          ? "Semua Riwayat" 
+          : `${selectedDate.getDate()} ${monthNames[selectedDate.getMonth()]} ${selectedDate.getFullYear()}`;
+      }
 
       const listToDisplay = showAllAbsencesScope 
         ? liveAbsences 
@@ -1512,53 +1608,67 @@
       broadcastState("ABSENCE_SYNC", liveAbsences);
     }
 
-    document.getElementById("absenceForm").addEventListener("submit", (e) => {
-      e.preventDefault();
-      const errorEl = document.getElementById("absentFormError");
-      const submitBtn = document.getElementById("absentSubmitBtn");
-      errorEl.classList.add("hidden");
+    const absenceFormEl = document.getElementById("absenceForm");
+    if (absenceFormEl) {
+      absenceFormEl.addEventListener("submit", (e) => {
+        e.preventDefault();
+        const errorEl = document.getElementById("absentFormError");
+        const submitBtn = document.getElementById("absentSubmitBtn");
+        if (errorEl) errorEl.classList.add("hidden");
 
-      const name = document.getElementById("absentName").value.trim();
-      const date = document.getElementById("absentDate").value;
-      const reason = document.getElementById("absentReason").value.trim();
+        const nameInput = document.getElementById("absentName");
+        const dateInput = document.getElementById("absentDate");
+        const reasonInput = document.getElementById("absentReason");
 
-      if (!name || !date || !reason) {
-        errorEl.innerText = "Semua kolom harus diisi!";
-        errorEl.classList.remove("hidden");
-        return;
-      }
+        const name = nameInput ? nameInput.value.trim() : "";
+        const date = dateInput ? dateInput.value : "";
+        const reason = reasonInput ? reasonInput.value.trim() : "";
 
-      submitBtn.disabled = true;
-      submitBtn.innerText = "Menyimpan Keterangan...";
+        if (!name || !date || !reason) {
+          if (errorEl) {
+            errorEl.innerText = "Semua kolom harus diisi!";
+            errorEl.classList.remove("hidden");
+          }
+          return;
+        }
 
-      try {
-        const newAbsence = {
-          id: Date.now().toString(),
-          deviceId: currentDeviceId,
-          name,
-          date,
-          reason,
-          createdAt: new Date().toISOString()
-        };
+        if (submitBtn) {
+          submitBtn.disabled = true;
+          submitBtn.innerText = "Menyimpan Keterangan...";
+        }
 
-        liveAbsences.unshift(newAbsence);
-        localStorage.setItem(ABSENCE_KEY, JSON.stringify(liveAbsences));
+        try {
+          const newAbsence = {
+            id: Date.now().toString(),
+            deviceId: currentDeviceId,
+            name,
+            date,
+            reason,
+            createdAt: new Date().toISOString()
+          };
 
-        document.getElementById("absentReason").value = "";
-        renderCalendar();
-        renderFilteredAbsences();
-        updateUserAbsentNotice();
-        broadcastState("ABSENCE_SYNC", liveAbsences);
-      } catch (err) {
-        errorEl.innerText = "Gagal menyimpan: " + err.message;
-        errorEl.classList.remove("hidden");
-      } finally {
-        submitBtn.disabled = false;
-        submitBtn.innerText = "Kirim Keterangan Publik";
-      }
-    });
+          liveAbsences.unshift(newAbsence);
+          localStorage.setItem(ABSENCE_KEY, JSON.stringify(liveAbsences));
 
-    // Salin Ringkasan Harian (Format Pesan Komunitas)
+          if (reasonInput) reasonInput.value = "";
+          renderCalendar();
+          renderFilteredAbsences();
+          updateUserAbsentNotice();
+          broadcastState("ABSENCE_SYNC", liveAbsences);
+        } catch (err) {
+          if (errorEl) {
+            errorEl.innerText = "Gagal menyimpan: " + err.message;
+            errorEl.classList.remove("hidden");
+          }
+        } finally {
+          if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.innerText = "Kirim Keterangan Publik";
+          }
+        }
+      });
+    }
+
     function copyDailyAttendanceSummary() {
       const dateKey = getDateISO(selectedDate);
       const dayIndex = selectedDate.getDay();
@@ -1579,13 +1689,13 @@
       if (dayAbsences.length === 0) {
         report += `- Nihil (Semua hadir)\n`;
       } else {
-        dayAbsences.forEach((a, i) => {
+        dayAbsences.forEach((a) => {
           report += `- ${a.name}: "${a.reason}"\n`;
         });
       }
 
       navigator.clipboard.writeText(report).then(() => {
-        alert("✅ Ringkasan presensi harian berhasil disalin ke clipboard! Siap dipaste ke WhatsApp/Discord.");
+        alert("✅ Ringkasan presensi harian berhasil disalin ke clipboard!");
       });
     }
 
@@ -1661,7 +1771,9 @@
       }
     }
 
-    // Inisialisasi awal
+    // ========================================================
+    // INISIALISASI UTAMA
+    // ========================================================
     initUserGate();
     renderCalendar();
     renderSchedule();
@@ -1669,6 +1781,11 @@
     renderFilteredAbsences();
     updateUserAbsentNotice();
     renderSynchronizedQuote();
+
+    // Jalankan jaringan P2P setelah DOM dan UI utama stabil
+    setTimeout(() => {
+      initP2PNetwork();
+    }, 300);
   </script>
 </body>
 
